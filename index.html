@@ -351,11 +351,7 @@
         🚨 Er is een bewijsfoto van een missie geüpload! Verplaats je naar de plaats van het incident!
       </div>
       <div id="hunterPhotoFeed" class="photo-feed">Geen foto's.</div>
-      <div class="photo-upload-area">
-        <input type="file" id="hunterPhotoInput" accept="image/*" capture="environment" />
-        <button class="btn btn-primary" id="hunterUploadPhotoBtn">📷 Foto maken / uploaden</button>
-        <span id="hunterUploadStatus" style="font-size:0.8rem; color:#8899aa; align-self:center;"></span>
-      </div>
+      <!-- Geen upload voor hunters -->
     </div>
 
     <div class="card">
@@ -419,6 +415,7 @@
     <div class="card">
       <h2>📸 Live foto-feed</h2>
       <div id="docentPhotoFeed" class="photo-feed">Geen foto's.</div>
+      <!-- Docent heeft upload -->
       <div class="photo-upload-area">
         <input type="file" id="docentPhotoInput" accept="image/*" capture="environment" />
         <button class="btn btn-primary" id="docentUploadPhotoBtn">📷 Foto maken / uploaden</button>
@@ -933,42 +930,6 @@
       }
     });
 
-    // Upload foto (hunter)
-    const hunterPhotoInput = document.getElementById('hunterPhotoInput');
-    const hunterUploadBtn = document.getElementById('hunterUploadPhotoBtn');
-    const hunterUploadStatus = document.getElementById('hunterUploadStatus');
-
-    async function hunterUploadPhoto(file) {
-      if (!file) return;
-      setStatus(hunterUploadStatus, '⏳ Uploaden...', 'info');
-      try {
-        const fileName = `${Date.now()}_${file.name}`;
-        const storageReference = storageRef(storage, `klassen/${className}/photos/${fileName}`);
-        await uploadBytes(storageReference, file);
-        const downloadURL = await getDownloadURL(storageReference);
-        await push(photosRef, {
-          uploader: teamName + ' (H)',
-          imageUrl: downloadURL,
-          timestamp: getTimestamp()
-        });
-        setStatus(hunterUploadStatus, '✅ Foto geüpload!', 'success');
-      } catch (err) {
-        setStatus(hunterUploadStatus, '❌ Fout: ' + err.message, 'error');
-      }
-    }
-
-    hunterUploadBtn.addEventListener('click', () => {
-      hunterPhotoInput.click();
-    });
-
-    hunterPhotoInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        hunterUploadPhoto(file);
-      }
-      hunterPhotoInput.value = '';
-    });
-
     document.getElementById('hunterLogoutBtn').addEventListener('click', () => {
       if (confirm('Weet je zeker dat je wilt uitloggen?')) {
         if (pingDisplayTimer) clearTimeout(pingDisplayTimer);
@@ -977,7 +938,7 @@
     });
   }
 
-  // --------------------- DOCENT DASHBOARD (met missie-overzicht) ---------------------
+  // --------------------- DOCENT DASHBOARD (met missie-overzicht en upload) ---------------------
   function initDocentDashboard(className) {
     updateTimer('docentTimerValue', className);
     setInterval(() => updateTimer('docentTimerValue', className), 1000);
@@ -1147,7 +1108,6 @@
         docentMissionList.innerHTML = '<div style="color:#8899aa;">Geen missies geladen.</div>';
         return;
       }
-      // Bouw een map van team -> completed missions
       const teamCompleted = {};
       if (playersData) {
         for (const [name, player] of Object.entries(playersData)) {
@@ -1158,10 +1118,8 @@
       }
 
       let html = '';
-      // Sorteer missies op order
       const missionArray = Object.values(missionsData).sort((a,b) => (a.order || 0) - (b.order || 0));
       for (const mission of missionArray) {
-        // Bepaal welke teams deze missie hebben voltooid
         const completedBy = [];
         for (const [team, completed] of Object.entries(teamCompleted)) {
           if (completed.includes(mission.id)) {
@@ -1180,7 +1138,6 @@
       docentMissionList.innerHTML = html || '<div style="color:#8899aa;">Geen missies.</div>';
     }
 
-    // Luister naar missies en spelers voor docent-overzicht
     onValue(missionsRef, (snapshot) => {
       const missionsData = snapshot.val();
       get(playersRef).then(playerSnap => {
@@ -1189,7 +1146,7 @@
       });
     });
 
-    // Foto-feed (docent)
+    // Foto-feed (docent) + upload
     onValue(photosRef, (snapshot) => {
       const data = snapshot.val();
       const docentPhotoFeed = document.getElementById('docentPhotoFeed');
