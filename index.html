@@ -351,7 +351,11 @@
         🚨 Er is een bewijsfoto van een missie geüpload! Verplaats je naar de plaats van het incident!
       </div>
       <div id="hunterPhotoFeed" class="photo-feed">Geen foto's.</div>
-      <!-- Geen upload voor hunters -->
+      <div class="photo-upload-area">
+        <input type="file" id="hunterPhotoInput" accept="image/*" capture="environment" />
+        <button class="btn btn-primary" id="hunterUploadPhotoBtn">📷 Foto maken / uploaden</button>
+        <span id="hunterUploadStatus" style="font-size:0.8rem; color:#8899aa; align-self:center;"></span>
+      </div>
     </div>
 
     <div class="card">
@@ -404,7 +408,7 @@
       </div>
     </div>
 
-    <!-- VERVANGING VOOR AANWIJZINGEN: MISSIE-OVERZICHT -->
+    <!-- MISSIE-OVERZICHT -->
     <div class="card">
       <h2>📋 Missie-overzicht</h2>
       <div id="docentMissionList" class="active-missions-list">
@@ -415,7 +419,6 @@
     <div class="card">
       <h2>📸 Live foto-feed</h2>
       <div id="docentPhotoFeed" class="photo-feed">Geen foto's.</div>
-      <!-- Docent heeft upload -->
       <div class="photo-upload-area">
         <input type="file" id="docentPhotoInput" accept="image/*" capture="environment" />
         <button class="btn btn-primary" id="docentUploadPhotoBtn">📷 Foto maken / uploaden</button>
@@ -475,39 +478,127 @@
   };
   const GAME_DURATION = 3600; // 60 minuten
 
-  const SAMPLE_LOCATIONS = [
+  // ----- Nieuwe missies (rechercheurthema) -----
+  const DEFAULT_MISSIONS = [
     {
-      id: 'loc1',
-      lat: 52.123456,
-      lng: 5.678901,
-      description: 'De oude bibliotheek',
-      question: 'Wat is de naam van de bibliotheek?',
-      answer: 'De Boekenberg',
-      photoURL: ''
+      "id": "mission1",
+      "order": 1,
+      "lat": 52.131168,
+      "lng": 5.365757,
+      "cryptic": "Er is een handlanger die op de criminelen wacht. Noteer de daderkenmerken van de handlanger: Naam, geboortedatum en signalement.",
+      "description": "Pik hier jullie handlanger op. De handlanger mag onder geen enkele voorwaarde, tijdens jullie actie, de grond raken. Maak een foto van jullie team, met handlanger voor de schuilplaats van de handlanger."
     },
     {
-      id: 'loc2',
-      lat: 52.234567,
-      lng: 5.789012,
-      description: 'Het centrale plein',
-      question: 'Welke kleur heeft het standbeeld?',
-      answer: 'Groen',
-      photoURL: ''
+      "id": "mission2",
+      "order": 2,
+      "lat": 52.13157158531315,
+      "lng": 5.366080999232944,
+      "cryptic": "Er is een inbraak geplaagd? Zoek op plaats naar weggenomen goederen, sporen, schade feiten en omstandigheden.",
+      "description": "Breek de kluis open en ontvreem de examens."
     },
     {
-      id: 'loc3',
-      lat: 52.345678,
-      lng: 5.890123,
-      description: 'De kantine',
-      question: 'Wat is het favoriete gerecht?',
-      answer: 'Pizza',
-      photoURL: ''
+      "id": "mission3",
+      "order": 3,
+      "lat": 52.130893,
+      "lng": 5.364418,
+      "cryptic": "Stel de sporen veilig. Beschrijf het decor: Welke voorwerpen zie en waar bevinden de sporen zich.",
+      "description": "Jullie zijn vuurwapengevaarlijk. Laat zien dat jullie handlanger niet erg handig is met een vuurwapen."
+    },
+    {
+      "id": "mission4",
+      "order": 4,
+      "lat": 52.13063770774307,
+      "lng": 5.365244149989522,
+      "cryptic": "De vlucht van de criminelen heeft een ongeluk veroorzaakt. Beschrijf de plaats delict. Wel spoor vinden jullie? Waar ligt het spoor?",
+      "description": "Jullie vluchtgedrag is erg levensgevaarlijk! Jullie veroorzaakten een complex verkeersongeval. Een deel van de buit verliezen jullie. Laat een spoor achter. Als jullie plaats incident verlaten, ligt er een voorwerp van jullie. Denk aan een schoen, zakdoek, potje gel ... verzin het maar!"
+    },
+    {
+      "id": "mission5",
+      "order": 5,
+      "lat": 52.13062979171813,
+      "lng": 5.367057323459728,
+      "cryptic": "Hier zijn de criminelen geweest. Verzamel de sporen.",
+      "description": "Hier kunnen jullie schuilen. Rust lekker uit. Neem de tijd.... of zitten de hunters jullie al op de hielen?"
+    },
+    {
+      "id": "mission6",
+      "order": 6,
+      "lat": 52.131564999440904,
+      "lng": 5.369160175495069,
+      "cryptic": "Plaats delict. Beschrijf wat je ziet. Noteer de feiten en omstandigheden van een strafbaar feit.",
+      "description": "Hier vindt de overdracht plaats. Lever de examens in en neem de beloning in ontvangst."
+    },
+    {
+      "id": "mission7",
+      "order": 7,
+      "lat": 52.13156499941543,
+      "lng": 5.368258953230015,
+      "cryptic": "De handlanger moet contact opnemen met een persoon. Een foto van de ontmoeting is vereist.",
+      "description": "De handlanger heeft een contactpersoon. Maak een foto van de ontmoeting."
+    },
+    {
+      "id": "mission8",
+      "order": 8,
+      "lat": 52.13,
+      "lng": 5.367,
+      "cryptic": "De criminelen hebben een schuilplaats gebruikt. Zoek naar sporen van verblijf: resten van eten, gebruikte voorwerpen, of andere aanwijzingen. Noteer de locatie en de gevonden sporen.",
+      "description": "Zoek een schuilplaats voor de nacht. Laat een spoor achter dat jullie hier zijn geweest (bijv. een gebruikte verpakking, een sigaret, etc.). Maak een foto van de schuilplaats."
+    },
+    {
+      "id": "mission9",
+      "order": 9,
+      "lat": 52.132,
+      "lng": 5.365,
+      "cryptic": "Er is een plaats delict waar sporen zijn uitgewist. Zoek naar restanten van sporen of aanwijzingen dat er is schoongemaakt. Beschrijf wat je ziet.",
+      "description": "De achtervolging is ingezet. Jullie moeten sporen uitwissen. Verwijder zoveel mogelijk sporen op de plaats delict (bijv. vegen, schoonmaken). Maak een foto van het schoongemaakte terrein."
+    },
+    {
+      "id": "mission10",
+      "order": 10,
+      "lat": 52.1318,
+      "lng": 5.3685,
+      "cryptic": "Er is een geheime code achtergelaten. Zoek naar de code en noteer deze. De code kan aanwijzingen geven over de volgende stap.",
+      "description": "De documenten bevatten een geheime code. Noteer de code en verstop hem op een veilige plek. Maak een foto van de verstopte code."
+    },
+    {
+      "id": "mission11",
+      "order": 11,
+      "lat": 52.13280971740192,
+      "lng": 5.367529392366214,
+      "cryptic": "Er is een checkpoint waar omkoping heeft plaatsgevonden. Onderzoek de wacht en zoek naar bewijzen van omkoping (bijv. vals geld, nepvoorwerp).",
+      "description": "Er is een checkpoint. Omkoop de wacht door hem een vals briefje of een nepvoorwerp te geven. Maak een foto van de omkoping."
+    },
+    {
+      "id": "mission12",
+      "order": 12,
+      "lat": 52.131,
+      "lng": 5.3675,
+      "cryptic": "Er heeft een overdracht van documenten plaatsgevonden. Zoek naar de locatie van de overdracht en eventuele getuigen of sporen.",
+      "description": "Overhandig de documenten aan de opdrachtgever. Maak een foto van de overhandiging en noteer de ontmoetingsplek."
+    },
+    {
+      "id": "mission13",
+      "order": 13,
+      "lat": 52.1325,
+      "lng": 5.3665,
+      "cryptic": "De criminelen hebben een wapen getoond als teken van loyaliteit. Zoek naar het wapen of sporen ervan. Noteer het type wapen.",
+      "description": "Toon jullie loyaliteit aan de opdrachtgever door een wapen te tonen. Maak een foto van jullie team met het wapen."
+    },
+    {
+      "id": "mission14",
+      "order": 14,
+      "lat": 52.1308,
+      "lng": 5.3682,
+      "cryptic": "De criminelen bereiden een ontsnapping per helikopter voor. Lokaliseer de helikopter en probeer de ontsnapping te voorkomen.",
+      "description": "Einddoel: ontsnapping per helikopter. Zorg dat de helikopter klaarstaat en maak een foto van de helikopter."
     }
   ];
 
+  // DOM refs
   const loginScreen = document.getElementById('loginScreen');
   const hunterScreen = document.getElementById('hunterScreen');
   const docentScreen = document.getElementById('docentScreen');
+
   const classSelect = document.getElementById('classSelect');
   const roleSelect = document.getElementById('roleSelect');
   const usernameInput = document.getElementById('usernameInput');
@@ -887,7 +978,7 @@
       });
     });
 
-    // --------------------- FOTO-FEED + INCIDENT MELDING ---------------------
+    // --------------------- FOTO-FEED + INCIDENT MELDING + UPLOAD VOOR HUNTERS ---------------------
     photosRef = ref(db, `klassen/${className}/photos`);
     const hunterPhotoFeed = document.getElementById('hunterPhotoFeed');
     const incidentAlert = document.getElementById('incidentAlert');
@@ -930,6 +1021,42 @@
       }
     });
 
+    // Upload foto voor hunters (herstellen)
+    const hunterPhotoInput = document.getElementById('hunterPhotoInput');
+    const hunterUploadBtn = document.getElementById('hunterUploadPhotoBtn');
+    const hunterUploadStatus = document.getElementById('hunterUploadStatus');
+
+    async function hunterUploadPhoto(file) {
+      if (!file) return;
+      setStatus(hunterUploadStatus, '⏳ Uploaden...', 'info');
+      try {
+        const fileName = `${Date.now()}_${file.name}`;
+        const storageReference = storageRef(storage, `klassen/${className}/photos/${fileName}`);
+        await uploadBytes(storageReference, file);
+        const downloadURL = await getDownloadURL(storageReference);
+        await push(photosRef, {
+          uploader: teamName + ' (H)',
+          imageUrl: downloadURL,
+          timestamp: getTimestamp()
+        });
+        setStatus(hunterUploadStatus, '✅ Foto geüpload!', 'success');
+      } catch (err) {
+        setStatus(hunterUploadStatus, '❌ Fout: ' + err.message, 'error');
+      }
+    }
+
+    hunterUploadBtn.addEventListener('click', () => {
+      hunterPhotoInput.click();
+    });
+
+    hunterPhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        hunterUploadPhoto(file);
+      }
+      hunterPhotoInput.value = '';
+    });
+
     document.getElementById('hunterLogoutBtn').addEventListener('click', () => {
       if (confirm('Weet je zeker dat je wilt uitloggen?')) {
         if (pingDisplayTimer) clearTimeout(pingDisplayTimer);
@@ -964,22 +1091,7 @@
     async function seedMissions() {
       const snapshot = await get(missionsRef);
       if (!snapshot.exists()) {
-        const DEFAULT_MISSIONS = [
-          { id: 'mission1', order: 1, lat: 52.131168, lng: 5.365757, cryptic: 'Er is een handlanger die op de criminelen wacht. Zorg dat hij de aarde niet raakt. Bewijs van hun ontmoeting is vereist.', description: 'Pik hier jullie handlanger op. De handlanger mag onder geen enkele voorwaarde, tijdens jullie actie, de grond raken. Maak een foto van jullie team, met handlanger voor de schuilplaats van de handlanger.' },
-          { id: 'mission2', order: 2, lat: 52.131605, lng: 5.368394, cryptic: 'De criminelen hebben een vluchtvoertuig nodig. Kies er één uit en maak een foto met de handlanger en het voertuig.', description: 'Zoek hier een geschikt vluchtvoertuig uit. Maak een foto met jullie handlanger en het voertuig.' },
-          { id: 'mission3', order: 3, lat: 52.130893, lng: 5.364418, cryptic: 'De handlanger moet laten zien dat hij met een vuurwapen kan omgaan. Een foto van de handlanger met een vuurwapen is vereist.', description: 'Jullie zijn vuurwapengevaarlijk. Laat zien dat jullie handlanger niet erg handig is met een vuurwapen.' },
-          { id: 'mission4', order: 4, lat: 52.132714, lng: 5.368064, cryptic: 'De vlucht van de criminelen heeft een ongeluk veroorzaakt. De hunters moeten een foto van de schade zien.', description: 'Jullie vluchtgedrag is erg gevaarlijk! Maak een foto van het ongeluk dat jullie veroorzaakten.' },
-          { id: 'mission5', order: 5, lat: 52.131170, lng: 5.366998, cryptic: 'De geheime documenten liggen op een bepaalde plek. De handlanger moet ze controleren.', description: 'Hier liggen de geheime documenten. Deze documenten moeten jullie hebben! Maak een foto dat jullie handlanger de documenten checkt.' },
-          { id: 'mission6', order: 6, lat: 52.131334, lng: 5.366343, cryptic: 'Is dit een geschikte plek om de documenten te verbergen? Laat de hunters een foto zien.', description: 'Is dit een geschikte plek om de documenten te verbergen? Maak een foto.' },
-          { id: 'mission7', order: 7, lat: 52.131500, lng: 5.366800, cryptic: 'De handlanger moet contact opnemen met een persoon. Een foto van de ontmoeting is vereist.', description: 'De handlanger heeft een contactpersoon. Maak een foto van de ontmoeting.' },
-          { id: 'mission8', order: 8, lat: 52.130000, lng: 5.367000, cryptic: 'De criminelen hebben een schuilplaats nodig voor de nacht. Laat de hunters de schuilplaats zien.', description: 'Zoek een schuilplaats voor de nacht. Maak een foto van de schuilplaats.' },
-          { id: 'mission9', order: 9, lat: 52.132000, lng: 5.365000, cryptic: 'De achtervolging is ingezet. De criminelen moeten sporen uitwissen. Een foto van de afgelegde weg is vereist.', description: 'De achtervolging is ingezet. Zorg dat jullie sporen uitwissen. Maak een foto van de weg die jullie hebben afgelegd.' },
-          { id: 'mission10', order: 10, lat: 52.131800, lng: 5.368500, cryptic: 'De documenten bevatten geheime codes. De handlanger moet een code onthouden. Laat de hunters de code zien.', description: 'De documenten bevatten geheime codes. Laat de handlanger een code onthouden. Maak een foto van de code.' },
-          { id: 'mission11', order: 11, lat: 52.130500, lng: 5.365500, cryptic: 'Er is een checkpoint. De handlanger moet de wacht omkopen. Een foto van de omkoping is vereist.', description: 'Er is een checkpoint. Laat de handlanger de wacht omkopen. Maak een foto van de omkoping.' },
-          { id: 'mission12', order: 12, lat: 52.131000, lng: 5.367500, cryptic: 'De documenten moeten worden overhandigd aan de opdrachtgever. Een foto van de overhandiging is vereist.', description: 'Jullie moeten de documenten overhandigen aan de opdrachtgever. Maak een foto van de overhandiging.' },
-          { id: 'mission13', order: 13, lat: 52.132500, lng: 5.366500, cryptic: 'De opdrachtgever wil een teken van loyaliteit. Laat de handlanger met een wapen zien.', description: 'De opdrachtgever wil een teken van jullie loyaliteit. Maak een foto van jullie team met een wapen.' },
-          { id: 'mission14', order: 14, lat: 52.130800, lng: 5.368200, cryptic: 'De ontsnapping per helikopter is de laatste stap. Een foto van de helikopter is vereist.', description: 'Einddoel: ontsnapping per helikopter. Maak een foto van de helikopter.' }
-        ];
+        // Gebruik dezelfde DEFAULT_MISSIONS
         for (const mission of DEFAULT_MISSIONS) {
           await set(ref(db, `klassen/${className}/missions/${mission.id}`), mission);
         }
@@ -1100,7 +1212,7 @@
       list.innerHTML = html || '<div style="color:#8899aa;">Geen spelers.</div>';
     });
 
-    // --------------------- MISSIE-OVERZICHT (vervangt aanwijzingen) ---------------------
+    // --------------------- MISSIE-OVERZICHT ---------------------
     const docentMissionList = document.getElementById('docentMissionList');
 
     function updateDocentMissionList(missionsData, playersData) {
