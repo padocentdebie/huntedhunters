@@ -235,6 +235,18 @@
       color: #d4c0f0;
       font-style: italic;
     }
+    .docent-mission-item {
+      background: #0d1624;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      border-left: 3px solid #4a90d9;
+      font-size: 0.9rem;
+    }
+    .docent-mission-item .status {
+      color: #f0c040;
+      font-weight: 600;
+    }
     @media (max-width: 480px) {
       .btn-group .btn { flex: 1 1 100%; }
     }
@@ -396,6 +408,14 @@
       </div>
     </div>
 
+    <!-- VERVANGING VOOR AANWIJZINGEN: MISSIE-OVERZICHT -->
+    <div class="card">
+      <h2>📋 Missie-overzicht</h2>
+      <div id="docentMissionList" class="active-missions-list">
+        <div style="color:#8899aa;">Geen missies geladen.</div>
+      </div>
+    </div>
+
     <div class="card">
       <h2>📸 Live foto-feed</h2>
       <div id="docentPhotoFeed" class="photo-feed">Geen foto's.</div>
@@ -403,16 +423,6 @@
         <input type="file" id="docentPhotoInput" accept="image/*" capture="environment" />
         <button class="btn btn-primary" id="docentUploadPhotoBtn">📷 Foto maken / uploaden</button>
         <span id="docentUploadStatus" style="font-size:0.8rem; color:#8899aa; align-self:center;"></span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>🗺️ Aanwijzingen beheren</h2>
-      <div id="docentClueList">Geen aanwijzingen.</div>
-      <div class="form-group" style="margin-top:12px;">
-        <label>Nieuwe aanwijzing toevoegen</label>
-        <input type="text" id="newClueInput" placeholder="Bijv. Vind de rode deur" />
-        <button class="btn btn-primary" id="addClueBtn" style="margin-top:6px;">➕ Toevoegen</button>
       </div>
     </div>
 
@@ -514,6 +524,10 @@
   let currentRole = '';
   let gameStarted = false;
   let incidentAlertShown = false;
+  let missionsRef = null;
+  let playersRef = null;
+  let chatsRef = null;
+  let photosRef = null;
 
   function setStatus(el, msg, type = 'info') {
     el.textContent = msg;
@@ -734,7 +748,7 @@
     });
 
     // Chat
-    const chatsRef = ref(db, `klassen/${className}/chats`);
+    chatsRef = ref(db, `klassen/${className}/chats`);
     onValue(chatsRef, (snapshot) => {
       const data = snapshot.val();
       const chatDiv = document.getElementById('hunterChatMessages');
@@ -830,13 +844,14 @@
 
     // --------------------- ACTIEVE MISSIES (cryptisch) ---------------------
     const activeMissionsList = document.getElementById('activeMissionsList');
+    missionsRef = ref(db, `klassen/${className}/missions`);
+    playersRef = ref(db, `klassen/${className}/players`);
 
     function updateActiveMissions(playersData, missionsData) {
       if (!playersData || !missionsData) {
         activeMissionsList.innerHTML = '<div style="color:#8899aa;">Geen actieve missies.</div>';
         return;
       }
-      // Verzamel alle huidige missie-ID's van criminelen die nog niet gearresteerd of gevlucht zijn
       const activeMissionIds = new Set();
       const missionTeams = {};
       for (const [name, player] of Object.entries(playersData)) {
@@ -876,7 +891,7 @@
     });
 
     // --------------------- FOTO-FEED + INCIDENT MELDING ---------------------
-    const photosRef = ref(db, `klassen/${className}/photos`);
+    photosRef = ref(db, `klassen/${className}/photos`);
     const hunterPhotoFeed = document.getElementById('hunterPhotoFeed');
     const incidentAlert = document.getElementById('incidentAlert');
 
@@ -893,7 +908,6 @@
         const photo = data[key];
         if (photo.type === 'proof' && !photo.alertShown) {
           hasNewProof = true;
-          // Markeer als getoond (we kunnen een veld toevoegen in DB, maar voor nu gebruiken we een lokale variabele)
         }
         html += `
           <div class="photo-item">
@@ -908,11 +922,9 @@
       }
       hunterPhotoFeed.innerHTML = html || '<div style="color:#8899aa;">Geen foto’s.</div>';
 
-      // Toon incident alert als er een nieuwe proof foto is
       if (hasNewProof && !incidentAlertShown && gameStarted) {
         incidentAlert.style.display = 'block';
         incidentAlertShown = true;
-        // Stuur ook een chatbericht
         push(chatsRef, {
           sender: '🚨 Systeem',
           text: '🚨 Er is een bewijsfoto van een missie geüpload! Verplaats je naar de plaats van het incident!',
@@ -965,13 +977,20 @@
     });
   }
 
-  // --------------------- DOCENT DASHBOARD (identiek aan vorige) ---------------------
+  // --------------------- DOCENT DASHBOARD (met missie-overzicht) ---------------------
   function initDocentDashboard(className) {
     updateTimer('docentTimerValue', className);
     setInterval(() => updateTimer('docentTimerValue', className), 1000);
 
+    const locRef = ref(db, `klassen/${className}/locations`);
+    const gameStatusRef = ref(db, `klassen/${className}/game/status`);
+    const missionRef = ref(db, `klassen/${className}/game/missionDescription`);
+    const chatsRef = ref(db, `klassen/${className}/chats`);
+    const playersRef = ref(db, `klassen/${className}/players`);
+    const photosRef = ref(db, `klassen/${className}/photos`);
+    const missionsRef = ref(db, `klassen/${className}/missions`);
+
     async function seedLocations() {
-      const locRef = ref(db, `klassen/${className}/locations`);
       const snapshot = await get(locRef);
       if (!snapshot.exists()) {
         for (const loc of SAMPLE_LOCATIONS) {
@@ -981,13 +1000,9 @@
       }
     }
 
-    // Bij start: ook de standaardmissies importeren als ze nog niet bestaan
     async function seedMissions() {
-      const missionsRef = ref(db, `klassen/${className}/missions`);
       const snapshot = await get(missionsRef);
       if (!snapshot.exists()) {
-        // Gebruik de DEFAULT_MISSIONS uit criminal.js, maar we moeten ze hier ook definiëren
-        // We definiëren ze opnieuw (of importeren uit een gedeelde bron, maar voor nu kopiëren we ze)
         const DEFAULT_MISSIONS = [
           { id: 'mission1', order: 1, lat: 52.131168, lng: 5.365757, cryptic: 'Er is een handlanger die op de criminelen wacht. Zorg dat hij de aarde niet raakt. Bewijs van hun ontmoeting is vereist.', description: 'Pik hier jullie handlanger op. De handlanger mag onder geen enkele voorwaarde, tijdens jullie actie, de grond raken. Maak een foto van jullie team, met handlanger voor de schuilplaats van de handlanger.' },
           { id: 'mission2', order: 2, lat: 52.131605, lng: 5.368394, cryptic: 'De criminelen hebben een vluchtvoertuig nodig. Kies er één uit en maak een foto met de handlanger en het voertuig.', description: 'Zoek hier een geschikt vluchtvoertuig uit. Maak een foto met jullie handlanger en het voertuig.' },
@@ -1014,7 +1029,7 @@
     document.getElementById('startGameBtn').addEventListener('click', async () => {
       await seedLocations();
       await seedMissions();
-      await set(ref(db, `klassen/${className}/game/status`), 'running');
+      await set(gameStatusRef, 'running');
       await set(ref(db, `klassen/${className}/game/startTime`), getTimestamp());
       await set(ref(db, `klassen/${className}/game/duration`), GAME_DURATION);
       document.getElementById('gameStatusValue').textContent = '🟢 Gestart';
@@ -1023,7 +1038,7 @@
 
     document.getElementById('endGameBtn').addEventListener('click', async () => {
       if (!confirm('Weet je zeker dat je het spel wilt beëindigen?')) return;
-      await set(ref(db, `klassen/${className}/game/status`), 'finished');
+      await set(gameStatusRef, 'finished');
       document.getElementById('gameStatusValue').textContent = '🔴 Beëindigd';
       setStatus(document.getElementById('gameStatusDisplay'), 'Spel beëindigd.', 'warning');
     });
@@ -1039,14 +1054,13 @@
       }
     });
 
-    onValue(ref(db, `klassen/${className}/game/status`), (snapshot) => {
+    onValue(gameStatusRef, (snapshot) => {
       const status = snapshot.val() || 'waiting';
       const statusMap = { waiting: '⏳ Wachten', running: '🟢 Gestart', finished: '🔴 Beëindigd' };
       document.getElementById('gameStatusValue').textContent = statusMap[status] || status;
     });
 
-    // Missie beschrijving (algemeen)
-    const missionRef = ref(db, `klassen/${className}/game/missionDescription`);
+    // Algemene missiebeschrijving
     onValue(missionRef, (snapshot) => {
       const desc = snapshot.val();
       if (desc) {
@@ -1070,7 +1084,6 @@
     });
 
     // Chat
-    const chatsRef = ref(db, `klassen/${className}/chats`);
     onValue(chatsRef, (snapshot) => {
       const data = snapshot.val();
       const chatDiv = document.getElementById('docentChatMessages');
@@ -1106,7 +1119,6 @@
     });
 
     // Spelerslijst
-    const playersRef = ref(db, `klassen/${className}/players`);
     onValue(playersRef, (snapshot) => {
       const data = snapshot.val();
       const list = document.getElementById('allPlayersList');
@@ -1127,53 +1139,60 @@
       list.innerHTML = html || '<div style="color:#8899aa;">Geen spelers.</div>';
     });
 
-    // Clues
-    const cluesRef = ref(db, `klassen/${className}/clues`);
-    onValue(cluesRef, (snapshot) => {
-      const data = snapshot.val();
-      const list = document.getElementById('docentClueList');
-      if (!data) {
-        list.innerHTML = '<div style="color:#8899aa;">Geen aanwijzingen.</div>';
+    // --------------------- MISSIE-OVERZICHT (vervangt aanwijzingen) ---------------------
+    const docentMissionList = document.getElementById('docentMissionList');
+
+    function updateDocentMissionList(missionsData, playersData) {
+      if (!missionsData) {
+        docentMissionList.innerHTML = '<div style="color:#8899aa;">Geen missies geladen.</div>';
         return;
       }
+      // Bouw een map van team -> completed missions
+      const teamCompleted = {};
+      if (playersData) {
+        for (const [name, player] of Object.entries(playersData)) {
+          if (player.role === 'criminal') {
+            teamCompleted[name] = player.completedMissions || [];
+          }
+        }
+      }
+
       let html = '';
-      for (const key of Object.keys(data)) {
-        const clue = data[key];
-        const found = clue.foundBy ? clue.foundBy.join(', ') : 'Niemand';
+      // Sorteer missies op order
+      const missionArray = Object.values(missionsData).sort((a,b) => (a.order || 0) - (b.order || 0));
+      for (const mission of missionArray) {
+        // Bepaal welke teams deze missie hebben voltooid
+        const completedBy = [];
+        for (const [team, completed] of Object.entries(teamCompleted)) {
+          if (completed.includes(mission.id)) {
+            completedBy.push(team);
+          }
+        }
+        const statusText = completedBy.length > 0 ? `✅ Voltooid door: ${completedBy.join(', ')}` : '⏳ Nog niet voltooid';
         html += `
-          <div class="clue-item">
-            <strong>${clue.text}</strong>
-            <span style="color:#8899aa;font-size:0.8rem;">Code: ${clue.code}</span>
-            <span style="color:#667788;font-size:0.7rem;">Gevonden door: ${found}</span>
+          <div class="docent-mission-item">
+            <div><strong>Missie ${mission.order}</strong></div>
+            <div style="color:#d4c0f0; font-style:italic; font-size:0.85rem;">${mission.cryptic || 'Geen cryptische omschrijving'}</div>
+            <div class="status">${statusText}</div>
           </div>
         `;
       }
-      list.innerHTML = html || '<div style="color:#8899aa;">Geen aanwijzingen.</div>';
-    });
+      docentMissionList.innerHTML = html || '<div style="color:#8899aa;">Geen missies.</div>';
+    }
 
-    document.getElementById('addClueBtn').addEventListener('click', async () => {
-      const text = document.getElementById('newClueInput').value.trim();
-      if (!text) {
-        setStatus(document.getElementById('gameStatusDisplay'), 'Voer een aanwijzing in.', 'error');
-        return;
-      }
-      const code = 'CLUE-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-      await push(cluesRef, {
-        text: text,
-        code: code,
-        createdBy: 'docent',
-        createdAt: getTimestamp(),
-        foundBy: []
+    // Luister naar missies en spelers voor docent-overzicht
+    onValue(missionsRef, (snapshot) => {
+      const missionsData = snapshot.val();
+      get(playersRef).then(playerSnap => {
+        const playersData = playerSnap.val();
+        updateDocentMissionList(missionsData, playersData);
       });
-      document.getElementById('newClueInput').value = '';
-      setStatus(document.getElementById('gameStatusDisplay'), `✅ Aanwijzing toegevoegd: ${code}`, 'success');
     });
 
     // Foto-feed (docent)
-    const photosRef = ref(db, `klassen/${className}/photos`);
-    const docentPhotoFeed = document.getElementById('docentPhotoFeed');
     onValue(photosRef, (snapshot) => {
       const data = snapshot.val();
+      const docentPhotoFeed = document.getElementById('docentPhotoFeed');
       if (!data) {
         docentPhotoFeed.innerHTML = '<div style="color:#8899aa;">Geen foto’s.</div>';
         return;
