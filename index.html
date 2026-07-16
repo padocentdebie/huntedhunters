@@ -572,17 +572,27 @@
         <button class="btn btn-primary" id="hunterChatSendBtn">Verstuur</button>
       </div>
     </div>
+
+    <!-- === VERBETERDE ARRESTATIE-SECTIE === -->
     <div class="card">
       <h2>🚔 Criminelen</h2>
       <div id="criminalList">Geen criminelen gevonden.</div>
       <div class="form-group" style="margin-top:12px;">
-        <label>Arresteer crimineel (voer teamnaam in)</label>
-        <div style="display:flex;gap:8px;">
-          <input type="text" id="arrestInput" placeholder="Teamnaam" style="flex:1;" />
-          <button class="btn btn-danger" id="arrestBtn">⛓️ Arresteer</button>
-        </div>
+        <label>Teamnaam van crimineel</label>
+        <input type="text" id="arrestCriminalInput" placeholder="Bijv. Team Zwart" />
       </div>
+      <div class="form-group">
+        <label>Misdrijf</label>
+        <input type="text" id="arrestMisdrijfInput" placeholder="Bijv. Diefstal, heling, vernieling..." />
+      </div>
+      <div class="form-group">
+        <label>Bewijsvoering (sporen, feiten en omstandigheden)</label>
+        <textarea id="arrestBewijsInput" placeholder="Beschrijf de bewijzen..." rows="3"></textarea>
+      </div>
+      <button class="btn btn-danger" id="arrestBtn" style="width:100%;">⛓️ Arresteer</button>
+      <div id="arrestStatus" style="margin-top:8px; font-size:0.9rem; color:#8899aa;"></div>
     </div>
+
     <button class="btn btn-danger" id="hunterLogoutBtn" style="width:100%;margin-top:8px;">🚪 Uitloggen</button>
   </div>
 
@@ -1012,8 +1022,7 @@
   classSelect.parentElement.style.display = 'block';
 
   // ===========================================================================
-  // HUNTER DASHBOARD (volledig, ongewijzigd behalve dat we de missie-pins nu
-  // live updaten via Firebase – dat werkt al via de bestaande listeners)
+  // HUNTER DASHBOARD (volledig, met verbeterde arrestatie)
   // ===========================================================================
   function initHunterDashboard(teamName, className) {
     // Timer
@@ -1180,7 +1189,7 @@
       if (e.key === 'Enter') hunterChatSendBtn.click();
     });
 
-    // ----- CRIMINELEN & ARRESTATIE -----
+    // ----- CRIMINELEN LIJST (toont nu ook misdrijf bij gearresteerden) -----
     onValue(playersRef, async (snapshot) => {
       const data = snapshot.val();
       const list = document.getElementById('criminalList');
@@ -1195,44 +1204,89 @@
         html += `
           <div class="ping-item" style="border-left-color: ${player.isArrested ? '#6c757d' : (player.extractReached ? '#28a745' : '#dc3545')};">
             <strong>${name}</strong> - ${status}
+            ${player.isArrested && player.misdrijf ? `<br><span style="font-size:0.8rem;color:#8899aa;">Misdrijf: ${player.misdrijf}</span>` : ''}
           </div>
         `;
       }
       list.innerHTML = html || '<div style="color:#8899aa;">Geen criminelen gevonden.</div>';
     });
 
-    document.getElementById('arrestBtn').addEventListener('click', async () => {
+    // ----- VERBETERDE ARRESTATIE (drie velden) -----
+    const arrestCriminalInput = document.getElementById('arrestCriminalInput');
+    const arrestMisdrijfInput = document.getElementById('arrestMisdrijfInput');
+    const arrestBewijsInput = document.getElementById('arrestBewijsInput');
+    const arrestBtn = document.getElementById('arrestBtn');
+    const arrestStatus = document.getElementById('arrestStatus');
+
+    arrestBtn.addEventListener('click', async () => {
+      const criminal = arrestCriminalInput.value.trim();
+      const misdrijf = arrestMisdrijfInput.value.trim();
+      const bewijs = arrestBewijsInput.value.trim();
+
+      if (!criminal || !misdrijf || !bewijs) {
+        setStatus(arrestStatus, '❌ Vul alle drie de velden in.', 'error');
+        return;
+      }
+
       if (!gameStarted) {
-        setStatus(document.getElementById('criminalList'), '⏳ Het spel is nog niet gestart!', 'warning');
+        setStatus(arrestStatus, '⏳ Het spel is nog niet gestart!', 'warning');
         return;
       }
-      const target = document.getElementById('arrestInput').value.trim();
-      if (!target) {
-        setStatus(document.getElementById('criminalList'), 'Voer een teamnaam in.', 'error');
-        return;
+
+      try {
+        const snapshot = await get(ref(db, `klassen/${className}/players/${criminal}`));
+        if (!snapshot.exists()) {
+          setStatus(arrestStatus, '❌ Speler niet gevonden.', 'error');
+          return;
+        }
+        const player = snapshot.val();
+        if (player.role !== 'criminal') {
+          setStatus(arrestStatus, '❌ Dit is geen crimineel.', 'error');
+          return;
+        }
+        if (player.isArrested) {
+          setStatus(arrestStatus, '⚠️ Deze crimineel is al gearresteerd.', 'warning');
+          return;
+        }
+        if (player.extractReached) {
+          setStatus(arrestStatus, '⚠️ Deze crimineel is al ontsnapt!', 'warning');
+          return;
+        }
+
+        // Update player met extra gegevens
+        await update(ref(db, `klassen/${className}/players/${criminal}`), {
+          isArrested: true,
+          arrestedBy: teamName,
+          arrestedAt: getTimestamp(),
+          misdrijf: misdrijf,
+          bewijsvoering: bewijs
+        });
+
+        // Opslaan in arrests node
+        await push(ref(db, `klassen/${className}/arrests`), {
+          criminal: criminal,
+          hunter: teamName,
+          misdrijf: misdrijf,
+          bewijsvoering: bewijs,
+          timestamp: getTimestamp()
+        });
+
+        setStatus(arrestStatus, `✅ ${criminal} gearresteerd!`, 'success');
+        // Leeg de velden
+        arrestCriminalInput.value = '';
+        arrestMisdrijfInput.value = '';
+        arrestBewijsInput.value = '';
+
+        // Stuur een chatbericht
+        await push(chatsRef, {
+          sender: '🚔 Arrestatie',
+          text: `${teamName} heeft ${criminal} gearresteerd wegens ${misdrijf}.`,
+          timestamp: getTimestamp()
+        });
+
+      } catch (err) {
+        setStatus(arrestStatus, '❌ Fout bij arrestatie: ' + err.message, 'error');
       }
-      const snapshot = await get(ref(db, `klassen/${className}/players/${target}`));
-      if (!snapshot.exists()) {
-        setStatus(document.getElementById('criminalList'), '❌ Speler niet gevonden.', 'error');
-        return;
-      }
-      const player = snapshot.val();
-      if (player.role !== 'criminal') {
-        setStatus(document.getElementById('criminalList'), '❌ Dit is geen crimineel.', 'error');
-        return;
-      }
-      if (player.isArrested) {
-        setStatus(document.getElementById('criminalList'), '⚠️ Deze crimineel is al gearresteerd.', 'warning');
-        return;
-      }
-      if (player.extractReached) {
-        setStatus(document.getElementById('criminalList'), '⚠️ Deze crimineel is al ontsnapt!', 'warning');
-        return;
-      }
-      await update(ref(db, `klassen/${className}/players/${target}`), { isArrested: true, arrestedBy: teamName, arrestedAt: getTimestamp() });
-      await push(ref(db, `klassen/${className}/arrests`), { criminal: target, hunter: teamName, timestamp: getTimestamp() });
-      setStatus(document.getElementById('criminalList'), `✅ ${target} gearresteerd!`, 'success');
-      document.getElementById('arrestInput').value = '';
     });
 
     // ----- MISSIES (actief & kaart-pins) -----
@@ -1562,8 +1616,6 @@
   // DOCENT DASHBOARD (met bewerkbare missie-pins)
   // ===========================================================================
   function initDocentDashboard(classes) {
-    // We gebruiken de eerste klas voor de kaart (alle klassen hebben dezelfde missies)
-    // We nemen de eerste klas uit de lijst
     const primaryClass = classes[0];
 
     // ---- Kaart initialiseren ----
@@ -1574,7 +1626,7 @@
 
     const missionMarkers = {};
     let editMode = false;
-    let gameStatus = 'waiting'; // waiting, running, finished
+    let gameStatus = 'waiting';
 
     const toggleBtn = document.getElementById('toggleEditPinsBtn');
     const editStatus = document.getElementById('editPinsStatus');
@@ -1583,7 +1635,6 @@
     const gameStatusRef = ref(db, `klassen/${primaryClass}/game/status`);
     onValue(gameStatusRef, (snapshot) => {
       gameStatus = snapshot.val() || 'waiting';
-      // Als het spel draait, schakel edit mode uit en disable de knop
       if (gameStatus === 'running' || gameStatus === 'finished') {
         if (editMode) toggleEditMode(false);
         toggleBtn.disabled = true;
@@ -1605,7 +1656,6 @@
       for (const [id, mission] of Object.entries(missionsData)) {
         if (mission.lat && mission.lng) {
           if (missionMarkers[id]) {
-            // Update positie als die veranderd is
             const marker = missionMarkers[id];
             const currentLatLng = marker.getLatLng();
             if (currentLatLng.lat !== mission.lat || currentLatLng.lng !== mission.lng) {
@@ -1615,15 +1665,11 @@
           } else {
             const marker = L.marker([mission.lat, mission.lng], { draggable: false })
               .bindPopup(`<strong>${mission.order}. ${mission.cryptic || 'Missie'}</strong>`);
-            // Als we in edit mode zijn, maak dan draggable
             if (editMode) marker.dragging.enable();
             marker.addTo(map);
-            // Sla marker op
             missionMarkers[id] = marker;
-            // Event voor dragend
             marker.on('dragend', function(e) {
               const newPos = marker.getLatLng();
-              // Update in Firebase
               update(ref(db, `klassen/${primaryClass}/missions/${id}`), {
                 lat: newPos.lat,
                 lng: newPos.lng
@@ -1717,7 +1763,6 @@
         }
         gameStatusValue.textContent = '🟢 Gestart';
         setStatus(gameStatusDisplay, 'Spel gestart voor alle klassen!', 'success');
-        // Edit mode uitschakelen
         if (editMode) toggleEditMode(false);
       } catch (err) {
         setStatus(gameStatusDisplay, '❌ Fout bij starten: ' + err.message, 'error');
@@ -1798,10 +1843,14 @@
         for (const [name, player] of Object.entries(data)) {
           const role = player.role === 'criminal' ? '🔫 Crimineel' : '🕵️ Hunter';
           const status = player.isArrested ? '⛓️ Gearresteerd' : (player.extractReached ? '✅ Ontsnapt' : '🏃 Actief');
+          let extra = '';
+          if (player.isArrested && player.misdrijf) {
+            extra = `<br><span style="font-size:0.7rem;color:#8899aa;">Misdrijf: ${player.misdrijf}</span>`;
+          }
           html += `
             <div class="player">
               <span><strong>${name}</strong> <span class="role">(${role})</span></span>
-              <span class="status">${status}</span>
+              <span class="status">${status}${extra}</span>
             </div>
           `;
         }
