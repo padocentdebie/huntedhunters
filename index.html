@@ -247,38 +247,45 @@
       color: #f0c040;
       font-weight: 600;
     }
-    /* Tab styling voor docent */
-    .tab-container {
+    /* Docent kolommen layout */
+    #docentColumns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
       margin-top: 12px;
     }
-    .tab-nav {
-      display: flex;
-      gap: 4px;
-      border-bottom: 1px solid #2a3a4a;
-      margin-bottom: 12px;
+    .class-col {
+      background: #1a2332;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #2a3a4a;
+      min-height: 200px;
     }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: #8899aa;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border-bottom: 2px solid transparent;
-      transition: 0.2s;
-    }
-    .tab-btn.active {
+    .class-col h3 {
       color: #f0c040;
-      border-bottom-color: #f0c040;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #2a3a4a;
+      padding-bottom: 6px;
     }
-    .tab-content {
-      display: none;
+    .class-col .class-status {
+      font-size: 0.85rem;
+      color: #8899aa;
+      margin-bottom: 8px;
     }
-    .tab-content.active {
-      display: block;
+    .class-col .class-players {
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 0.85rem;
     }
-    /* Getuige chatbot */
+    .class-col .class-players .player {
+      padding: 4px 0;
+      border-bottom: 1px solid #1a2a3a;
+      display: flex;
+      justify-content: space-between;
+    }
+    .class-col .class-players .player .role { color: #88ccff; }
+    .class-col .class-players .player .status { color: #f0c040; }
     .getuige-chat {
       background: #0d1624;
       border-radius: 8px;
@@ -307,7 +314,6 @@
     .getuige-chat .input-area input {
       flex: 1;
     }
-    /* Incidentenbord */
     .incident-feed {
       display: flex;
       flex-direction: column;
@@ -329,7 +335,6 @@
       color: #667788;
       font-size: 0.7rem;
     }
-    /* RDW-check styling */
     .rdw-result {
       background: #0d1624;
       border-radius: 6px;
@@ -342,7 +347,7 @@
     .rdw-result .value { color: #e0e0e0; }
     @media (max-width: 480px) {
       .btn-group .btn { flex: 1 1 100%; }
-      .tab-btn { flex: 1; text-align: center; }
+      #docentColumns { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -555,7 +560,7 @@
     <button class="btn btn-danger" id="hunterLogoutBtn" style="width:100%;margin-top:8px;">🚪 Uitloggen</button>
   </div>
 
-  <!-- DOCENT DASHBOARD (met tabs voor 3 klassen) -->
+  <!-- DOCENT DASHBOARD (drie kolommen) -->
   <div id="docentScreen" class="container hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
@@ -575,21 +580,22 @@
       <button class="btn btn-danger" id="resetGameBtn" style="margin-top:12px; width:100%;">🔄 Reset ALLE gegevens (harde reset)</button>
     </div>
 
-    <!-- TABS VOOR 3 KLASSEN -->
-    <div class="tab-container">
-      <div class="tab-nav" id="classTabs">
-        <button class="tab-btn active" data-class="class1">Klas 1</button>
-        <button class="tab-btn" data-class="class2">Klas 2</button>
-        <button class="tab-btn" data-class="class3">Klas 3</button>
+    <!-- Drie kolommen voor de klassen -->
+    <div id="docentColumns">
+      <div class="class-col" id="class1Content">
+        <h3>Klas 1</h3>
+        <div class="class-status">Status: onbekend</div>
+        <div class="class-players">Geen spelers.</div>
       </div>
-      <div id="class1Tab" class="tab-content active">
-        <div id="class1Content"></div>
+      <div class="class-col" id="class2Content">
+        <h3>Klas 2</h3>
+        <div class="class-status">Status: onbekend</div>
+        <div class="class-players">Geen spelers.</div>
       </div>
-      <div id="class2Tab" class="tab-content">
-        <div id="class2Content"></div>
-      </div>
-      <div id="class3Tab" class="tab-content">
-        <div id="class3Content"></div>
+      <div class="class-col" id="class3Content">
+        <h3>Klas 3</h3>
+        <div class="class-status">Status: onbekend</div>
+        <div class="class-players">Geen spelers.</div>
       </div>
     </div>
 
@@ -1482,46 +1488,58 @@
     });
   }
 
-  // --------------------- DOCENT DASHBOARD (vereenvoudigd voor 3 klassen) ---------------------
+  // --------------------- DOCENT DASHBOARD (drie kolommen) ---------------------
   function initDocentDashboard(classes) {
-    // Voor elke klas laden we dezelfde widgets in de tab
-    // We gebruiken een helper om de content te genereren
-    // We hergebruiken de logica uit de hunter dashboard, maar dan lees-only.
+    // Voor elke klas laden we live-data in de kolommen
+    const classContainers = [
+      document.getElementById('class1Content'),
+      document.getElementById('class2Content'),
+      document.getElementById('class3Content')
+    ];
 
-    // We implementeren een eenvoudige weergave van spelers en missies.
-    // Omdat dit uitgebreid is, en de vraag alleen om RDW-check ging, 
-    // houden we het docentdashboard beknopt: we tonen de klassen en hun status.
-    // We vullen elke tab met een overzicht van spelers, missies en incidenten.
-    // Voor de volledigheid voegen we een basisimplementatie toe.
+    // We vullen elke kolom met info
+    classes.forEach((cls, idx) => {
+      const container = classContainers[idx];
+      if (!container) return;
 
-    console.log('Docent dashboard voor klassen:', classes);
+      // Titel aanpassen
+      const title = container.querySelector('h3');
+      if (title) title.textContent = `Klas ${cls}`;
 
-    // Simpele invulling: we tonen de klassenamen en een bericht.
-    const tabs = ['class1', 'class2', 'class3'];
-    tabs.forEach((tabId, index) => {
-      const container = document.getElementById(tabId + 'Content');
-      const cls = classes[index];
-      if (container) {
-        container.innerHTML = `
-          <div class="card">
-            <h3>Klas ${cls}</h3>
-            <p style="color:#8899aa;">Status: actief</p>
-            <div id="docentClassInfo_${index}"></div>
-          </div>
-        `;
-        // Hier kunnen we eenvoudige listeners toevoegen voor spelers, missies, incidenten
-        // Maar vanwege de lengte beperken we ons tot de basis.
-      }
-    });
+      // Status
+      const statusDiv = container.querySelector('.class-status');
+      const playersDiv = container.querySelector('.class-players');
 
-    // Tab switching
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const target = btn.dataset.class;
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-        document.getElementById(target + 'Tab').classList.add('active');
+      // Luister naar game status
+      const gameStatusRef = ref(db, `klassen/${cls}/game/status`);
+      onValue(gameStatusRef, (snapshot) => {
+        const status = snapshot.val();
+        if (statusDiv) {
+          statusDiv.textContent = `Status: ${status === 'running' ? '🟢 Actief' : status === 'finished' ? '🔴 Beëindigd' : '⏳ Wachten'}`;
+          statusDiv.style.color = status === 'running' ? '#6bff6b' : status === 'finished' ? '#ff6b6b' : '#f0c040';
+        }
+      });
+
+      // Luister naar spelers
+      const playersRef = ref(db, `klassen/${cls}/players`);
+      onValue(playersRef, (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+          playersDiv.innerHTML = 'Geen spelers.';
+          return;
+        }
+        let html = '';
+        for (const [name, player] of Object.entries(data)) {
+          const role = player.role === 'criminal' ? '🔫 Crimineel' : '🕵️ Hunter';
+          const status = player.isArrested ? '⛓️ Gearresteerd' : (player.extractReached ? '✅ Ontsnapt' : '🏃 Actief');
+          html += `
+            <div class="player">
+              <span><strong>${name}</strong> <span class="role">(${role})</span></span>
+              <span class="status">${status}</span>
+            </div>
+          `;
+        }
+        playersDiv.innerHTML = html || 'Geen spelers.';
       });
     });
 
@@ -1537,15 +1555,12 @@
       }
     });
 
-    // Start / End spel voor ALLE klassen? 
-    // We kunnen een start-knop laten starten voor alle klassen.
+    // Start / End spel voor ALLE klassen
     document.getElementById('startGameBtn').addEventListener('click', async () => {
-      // Voor alle klassen starten we het spel
       for (const cls of classes) {
         const gameStatusRef = ref(db, `klassen/${cls}/game/status`);
         const startTimeRef = ref(db, `klassen/${cls}/game/startTime`);
         const durationRef = ref(db, `klassen/${cls}/game/duration`);
-        // We moeten missies ook seeden voor elke klas (als ze nog niet bestaan)
         await seedMissionsForClass(cls);
         await set(gameStatusRef, 'running');
         await set(startTimeRef, getTimestamp());
@@ -1574,6 +1589,19 @@
         }
       }
     }
+
+    // Docent timer (optioneel, toont tijd voor eerste klas)
+    if (classes.length > 0) {
+      updateTimer('docentTimerValue', classes[0]);
+      setInterval(() => updateTimer('docentTimerValue', classes[0]), 1000);
+    }
+
+    // Logout
+    document.getElementById('docentLogoutBtn').addEventListener('click', () => {
+      if (confirm('Weet je zeker dat je wilt uitloggen?')) {
+        logout();
+      }
+    });
   }
 
   // --------------------- HULPFUNCTIES ---------------------
