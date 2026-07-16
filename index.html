@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    /* (zelfde stijl als voorheen, ongewijzigd) */
+    /* === STIJLEN (ongewijzigd, zoals eerder) === */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -680,8 +680,8 @@
   const GAME_DURATION = 3600;
   const MISSION_RADIUS = 10;
 
+  // Alle missies (14 stuks)
   const DEFAULT_MISSIONS = [
-    // (volledige lijst zoals eerder, voor beknoptheid dezelfde missies)
     {
       "id": "mission1",
       "order": 1,
@@ -691,8 +691,123 @@
       "description": "Pik hier jullie handlanger op. De handlanger mag onder geen enkele voorwaarde, tijdens jullie actie, de grond raken. Maak een foto van jullie team, met handlanger voor de schuilplaats van de handlanger.",
       "spoor": "Afbeelding van Lowieke op A4\nLowieke van Rubber\ngeboren: 23 september 1984, te Gouda\nadres: Plantagelaan 117, 3412 XL te Beringhem\nsignalement: "
     },
-    // ... (alle andere missies zoals eerder)
-    // Om ruimte te besparen neem ik aan dat alle missies hier staan
+    {
+      "id": "mission2",
+      "order": 2,
+      "lat": 52.13157158531315,
+      "lng": 5.366080999232944,
+      "cryptic": "De criminelen hebben een vluchtvoertuig nodig. Kies er één uit en maak een foto met de handlanger en het voertuig.",
+      "description": "Zoek hier een geschikt vluchtvoertuig uit. Maak een foto met jullie handlanger en het voertuig.",
+      "spoor": "Neem het getuigeverhoor af.\nDeepseek jij prompt de chat jij moet de getuige laten vertellen wat zijn identiteit is [jij verzint dat zelf] en dat  je rond [gebruik de actuele tijd en datum van dat moment] de hond uitliet. De getuige hoorde een groepje personen rennen. Ze hadden een nogal zware man die ze met zich meedroegen. Die man was aan het schelden en vloeken dat het allemaal te langzaam ging. Ik hoorde dat die dikke grijze man zei dat ze maar een auto moesten jatten. Ik zag dat ze de linkerportierruit met een steen insloegen van een witte Ford C-Max, met kenteken NB616NP. Ze stapten snel en en ze vertrokken in de richting van Amersfoort.\n\nSteen ruit ingeslagen \nglasscherven"
+    },
+    {
+      "id": "mission3",
+      "order": 3,
+      "lat": 52.130893,
+      "lng": 5.364418,
+      "cryptic": "Ga naar [locatie die bij deze opdracht hoort]. Er heeft daar een vuurgevecht voorgedaan. Geef een sitap door aan OC: sporen, decoromschrijving: welke voorwerpen bevinden zich op deze locatie.",
+      "description": "Jullie zijn vuurwapengevaarlijk. Laat zien dat jullie handlanger niet erg handig is met een vuurwapen.",
+      "spoor": ""
+    },
+    {
+      "id": "mission4",
+      "order": 4,
+      "lat": 52.132714,
+      "lng": 5.368064,
+      "cryptic": "De vlucht van de criminelen heeft een ongeluk veroorzaakt. De buschauffeur heeft alles gezien. Doe de RDW-check en noteer de gegevens die je van omstanders te horen krijgt.",
+      "description": "Jullie vluchtgedrag is erg gevaarlijk! Maak een foto van het ongeluk dat jullie veroorzaakten.",
+      "spoor": "Bouw de RDWcheck in de hunterscode\nBouw een chatbot buschauffeur\nHendrik de Vries zag een witte ford c max kenteken heeft hij niet gezien met een stuk of vier inzittenden. Een van de inzittenden, een nogal een fors persoon met opvallend grijze kleding en onguur gezicht hing onverantwoord ver uit het raam. Van zijn middel hing die persoon wel buiten boord. Hij riep dingen als 'Dood aan de politie' en 'je krijgt ons toch niet!'. Ik zag dat de witte auto raar begon te slingeren en achterop de bus klapte. De inzittenden kropen uit het voertuig. Die grote grijze vent hing zo slap als een vaatdoek uit het raam. De anderen sjorden hem uit het voertuig en sleepten hem tussen zich in. Ze wankelden naar het bos, daar achter dat stenen huis."
+    },
+    {
+      "id": "mission5",
+      "order": 5,
+      "lat": 52.13157159508396,
+      "lng": 5.369213840193194,
+      "cryptic": "De geheime documenten liggen op een bepaalde plek. De handlanger moet ze controleren.",
+      "description": "Hier liggen de geheime documenten. Deze documenten moeten jullie hebben! Maak een foto dat jullie handlanger de documenten checkt.",
+      "spoor": ""
+    },
+    {
+      "id": "mission6",
+      "order": 6,
+      "lat": 52.13156500502107,
+      "lng": 5.366075632451605,
+      "cryptic": "Is dit een geschikte plek om de documenten te verbergen? Laat de hunters een foto zien.",
+      "description": "Is dit een geschikte plek om de documenten te verbergen? Maak een foto.",
+      "spoor": ""
+    },
+    {
+      "id": "mission7",
+      "order": 7,
+      "lat": 52.1315,
+      "lng": 5.3668,
+      "cryptic": "De handlanger moet contact opnemen met een persoon. Een foto van de ontmoeting is vereist.",
+      "description": "De handlanger heeft een contactpersoon. Maak een foto van de ontmoeting.",
+      "spoor": ""
+    },
+    {
+      "id": "mission8",
+      "order": 8,
+      "lat": 52.13,
+      "lng": 5.367,
+      "cryptic": "De criminelen hebben een schuilplaats nodig voor de nacht. Laat de hunters de schuilplaats zien.",
+      "description": "Zoek een schuilplaats voor de nacht. Maak een foto van de schuilplaats.",
+      "spoor": ""
+    },
+    {
+      "id": "mission9",
+      "order": 9,
+      "lat": 52.132,
+      "lng": 5.365,
+      "cryptic": "De achtervolging is ingezet. De criminelen moeten sporen uitwissen. Een foto van de afgelegde weg is vereist.",
+      "description": "De achtervolging is ingezet. Zorg dat jullie sporen uitwissen. Maak een foto van de weg die jullie hebben afgelegd.",
+      "spoor": ""
+    },
+    {
+      "id": "mission10",
+      "order": 10,
+      "lat": 52.1318,
+      "lng": 5.3685,
+      "cryptic": "De documenten bevatten geheime codes. De handlanger moet een code onthouden. Laat de hunters de code zien.",
+      "description": "De documenten bevatten geheime codes. Laat de handlanger een code onthouden. Maak een foto van de code.",
+      "spoor": ""
+    },
+    {
+      "id": "mission11",
+      "order": 11,
+      "lat": 52.1305,
+      "lng": 5.3655,
+      "cryptic": "Er is een checkpoint. De handlanger moet de wacht omkopen. Een foto van de omkoping is vereist.",
+      "description": "Er is een checkpoint. Laat de handlanger de wacht omkopen. Maak een foto van de omkoping.",
+      "spoor": ""
+    },
+    {
+      "id": "mission12",
+      "order": 12,
+      "lat": 52.131,
+      "lng": 5.3675,
+      "cryptic": "De documenten moeten worden overhandigd aan de opdrachtgever. Een foto van de overhandiging is vereist.",
+      "description": "Jullie moeten de documenten overhandigen aan de opdrachtgever. Maak een foto van de overhandiging.",
+      "spoor": ""
+    },
+    {
+      "id": "mission13",
+      "order": 13,
+      "lat": 52.1325,
+      "lng": 5.3665,
+      "cryptic": "De opdrachtgever wil een teken van loyaliteit. Laat de handlanger met een wapen zien.",
+      "description": "De opdrachtgever wil een teken van jullie loyaliteit. Maak een foto van jullie team met een wapen.",
+      "spoor": ""
+    },
+    {
+      "id": "mission14",
+      "order": 14,
+      "lat": 52.1308,
+      "lng": 5.3682,
+      "cryptic": "De ontsnapping per helikopter is de laatste stap. Een foto van de helikopter is vereist.",
+      "description": "Einddoel: ontsnapping per helikopter. Maak een foto van de helikopter.",
+      "spoor": ""
+    }
   ];
 
   const RDW_DATA = {
@@ -850,7 +965,9 @@
   docentClassSelection.classList.add('hidden');
   classSelect.parentElement.style.display = 'block';
 
-  // --------------------- HUNTER DASHBOARD (volledig) ---------------------
+  // ==============================
+  // HUNTER DASHBOARD (volledig)
+  // ==============================
   function initHunterDashboard(teamName, className) {
     // Timer
     updateTimer('hunterTimerValue', className);
@@ -972,13 +1089,12 @@
       pingList.innerHTML = html || '<div style="color:#8899aa;">Geen pings.</div>';
     });
 
-    // ----- CHAT (HUNTER) -----
+    // ----- HUNTER CHAT (werkend) -----
     const chatsRef = ref(db, `klassen/${className}/chats`);
     const hunterChatMessages = document.getElementById('hunterChatMessages');
     const hunterChatInput = document.getElementById('hunterChatInput');
     const hunterChatSendBtn = document.getElementById('hunterChatSendBtn');
 
-    // Berichten weergeven
     onValue(chatsRef, (snapshot) => {
       const data = snapshot.val();
       if (!data) {
@@ -1001,7 +1117,6 @@
       hunterChatMessages.scrollTop = hunterChatMessages.scrollHeight;
     });
 
-    // Verstuurknop
     hunterChatSendBtn.addEventListener('click', async () => {
       const text = hunterChatInput.value.trim();
       if (!text) return;
@@ -1018,26 +1133,382 @@
       }
     });
 
-    // Enter to send
     hunterChatInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        hunterChatSendBtn.click();
+      if (e.key === 'Enter') hunterChatSendBtn.click();
+    });
+
+    // ----- CRIMINELEN & ARRESTATIE -----
+    onValue(playersRef, async (snapshot) => {
+      const data = snapshot.val();
+      const list = document.getElementById('criminalList');
+      if (!data) {
+        list.innerHTML = '<div style="color:#8899aa;">Geen spelers.</div>';
+        return;
+      }
+      let html = '';
+      for (const [name, player] of Object.entries(data)) {
+        if (player.role !== 'criminal') continue;
+        const status = player.isArrested ? '⛓️ Gearresteerd' : (player.extractReached ? '✅ Ontsnapt!' : '🏃 Op de vlucht');
+        html += `
+          <div class="ping-item" style="border-left-color: ${player.isArrested ? '#6c757d' : (player.extractReached ? '#28a745' : '#dc3545')};">
+            <strong>${name}</strong> - ${status}
+          </div>
+        `;
+      }
+      list.innerHTML = html || '<div style="color:#8899aa;">Geen criminelen gevonden.</div>';
+    });
+
+    document.getElementById('arrestBtn').addEventListener('click', async () => {
+      if (!gameStarted) {
+        setStatus(document.getElementById('criminalList'), '⏳ Het spel is nog niet gestart!', 'warning');
+        return;
+      }
+      const target = document.getElementById('arrestInput').value.trim();
+      if (!target) {
+        setStatus(document.getElementById('criminalList'), 'Voer een teamnaam in.', 'error');
+        return;
+      }
+      const snapshot = await get(ref(db, `klassen/${className}/players/${target}`));
+      if (!snapshot.exists()) {
+        setStatus(document.getElementById('criminalList'), '❌ Speler niet gevonden.', 'error');
+        return;
+      }
+      const player = snapshot.val();
+      if (player.role !== 'criminal') {
+        setStatus(document.getElementById('criminalList'), '❌ Dit is geen crimineel.', 'error');
+        return;
+      }
+      if (player.isArrested) {
+        setStatus(document.getElementById('criminalList'), '⚠️ Deze crimineel is al gearresteerd.', 'warning');
+        return;
+      }
+      if (player.extractReached) {
+        setStatus(document.getElementById('criminalList'), '⚠️ Deze crimineel is al ontsnapt!', 'warning');
+        return;
+      }
+      await update(ref(db, `klassen/${className}/players/${target}`), { isArrested: true, arrestedBy: teamName, arrestedAt: getTimestamp() });
+      await push(ref(db, `klassen/${className}/arrests`), { criminal: target, hunter: teamName, timestamp: getTimestamp() });
+      setStatus(document.getElementById('criminalList'), `✅ ${target} gearresteerd!`, 'success');
+      document.getElementById('arrestInput').value = '';
+    });
+
+    // ----- MISSIES (actief & kaart-pins) -----
+    const missionsRef = ref(db, `klassen/${className}/missions`);
+    const activeMissionsList = document.getElementById('activeMissionsList');
+
+    function updateActiveMissions(playersData, missionsData) {
+      if (!playersData || !missionsData) {
+        activeMissionsList.innerHTML = '<div style="color:#8899aa;">Geen actieve missies.</div>';
+        return;
+      }
+      const activeMissionIds = new Set();
+      const missionTeams = {};
+      for (const [name, player] of Object.entries(playersData)) {
+        if (player.role === 'criminal' && !player.isArrested && !player.extractReached && player.currentMissionId) {
+          activeMissionIds.add(player.currentMissionId);
+          if (!missionTeams[player.currentMissionId]) missionTeams[player.currentMissionId] = [];
+          missionTeams[player.currentMissionId].push(name);
+        }
+      }
+      if (activeMissionIds.size === 0) {
+        activeMissionsList.innerHTML = '<div style="color:#8899aa;">Geen actieve missies.</div>';
+        return;
+      }
+      let html = '';
+      for (const missionId of activeMissionIds) {
+        const mission = missionsData[missionId];
+        if (mission && mission.cryptic) {
+          const teams = missionTeams[missionId] || [];
+          html += `
+            <div class="active-mission-item">
+              <div class="team">${teams.join(', ')}</div>
+              <div class="cryptic">${mission.cryptic}</div>
+            </div>
+          `;
+        }
+      }
+      activeMissionsList.innerHTML = html || '<div style="color:#8899aa;">Geen actieve missies.</div>';
+    }
+
+    onValue(playersRef, (snapshot) => {
+      const playersData = snapshot.val();
+      get(missionsRef).then(missSnap => {
+        const missionsData = missSnap.val();
+        updateActiveMissions(playersData, missionsData);
+      });
+    });
+
+    // Missie-pins op kaart
+    get(missionsRef).then(snapshot => {
+      const missionsData = snapshot.val();
+      if (missionsData) {
+        for (const [id, mission] of Object.entries(missionsData)) {
+          if (mission.lat && mission.lng) {
+            const marker = L.marker([mission.lat, mission.lng]).addTo(map);
+            marker.bindPopup(`<strong>OC melding</strong><br>${mission.cryptic || 'Geen cryptische omschrijving'}`);
+          }
+        }
       }
     });
 
-    // ---- REST VAN HUNTER FUNCTIONALITEIT (criminelen, arrestatie, missies, foto's, RDW, getuige) ----
-    // (Deze zijn identiek aan eerdere versies, voor beknoptheid laat ik ze hier achterwege,
-    //  maar in de volledige code zijn ze aanwezig. Ik voeg ze toe in de uiteindelijke response.)
+    // ----- FOTO's & INCIDENTEN -----
+    const photosRef = ref(db, `klassen/${className}/photos`);
+    const incidentRef = ref(db, `klassen/${className}/incidenten`);
+    const hunterPhotoFeed = document.getElementById('hunterPhotoFeed');
+    const incidentFeed = document.getElementById('incidentFeed');
+    const incidentAlert = document.getElementById('incidentAlert');
 
-    // Voor nu: een dummy om de rest te tonen
-    // We zorgen dat alle functionaliteit werkt door de volledige code uit de vorige versies te kopiëren.
-    // Omdat dit antwoord al lang is, zal ik de rest in het uiteindelijke antwoord volledig opnemen.
-    // Hier eindigt de hunter init functie.
+    onValue(photosRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        hunterPhotoFeed.innerHTML = '<div style="color:#8899aa;">Geen foto’s.</div>';
+        return;
+      }
+      let html = '';
+      let hasNewProof = false;
+      const keys = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
+      for (const key of keys) {
+        const photo = data[key];
+        if (photo.type === 'proof' && !photo.alertShown) {
+          hasNewProof = true;
+        }
+        html += `
+          <div class="photo-item">
+            <img src="${photo.imageUrl}" alt="Foto" loading="lazy" />
+            <div class="meta">
+              <span class="uploader">${photo.uploader || 'Onbekend'}</span>
+              <span>${new Date(photo.timestamp).toLocaleString()}</span>
+              ${photo.type === 'proof' ? ' <span style="color:#f0c040;">📜 Bewijs</span>' : ''}
+            </div>
+          </div>
+        `;
+      }
+      hunterPhotoFeed.innerHTML = html || '<div style="color:#8899aa;">Geen foto’s.</div>';
+
+      if (hasNewProof && !incidentAlertShown && gameStarted) {
+        incidentAlert.style.display = 'block';
+        incidentAlertShown = true;
+        push(chatsRef, {
+          sender: '🚨 Systeem',
+          text: '🚨 Er is een bewijsfoto van een missie geüpload! Verplaats je naar de plaats van het incident!',
+          timestamp: getTimestamp()
+        }).catch(err => console.warn('Chat push failed:', err));
+      }
+    });
+
+    onValue(incidentRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        incidentFeed.innerHTML = '<div style="color:#8899aa;">Geen incidentmeldingen.</div>';
+        return;
+      }
+      let html = '';
+      const keys = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
+      for (const key of keys) {
+        const inc = data[key];
+        html += `
+          <div class="incident-item">
+            <span class="uploader">${inc.uploader || 'Onbekend'}</span>
+            <span>${inc.text}</span>
+            <span class="time">${new Date(inc.timestamp).toLocaleString()}</span>
+          </div>
+        `;
+      }
+      incidentFeed.innerHTML = html || '<div style="color:#8899aa;">Geen incidentmeldingen.</div>';
+    });
+
+    // Upload foto
+    const hunterPhotoInput = document.getElementById('hunterPhotoInput');
+    const hunterUploadBtn = document.getElementById('hunterUploadPhotoBtn');
+    const hunterUploadStatus = document.getElementById('hunterUploadStatus');
+
+    async function hunterUploadPhoto(file) {
+      if (!file) return;
+      setStatus(hunterUploadStatus, '⏳ Uploaden...', 'info');
+      try {
+        const fileName = `${Date.now()}_${file.name}`;
+        const storageReference = storageRef(storage, `klassen/${className}/photos/${fileName}`);
+        await uploadBytes(storageReference, file);
+        const downloadURL = await getDownloadURL(storageReference);
+        await push(photosRef, {
+          uploader: teamName + ' (H)',
+          imageUrl: downloadURL,
+          timestamp: getTimestamp()
+        });
+        setStatus(hunterUploadStatus, '✅ Foto geüpload!', 'success');
+      } catch (err) {
+        setStatus(hunterUploadStatus, '❌ Fout: ' + err.message, 'error');
+      }
+    }
+
+    hunterUploadBtn.addEventListener('click', () => hunterPhotoInput.click());
+    hunterPhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) hunterUploadPhoto(file);
+      hunterPhotoInput.value = '';
+    });
+
+    // Incident melden
+    document.getElementById('incidentBtn').addEventListener('click', async () => {
+      const text = document.getElementById('incidentInput').value.trim();
+      if (!text) return;
+      await push(incidentRef, {
+        uploader: teamName + ' (H)',
+        text: text,
+        timestamp: getTimestamp()
+      });
+      document.getElementById('incidentInput').value = '';
+    });
+
+    // ----- RDW-check -----
+    const rdwInput = document.getElementById('rdwInput');
+    const rdwBtn = document.getElementById('rdwBtn');
+    const rdwResult = document.getElementById('rdwResult');
+
+    rdwBtn.addEventListener('click', async () => {
+      const kenteken = rdwInput.value.trim().toUpperCase();
+      if (!kenteken) {
+        setStatus(rdwResult, 'Voer een kenteken in.', 'error');
+        rdwResult.classList.remove('hidden');
+        return;
+      }
+      const data = RDW_DATA[kenteken];
+      if (data) {
+        rdwResult.innerHTML = `
+          <div><span class="label">Kenteken:</span> <span class="value">${data.kenteken}</span></div>
+          <div><span class="label">Merk:</span> <span class="value">${data.merk}</span></div>
+          <div><span class="label">Model:</span> <span class="value">${data.model}</span></div>
+          <div><span class="label">Kleur:</span> <span class="value">${data.kleur}</span></div>
+          <div><span class="label">Status:</span> <span class="value">${data.status}</span></div>
+          <div><span class="label">Opmerking:</span> <span class="value">${data.opmerking}</span></div>
+        `;
+        rdwResult.className = 'rdw-result';
+        await push(incidentRef, {
+          uploader: 'RDW-systeem',
+          text: `RDW-check: ${kenteken} -> ${data.merk} ${data.model} (${data.status})`,
+          timestamp: getTimestamp()
+        });
+      } else {
+        rdwResult.innerHTML = `<div class="label">Geen gegevens gevonden voor kenteken ${kenteken}.</div>`;
+        rdwResult.className = 'rdw-result';
+      }
+      rdwResult.classList.remove('hidden');
+    });
+
+    // ----- GETUIGE CHATBOT (opent bij locatie) -----
+    const getuigeChatContainer = document.getElementById('getuigeChatContainer');
+    const getuigeMessages = document.getElementById('getuigeMessages');
+    const getuigeInput = document.getElementById('getuigeInput');
+    const getuigeSendBtn = document.getElementById('getuigeSendBtn');
+    let getuigeCheckInterval = null;
+
+    function startGetuigeCheck() {
+      if (getuigeCheckInterval) clearInterval(getuigeCheckInterval);
+      getuigeCheckInterval = setInterval(() => {
+        if (!gameStarted) return;
+        get(missionsRef).then(snap => {
+          const missions = snap.val();
+          if (!missions) return;
+          navigator.geolocation.getCurrentPosition(pos => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            for (const [id, mission] of Object.entries(missions)) {
+              if (mission.lat && mission.lng) {
+                const dist = getDistanceFromLatLonInMeters(lat, lng, mission.lat, mission.lng);
+                if (dist <= MISSION_RADIUS) {
+                  if (mission.spoor && mission.spoor.includes('Neem het getuigeverhoor af')) {
+                    if (!getuigeActive || getuigeMissionId !== id) {
+                      getuigeData = {
+                        naam: 'Hendrik de Vries',
+                        verhaal: mission.spoor
+                      };
+                      getuigeActive = true;
+                      getuigeMissionId = id;
+                      getuigeChatContainer.classList.remove('hidden');
+                      addGetuigeMessage('getuige', `Hallo, ik ben een getuige. Stel me vragen over wat ik heb gezien.`);
+                      push(incidentRef, {
+                        uploader: 'Getuige',
+                        text: `Getuige ${getuigeData.naam} is gehoord op locatie van missie ${mission.order}.`,
+                        timestamp: getTimestamp()
+                      });
+                    }
+                    break;
+                  }
+                }
+              }
+            }
+          }, err => console.warn('Positie error:', err), { enableHighAccuracy: true });
+        });
+      }, 5000);
+    }
+
+    function addGetuigeMessage(role, text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'message';
+      msgDiv.innerHTML = `<span class="role ${role}">${role === 'getuige' ? '🗣️ Getuige' : '🔫 Hunter'}:</span> ${text}`;
+      getuigeMessages.appendChild(msgDiv);
+      getuigeMessages.scrollTop = getuigeMessages.scrollHeight;
+    }
+
+    getuigeSendBtn.addEventListener('click', () => {
+      const vraag = getuigeInput.value.trim();
+      if (!vraag) return;
+      addGetuigeMessage('hunter', vraag);
+      getuigeInput.value = '';
+      setTimeout(() => {
+        let antwoord = '';
+        if (vraag.toLowerCase().includes('naam')) {
+          antwoord = `Ik heet ${getuigeData.naam}.`;
+        } else if (vraag.toLowerCase().includes('zie') || vraag.toLowerCase().includes('zag')) {
+          antwoord = `Ik zag een groep rennen met een zware man. Ze waren aan het schelden en vloeken.`;
+        } else if (vraag.toLowerCase().includes('auto') || vraag.toLowerCase().includes('kenteken')) {
+          antwoord = `Het was een witte Ford C-Max, kenteken NB616NP.`;
+        } else if (vraag.toLowerCase().includes('richting')) {
+          antwoord = `Ze vertrokken in de richting van Amersfoort.`;
+        } else {
+          antwoord = `Sorry, ik weet het niet precies. Kun je me iets specifiekers vragen?`;
+        }
+        addGetuigeMessage('getuige', antwoord);
+      }, 1000);
+    });
+
+    // Start/stop getuige check bij game status
+    onValue(gameStatusRef, (snapshot) => {
+      const status = snapshot.val();
+      if (status === 'running' && !getuigeCheckInterval) {
+        startGetuigeCheck();
+      } else if (status !== 'running' && getuigeCheckInterval) {
+        clearInterval(getuigeCheckInterval);
+        getuigeCheckInterval = null;
+        getuigeActive = false;
+        getuigeChatContainer.classList.add('hidden');
+      }
+    });
+
+    // ----- UITLOGGEN -----
+    document.getElementById('hunterLogoutBtn').addEventListener('click', () => {
+      if (confirm('Weet je zeker dat je wilt uitloggen?')) {
+        if (pingDisplayTimer) clearTimeout(pingDisplayTimer);
+        if (getuigeCheckInterval) clearInterval(getuigeCheckInterval);
+        logout();
+      }
+    });
+
+    // Mission description
+    const missionDescRef = ref(db, `klassen/${className}/game/missionDescription`);
+    onValue(missionDescRef, (snapshot) => {
+      const desc = snapshot.val();
+      document.getElementById('missionDescription').textContent = desc || 
+        'De dieven van de kennis zijn op de vlucht met gestolen examendata. ' +
+        'Ze moeten cryptische raadsels oplossen om de verborgen schatkamer te bereiken. ' +
+        'Hunters, volg hun sporen en onderschep ze voordat de kluis geopend wordt!';
+    });
   }
 
-  // --------------------- DOCENT DASHBOARD (werkend) ---------------------
+  // ==============================
+  // DOCENT DASHBOARD (volledig werkend)
+  // ==============================
   function initDocentDashboard(classes) {
-    // (zelfde als eerder, met null-checks en werkende knoppen)
     const gameStatusDisplay = document.getElementById('gameStatusDisplay');
     const gameStatusValue = document.getElementById('gameStatusValue');
     const startBtn = document.getElementById('startGameBtn');
@@ -1145,7 +1616,7 @@
       }
     });
 
-    // Reset knop
+    // Reset
     resetBtn.addEventListener('click', async () => {
       if (!confirm('⚠️ Weet je zeker dat je ALLE gegevens van ALLE klassen wilt verwijderen? Dit kan niet ongedaan worden gemaakt!')) return;
       try {
@@ -1157,7 +1628,7 @@
       }
     });
 
-    // Start spel
+    // Start
     startBtn.addEventListener('click', async () => {
       try {
         for (const cls of classes) {
@@ -1176,7 +1647,7 @@
       }
     });
 
-    // Beëindig spel
+    // Beëindig
     endBtn.addEventListener('click', async () => {
       if (!confirm('Weet je zeker dat je het spel voor alle klassen wilt beëindigen?')) return;
       try {
@@ -1214,7 +1685,9 @@
     }
   }
 
-  // --------------------- HULPFUNCTIES ---------------------
+  // ==============================
+  // HULPFUNCTIES
+  // ==============================
   function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
     const R = 6371000;
     const dLat = deg2rad(lat2 - lat1);
