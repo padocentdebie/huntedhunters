@@ -109,6 +109,13 @@
       font-size: 0.9rem;
       border-left: 3px solid #f0c040;
     }
+    .ping-item .cryptic {
+      color: #d4c0f0;
+      font-style: italic;
+      font-size: 0.85rem;
+      display: block;
+      margin-top: 2px;
+    }
     .chat-messages {
       max-height: 200px;
       overflow-y: auto;
@@ -390,6 +397,19 @@
     }
     .rdw-result .label { color: #8899aa; }
     .rdw-result .value { color: #e0e0e0; }
+    .oc-communicatie {
+      margin-top: 8px;
+      border-top: 1px solid #2a3a4a;
+      padding-top: 8px;
+    }
+    .oc-communicatie .oc-input-area {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .oc-communicatie .oc-input-area input {
+      flex: 1;
+    }
     @media (max-width: 480px) {
       .btn-group .btn { flex: 1 1 100%; }
       #docentColumns { grid-template-columns: 1fr; }
@@ -573,6 +593,22 @@
       </div>
     </div>
 
+    <!-- === OC COMMUNICATIE === -->
+    <div class="card">
+      <h2>📨 Communicatie naar OC (docent)</h2>
+      <div class="oc-communicatie">
+        <div class="oc-input-area">
+          <input type="text" id="ocInput" placeholder="Bericht naar OC..." style="flex:1;" />
+          <button class="btn btn-purple" id="ocSendBtn">📤 Stuur naar OC</button>
+        </div>
+        <div class="photo-upload-area">
+          <input type="file" id="ocPhotoInput" accept="image/*" capture="environment" />
+          <button class="btn btn-purple" id="ocUploadBtn">📷 Upload foto naar OC</button>
+          <span id="ocUploadStatus" style="font-size:0.8rem; color:#8899aa; align-self:center;"></span>
+        </div>
+      </div>
+    </div>
+
     <!-- === VERBETERDE ARRESTATIE-SECTIE === -->
     <div class="card">
       <h2>🚔 Criminelen</h2>
@@ -706,79 +742,79 @@
   const GAME_DURATION = 3600;
   const MISSION_RADIUS = 10;
 
-  // ----- MISSIES (14 stuks) -----
+  // ----- NIEUWE MISSIES (14 stuks, gelijk aan criminele code) -----
   const DEFAULT_MISSIONS = [
     {
       "id": "mission1",
       "order": 1,
       "lat": 52.131168,
       "lng": 5.365757,
-      "cryptic": "Er is een handlanger die op de criminelen wacht. Wat is de identiteit van deze persoon?",
-      "description": "Pik hier jullie handlanger op. De handlanger mag onder geen enkele voorwaarde, tijdens jullie actie, de grond raken. Maak een foto van jullie team, met handlanger voor de schuilplaats van de handlanger.",
-      "spoor": "Afbeelding van Lowieke op A4\nLowieke van Rubber\ngeboren: 23 september 1984, te Gouda\nadres: Plantagelaan 117, 3412 XL te Beringhem\nsignalement: "
+      "cryptic": "We krijgen zojuist een melding binnen van een verdachte situatie op de aangewezen locatie. Er zijn sterke aanwijzingen dat een criminele groepering ter plaatse is om een zojuist ingesloten handlanger op te pikken en te ontzetten. Meld OC signalement van deze persoon. Bevraag de getuigen naar signalementen en gestolen goederen. Noteer jullie bevindingen.",
+      "description": "Pik hier jullie handlanger op en neem het goud mee. Ik wil er zeker van zijn dat jullie alles hebben. Maak een foto van jullie team, met handlanger en het goud.",
+      "spoor": "Poster met mugshot : lowiekevanrubber.png\nSignalemen:\n-uiterlijk: Grijs, rubberen postuur, zeer fors gebouwd;\n- haardracht: opvallende, weelderige zwarte haardos met een dikke, donkere snor; \nkleding: voornamelijke grijze kleding; \n- accessoires: behangen met extreem veel 'blingbling'. Draagt meerdere gouden kettingen (waarvan één met handboeien-hanger), een opvallend gouden horloge om de linkerpols, gouden armbanden om de rechterpols en diverse glimmende ringen om de vingers.\nKettlebell wordt meegenomen"
     },
     {
       "id": "mission2",
       "order": 2,
-      "lat": 52.13157158531315,
-      "lng": 5.366080999232944,
-      "cryptic": "De criminelen hebben een vluchtvoertuig nodig. Kies er één uit en maak een foto met de handlanger en het voertuig.",
-      "description": "Zoek hier een geschikt vluchtvoertuig uit. Maak een foto met jullie handlanger en het voertuig.",
-      "spoor": "Neem het getuigeverhoor af.\nDeepseek jij prompt de chat jij moet de getuige laten vertellen wat zijn identiteit is [jij verzint dat zelf] en dat  je rond [gebruik de actuele tijd en datum van dat moment] de hond uitliet. De getuige hoorde een groepje personen rennen. Ze hadden een nogal zware man die ze met zich meedroegen. Die man was aan het schelden en vloeken dat het allemaal te langzaam ging. Ik hoorde dat die dikke grijze man zei dat ze maar een auto moesten jatten. Ik zag dat ze de linkerportierruit met een steen insloegen van een witte Ford C-Max, met kenteken NB616NP. Ze stapten snel en en ze vertrokken in de richting van Amersfoort.\n\nSteen ruit ingeslagen \nglasscherven"
+      "lat": 52.131752708465726,
+      "lng": 5.368489613802097,
+      "cryptic": "Alle eenheden regio Amersfoort/Leusden, aanvulling op de lopende drugsgerelateerde melding op het Sintelplein 2.\n\nSituatie: Omstanders melden zojuist een verdacht voertuig dat met draaiende motor stand-by staat in de directe omgeving van de doellocatie. Het vermoeden bestaat dat dit het vluchtvoertuig is voor de lopende transactie binnen.\n\nVoertuig & Signalement: Het betreft een snelle, sportieve matzwarte sedan (mogelijk BMW of Audi). Bij het voertuig staat een robuuste man die zich zenuwachtig ophoudt. Signalement: zwarte muts, legergroene jas en opvallend veel zware gouden kettingen en ringen.\n\nInstructie: Toon spoed. Eenheden dienen de mogelijke vluchtwegen rondom het Sintelplein direct dicht te zetten en het voertuig tactisch te benaderen. Houd rekening met een directe en agressieve vluchtpoging. Verdachten zijn vermoedelijk vuurwapengevaarlijk. Bevestig positie bij aankomst. Meld status van het voertuig uit RDW-gegevens.",
+      "description": "Luister goed. De deal op het Sintelplein in Leusden is bijna rond, maar we hebben een waterdicht plan nodig om daarna te verdwijnen. Zoek nu meteen een geschikt vluchtvoertuig uit—iets snels, betrouwbaars en krachtig genoeg om weg te komen als de grond te heet onder de voeten wordt.\n\nZorg dat de wagen klaarstaat en maak een foto van onze handlanger samen met het voertuig, zodat ik zeker weet dat alles volgens mijn instructies geregeld is. Geen excuses, geen fouten, anders zijn de consequenties voor jullie. Begrepen?",
+      "spoor": "Kentekenplaat op auto\nIn code hunters RDW check met voertuig genoteerd als gestolen"
     },
     {
       "id": "mission3",
       "order": 3,
-      "lat": 52.130893,
-      "lng": 5.364418,
-      "cryptic": "Ga naar [locatie die bij deze opdracht hoort]. Er heeft daar een vuurgevecht voorgedaan. Geef een sitap door aan OC: sporen, decoromschrijving: welke voorwerpen bevinden zich op deze locatie.",
-      "description": "Jullie zijn vuurwapengevaarlijk. Laat zien dat jullie handlanger niet erg handig is met een vuurwapen.",
-      "spoor": ""
+      "lat": 52.130733811829295,
+      "lng": 5.364181348595629,
+      "cryptic": "PRIO 1. Verzoek om assistentie. Melding van een vuurgevecht gaande op de [Locatie in Ede, bijv. Parkeerterrein Kernhem]. Meerdere verdachten, vuurwapengevaarlijk. Eenheden ter plaatse melden recent schotwisseling. Minimaal twee verdachten betrokken, een oudere man en een jongere man. Beiden dragen zwarte kleding. Een van de verdachten, een jonge man met een capuchon en sjaal, lijkt momenteel onbekwaam met zijn eigen vuurwapen en worstelt ermee. Benader met extreme voorzichtigheid. Eenheden met ballistische bescherming gewenst. Beschrijf de situatie aan de hand van de camerabeelden.",
+      "description": "Heren, de situatie op deze locatie vereist een directe aanpak; de tegenpartij weigert zich aan onze afspraken te houden. Jullie gaan daar nu naartoe in zwarte kleding om de boel recht te zetten en onze belangen te beschermen. Mocht er weerstand zijn, dan lossen jullie dat ter plekke en definitief op. En jij, jongeman—zorg dat je je wapen dit keer onder controle hebt en niet aarzelt als de eerste kogel moet vallen. Stel me niet teleur.",
+      "spoor": "afbeeldingen camerabeelden: \nincidentwapenkamer.png\nincidentwapenkamerhulzen.png"
     },
     {
       "id": "mission4",
       "order": 4,
-      "lat": 52.132714,
-      "lng": 5.368064,
-      "cryptic": "De vlucht van de criminelen heeft een ongeluk veroorzaakt. De buschauffeur heeft alles gezien. Doe de RDW-check en noteer de gegevens die je van omstanders te horen krijgt.",
-      "description": "Jullie vluchtgedrag is erg gevaarlijk! Maak een foto van het ongeluk dat jullie veroorzaakten.",
-      "spoor": "Bouw de RDWcheck in de hunterscode\nBouw een chatbot buschauffeur\nHendrik de Vries zag een witte ford c max kenteken heeft hij niet gezien met een stuk of vier inzittenden. Een van de inzittenden, een nogal een fors persoon met opvallend grijze kleding en onguur gezicht hing onverantwoord ver uit het raam. Van zijn middel hing die persoon wel buiten boord. Hij riep dingen als 'Dood aan de politie' en 'je krijgt ons toch niet!'. Ik zag dat de witte auto raar begon te slingeren en achterop de bus klapte. De inzittenden kropen uit het voertuig. Die grote grijze vent hing zo slap als een vaatdoek uit het raam. De anderen sjorden hem uit het voertuig en sleepten hem tussen zich in. Ze wankelden naar het bos, daar achter dat stenen huis."
+      "lat": 52.13080791024424,
+      "lng": 5.365163684943295,
+      "cryptic": "Aan alle beschikbare eenheden regio Ede. Prioriteit 1. Dringend verzoek om assistentie bij een ernstig verkeersongeval op de Loes van Overeemlaan, nabij bushalte Schietbaan, Leusden. \n\nSituatie: Een zwart voertuig is na extreem gevaarlijk rijgedrag met hoge snelheid frontaal in botsing gekomen met een Connexxion lijnbus (Lijn 88 richting Ede Station). Er is sprake van zware materiële schade aan zowel de bus als de personenauto. Mogelijk letsel bij de passagiers in de bus.\n\nBijzonderheden: Het zwarte voertuig matcht met de eerdere meldingen over het gevaarlijke vluchtgedrag. Meerdere getuigen ter plaatse melden dat de inzittenden van het voertuig op dit moment in alle haast tassen en goederen uit de auto aan het trekken zijn. Ze proberen de locatie te voet te ontvluchten nog vóór de aankomst van de eerste eenheden.\n\nInstructie: Met spoed aanrijden. Eenheden in de omgeving dienen direct de omliggende straten en vluchtwegen af te grendelen om de verdachten te onderscheppen. Ambulance en brandweer zijn met prioriteit onderweg voor de hulpverlening in de bus. Benader de verdachten met verhoogde waakzaamheid. Geef door waarheen de betrokkenen zijn gevlucht. Geef door hoe de betrokkenen zijn gevlucht.",
+      "description": "Luister goed. Er is een pakketje dat absoluut niet in de verkeerde handen mag vallen. De koerier heeft specifieke instructies gekregen: deze levering heeft prioriteit boven alles. Als er obstakels zijn, dan worden die omzeild. Als er vertraging dreigt, dan wordt er gas bijgegeven. Geen excuses, geen maren. Het belang van de familie staat op het spel. Zorg dat het aankomt, hoe dan ook..... Een ongeluk? Dit is exact het soort amateurisme waar ik een broertje dood aan heb. Ik vroeg om een snelle levering, niet om een mediaspektakel dat de hele politiemacht van de regio Amersfoort op onze nek haalt.\nAls dat pakketje nu door de recherche wordt gevonden, hebben die twee een veel groter probleem dan een paar gekneusde ribben. Zorg dat onze mensen ter plaatse zijn nog vóór de bergingsauto arriveert. De sporen moeten worden uitgewist, de auto moet leeg, en die twee malloten moeten verdwijnen uit het zicht van de autoriteiten. Incompetentie die de familie in gevaar brengt, tolereer ik niet. Regel het. Nu.",
+      "spoor": "Afbeelding ongeluk connexxionbus: verkeersongeluk.png"
     },
     {
       "id": "mission5",
       "order": 5,
-      "lat": 52.13157159508396,
-      "lng": 5.369213840193194,
-      "cryptic": "De geheime documenten liggen op een bepaalde plek. De handlanger moet ze controleren.",
-      "description": "Hier liggen de geheime documenten. Deze documenten moeten jullie hebben! Maak een foto dat jullie handlanger de documenten checkt.",
-      "spoor": ""
+      "lat": 52.131571583234894,
+      "lng": 5.369203091268884,
+      "cryptic": "Aan alle beschikbare eenheden regio Leusden Prioriteit 1. Verzoek om onderzoek naar een verdachte situatie in een woning. Exacte adresgegevens volgen via de MDT.\n\nSituatie: Via een betrouwbare bron is informatie binnengekomen dat er op dit moment een illegale overdracht plaatsvindt in de woning. Er zou een ontmoeting gaande zijn tussen een bewoner/contactpersoon en externe partijen.\n\nBijzonderheden: De transactie betreft vermoedelijk de uitwisseling van gevoelige documenten tegen een substantiële hoeveelheid verdovende middelen (harddrugs, omschreven als 'poeder'), welke verpakt zouden zitten in een doos. Er is een reële kans dat de betrokkenen proberen de locatie snel te verlaten zodra de overdracht is afgerond.\n\nInstructie: Benader de woning onopvallend en tactisch. Stel eventuele vluchtwegen aan de achterzijde van het pand veilig alvorens aan te bellen. Houd rekening met de aanwezigheid van meerdere personen binnen. Beschrijf wat je binnen aantreft.",
+      "description": "Luister goed naar wat ik je nu ga zeggen. Op de afgesproken locatie staat een huis waar de documenten die we nodig hebben op je liggen te wachten. Dit zijn niet zomaar papieren; dit zijn de geheimen die onze positie veiligstellen.\n\nEr is binnen een contactpersoon aanwezig die precies weet waarom je komt. Je overhandigt de documenten, en in ruil daarvoor neem je onze specifieke hoeveelheid poeder mee... je weet precies wat ik bedoel, exact volgens de afspraak die we vooraf gemaakt hebben. Het staat klaar in de doos.\n\nGeen misverstanden, geen onnodige vragen. Je loopt naar binnen, handelt dit zakelijk af en zorgt dat alles geruisloos verloopt. Laat me zien dat ik op je kan rekenen. Succes.",
+      "spoor": "Lijk TLO\nDoos\nDrugs"
     },
     {
       "id": "mission6",
       "order": 6,
-      "lat": 52.13156500502107,
-      "lng": 5.366075632451605,
-      "cryptic": "Is dit een geschikte plek om de documenten te verbergen? Laat de hunters een foto zien.",
-      "description": "Is dit een geschikte plek om de documenten te verbergen? Maak een foto.",
-      "spoor": ""
+      "lat": 52.1305771043951,
+      "lng": 5.3671699778875945,
+      "cryptic": "Aan alle beschikbare eenheden regio Ede. Prioriteit 2. Verzoek om controle bij een leegstaande loods. Exacte locatiegegevens volgen via de MDT.\n\nSituatie: Er is zojuist een melding binnengekomen over verdachte activiteit rondom een verlaten loods. Een passant zag een persoon zich verdacht ophouden aan de achterzijde van het pand en vervolgens een oude kelderruimte betreden.\n\nBijzonderheden: Vermoeden bestaat dat deze locatie wordt gebruikt voor het stallen of verbergen van illegale goederen of bewijsmateriaal (mogelijk documenten of administratie gerelateerd aan eerdere incidenten). Er is vooralsnog geen sprake van directe dreiging of wapens, maar alertheid is geboden.\n\nInstructie: Rijdt aan zonder optische en geluidssignalen om de verdachte niet op te schrikken. Benader de achterzijde en de kelderruimte van de loods tactisch. Controleer de ruimte op eventueel achtergelaten goederen of nog aanwezige personen. Stel sporen veilig. Beschrijf wat je aantreft.",
+      "description": "Luister goed. Het goud dat je zojuist hebt veiliggesteld is op dit moment ook levensgevaarlijk. De politie spit het hele Sintelplein binnenstebuiten en we kunnen geen enkel risico nemen.\n\nJe brengt het naar de oude kelderruimte achter de loods. Achter de derde steunpilaar zit een losse baksteen in de muur. Daar schuif je ze achter. Niemand komt daar, niemand zoekt daar. Als die papieren daar liggen, is het alsof ze nooit hebben bestaan.\n\nEn onthoud één ding: vanaf dit moment weet jij van niets, heb je niets gezien en ken je de naam van de contactpersoon niet meer. Als er ook maar één detail uitlekt naar de autoriteiten, dan weet je dat de familie dat niet ongestraft laat. Zorg dat het geregeld wordt, met de nodige discretie.",
+      "spoor": "Stapel stenen"
     },
     {
       "id": "mission7",
       "order": 7,
-      "lat": 52.1315,
-      "lng": 5.3668,
-      "cryptic": "De handlanger moet contact opnemen met een persoon. Een foto van de ontmoeting is vereist.",
-      "description": "De handlanger heeft een contactpersoon. Maak een foto van de ontmoeting.",
-      "spoor": ""
+      "lat": 52.1326780223426,
+      "lng": 5.368076571798458,
+      "cryptic": "Aan alle beschikbare eenheden regio Leusden Prioriteit 2. Verzoek om verhoogde surveillance en waakzaamheid rondom het bedrijfspand. Exacte objectgegevens volgen direct via de MDT.\n\nSituatie: Er is zojuist via een interne veiligheidslijn een melding binnengekomen over een verdachte ontmoeting nabij de personeelsingang van het object. Een onbekende man heeft daar contact gezocht met een van de aanwezige beveiligers.\n\nBijzonderheden: Het sterke vermoeden bestaat dat er sprake is van een poging tot omkoping of intimidatie van het beveiligingspersoneel ('platleggen' van de beveiliging) met het oog op een geplande inbraak of insluiping tijdens de avonduren. De beveiliger in kwestie wordt momenteel intern gehoord. Er is mogelijk een foto van de ontmoeting gemaakt door een handlanger in de buurt.\n\nInstructie: Neem het object en de directe omgeving op in de lopende surveillance voor de avond- en nachtdienst. Let specifiek op personen die zich ophouden rondom de camera-opstellingen of nooduitgangen. Meld eventuele verdachte voertuigen direct aan de meldkamer. Geef signalement van verdachte personen.",
+      "description": "Luister goed. Vanavond is de avond dat we het pand aan de binnenkant gaan bekijken, maar ik wil geen alarmbellen, geen honden en absoluut geen politie aan de deur. De beveiliging moet plat liggen nog vóór de zon ondergaat.\n\nEr loopt daar een bewaker rond die vatbaar is voor de juiste motivatie. Je zoekt hem op, je neemt hem apart en je zorgt ervoor dat hij inziet dat een goedgevulde envelop beter is voor zijn gezondheid en zijn portemonnee dan de held uithangen. Vertel hem precies hoe laat hij zijn ronde de andere kant op moet lopen en welke camera's er toevallig een uurtje 'storing' moeten hebben.\n\nEn ik wil bewijs dat de afspraak staat. Maak onopvallend een foto van de ontmoeting, zodat ik kan zien dat de deal gesloten is. Als die lichten vanavond uitgaan, slaan we onze slag. Zorg dat hij meewerkt—of zorg dat hij spijt krijgt dat hij ooit 'nee' heeft gezegd. Regel het.",
+      "spoor": "Geld voor corruptie\nEnvelop voor criminelen met Geheime documenten 'classified.pdf'"
     },
     {
       "id": "mission8",
       "order": 8,
-      "lat": 52.13,
-      "lng": 5.367,
-      "cryptic": "De criminelen hebben een schuilplaats nodig voor de nacht. Laat de hunters de schuilplaats zien.",
-      "description": "Zoek een schuilplaats voor de nacht. Maak een foto van de schuilplaats.",
-      "spoor": ""
+      "lat": 52.131564996774756,
+      "lng": 5.36609709267856,
+      "cryptic": "Aan alle eenheden regio en grensbewaking. Prioriteit 1. Verzoek om scherpe controle en uitkijken naar een verdachte die tracht het land te ontvluchten middels identiteitsfraude.\n\nSituatie: Uit tactische informatie is gebleken dat het subject, bekend onder de alias 'Lowieke van Rubber', actief bezig is met het aannemen van een valse identiteit. Er zijn aanwijzingen dat er vervalste reisbescheiden en pasfoto's zijn klaargemaakt voor internationale vluchten, met als vermoedelijke bestemmingen Tokyo of Rio de Janeiro.\n\nBijzonderheden: De verdachte maakt gebruik van hoogwaardig vervalste documenten en zal proberen de grenscontrole te passeren onder een gefingeerde naam. Het subject staat gesignaleerd.\n\nInstructie: Directe afstemming met de Koninklijke Marechaussee op de uitvalswegen en luchthavens. Bij aantreffen van personen die voldoen aan het signalement van de eerdere mugshots, direct overgaan tot staandehouding en verificatie van de biometrische gegevens. Benadering met verhoogde waakzaamheid. Maak een lijst op van reisplannen en bestemmingen.",
+      "description": "Luister goed naar me. De grond onder onze voeten wordt te heet. De recherche spit elk dossier door en die OC-meldingen bewijzen dat ze ons op het spoor zijn. Het is tijd voor het noodplan. Tokyo en Rio de Janeiro liggen klaar, maar je gaat niet als jezelf de grens over.\n\nLowieke van Rubber bestaat vanaf vandaag niet meer voor de douane. Je pakt die valse pasfoto's en de klaargemaakte reisbescheiden die we hebben gefabriceerd. Vanaf dit moment neem je de identiteit aan van de persoon op die papieren. Je leert zijn naam, zijn geboortedatum en zijn achtergrond uit je hoofd. Geen aarzeling bij de grenscontrole, geen zenuwachtig gedrag.\n\nAls ze je paspoort scannen, ben jij die ander. Je stapt dat vliegtuig in, laat je oude leven hier achter en zorgt dat je aan de andere kant van de wereld onder de radar verdwijnt. Identiteitsfraude is onze enige ticket naar vrijheid. Verpruts het niet, want een tweede kans krijg je niet van me. Verdwijn.",
+      "spoor": "reisbescheiden japan, Brazillië , alles\ndoos met reispapieren in Souterrain"
     },
     {
       "id": "mission9",
@@ -792,8 +828,8 @@
     {
       "id": "mission10",
       "order": 10,
-      "lat": 52.1318,
-      "lng": 5.3685,
+      "lat": 52.13257263059253,
+      "lng": 5.371316703933494,
       "cryptic": "De documenten bevatten geheime codes. De handlanger moet een code onthouden. Laat de hunters de code zien.",
       "description": "De documenten bevatten geheime codes. Laat de handlanger een code onthouden. Maak een foto van de code.",
       "spoor": ""
@@ -1022,7 +1058,7 @@
   classSelect.parentElement.style.display = 'block';
 
   // ===========================================================================
-  // HUNTER DASHBOARD (volledig, met verbeterde arrestatie)
+  // HUNTER DASHBOARD (met pings + cryptic)
   // ===========================================================================
   function initHunterDashboard(teamName, className) {
     // Timer
@@ -1039,6 +1075,111 @@
     const markerTimers = {};
     const waitingMsg = document.getElementById('hunterWaitingMessage');
 
+    // ----- Map voor missie-cryptic per crimineel -----
+    const criminalMissionMap = new Map(); // team -> missionId
+
+    // Luister naar spelers om currentMissionId te updaten
+    const playersRef = ref(db, `klassen/${className}/players`);
+    onValue(playersRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+      for (const [name, player] of Object.entries(data)) {
+        if (player.role === 'criminal') {
+          criminalMissionMap.set(name, player.currentMissionId || null);
+        }
+      }
+    });
+
+    // ----- Pings (live) met cryptic -----
+    const pingsRef = ref(db, `klassen/${className}/pings`);
+    const pingList = document.getElementById('pingList');
+
+    // Houd laatste ping per team bij
+    const latestPings = {};
+
+    onValue(pingsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        pingList.innerHTML = '<div style="color:#8899aa;">Geen pings ontvangen.</div>';
+        return;
+      }
+      // Update latestPings
+      for (const key of Object.keys(data)) {
+        const ping = data[key];
+        if (!latestPings[ping.teamName] || ping.timestamp > latestPings[ping.teamName].timestamp) {
+          latestPings[ping.teamName] = ping;
+        }
+      }
+      // Bouw lijst met cryptic
+      let html = '';
+      const sorted = Object.values(latestPings).sort((a,b) => b.timestamp - a.timestamp);
+      for (const ping of sorted) {
+        const missionId = criminalMissionMap.get(ping.teamName);
+        let crypticText = '';
+        if (missionId) {
+          // Zoek missie in DEFAULT_MISSIONS (of in database, maar we gebruiken DEFAULT_MISSIONS)
+          const mission = DEFAULT_MISSIONS.find(m => m.id === missionId);
+          if (mission) crypticText = mission.cryptic || '';
+        }
+        html += `
+          <div class="ping-item">
+            <strong>${ping.teamName}</strong> 📍 ${ping.latitude.toFixed(4)}, ${ping.longitude.toFixed(4)}
+            <span style="color:#667788;font-size:0.7rem;">${new Date(ping.timestamp).toLocaleTimeString()}</span>
+            ${crypticText ? `<span class="cryptic">📜 ${crypticText}</span>` : '<span class="cryptic" style="color:#8899aa;">(geen actieve missie)</span>'}
+          </div>
+        `;
+      }
+      pingList.innerHTML = html || '<div style="color:#8899aa;">Geen pings.</div>';
+    });
+
+    // ----- Kaart markers voor pings (met cryptic in popup) -----
+    function showPinpoint(team, lat, lng) {
+      if (markers[team]) {
+        map.removeLayer(markers[team]);
+        clearTimeout(markerTimers[team]);
+      }
+      const missionId = criminalMissionMap.get(team);
+      let crypticText = '';
+      if (missionId) {
+        const mission = DEFAULT_MISSIONS.find(m => m.id === missionId);
+        if (mission) crypticText = mission.cryptic || '';
+      }
+      const popupContent = `
+        <strong>${team}</strong><br>
+        📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}<br>
+        ${crypticText ? `📜 ${crypticText}` : 'Geen actieve missie'}
+      `;
+      const marker = L.marker([lat, lng]).addTo(map)
+        .bindPopup(popupContent);
+      markers[team] = marker;
+      markerTimers[team] = setTimeout(() => {
+        if (markers[team]) {
+          map.removeLayer(markers[team]);
+          delete markers[team];
+        }
+      }, 30000);
+    }
+
+    // ----- Ping display interval (toont willekeurig pings met 30s-3min interval) -----
+    function schedulePingDisplay() {
+      if (pingDisplayTimer) clearTimeout(pingDisplayTimer);
+      const interval = Math.floor(Math.random() * (3 * 60 * 1000 - 30 * 1000) + 30 * 1000);
+      pingDisplayTimer = setTimeout(() => {
+        if (!gameStarted) return;
+        const latest = Object.values(latestPings);
+        for (const ping of latest) {
+          get(ref(db, `klassen/${className}/players/${ping.teamName}`)).then(snap => {
+            const player = snap.val();
+            if (player && player.role === 'criminal' && !player.isArrested && !player.extractReached) {
+              showPinpoint(ping.teamName, ping.latitude, ping.longitude);
+            }
+          });
+        }
+        schedulePingDisplay();
+      }, interval);
+    }
+
+    // ----- Game status -----
     const gameStatusRef = ref(db, `klassen/${className}/game/status`);
     onValue(gameStatusRef, (snapshot) => {
       const status = snapshot.val();
@@ -1054,92 +1195,6 @@
           pingDisplayTimer = null;
         }
       }
-    });
-
-    const pingsRef = ref(db, `klassen/${className}/pings`);
-    onValue(pingsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-      const latest = {};
-      for (const key of Object.keys(data)) {
-        const ping = data[key];
-        if (!latest[ping.teamName] || ping.timestamp > latest[ping.teamName].timestamp) {
-          latest[ping.teamName] = ping;
-        }
-      }
-      window.latestPings = latest;
-    });
-
-    function showPinpoint(team, lat, lng) {
-      if (markers[team]) {
-        map.removeLayer(markers[team]);
-        clearTimeout(markerTimers[team]);
-      }
-      const marker = L.marker([lat, lng]).addTo(map)
-        .bindPopup(`<strong>${team}</strong><br>📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-      markers[team] = marker;
-      markerTimers[team] = setTimeout(() => {
-        if (markers[team]) {
-          map.removeLayer(markers[team]);
-          delete markers[team];
-        }
-      }, 30000);
-    }
-
-    function schedulePingDisplay() {
-      if (pingDisplayTimer) clearTimeout(pingDisplayTimer);
-      const interval = Math.floor(Math.random() * (3 * 60 * 1000 - 30 * 1000) + 30 * 1000);
-      pingDisplayTimer = setTimeout(() => {
-        if (!gameStarted) return;
-        const latest = window.latestPings || {};
-        for (const [team, ping] of Object.entries(latest)) {
-          get(ref(db, `klassen/${className}/players/${team}`)).then(snap => {
-            const player = snap.val();
-            if (player && player.role === 'criminal' && !player.isArrested && !player.extractReached) {
-              showPinpoint(team, ping.latitude, ping.longitude);
-            }
-          });
-        }
-        schedulePingDisplay();
-      }, interval);
-    }
-
-    const playersRef = ref(db, `klassen/${className}/players`);
-    onValue(playersRef, (snapshot) => {
-      if (!gameStarted) return;
-      const data = snapshot.val();
-      if (!data) return;
-      const now = Date.now();
-      for (const [name, player] of Object.entries(data)) {
-        if (player.role === 'criminal' && player.hunterTimerEnd && (now - player.hunterTimerEnd) < 2000) {
-          const latest = window.latestPings || {};
-          if (latest[name]) {
-            showPinpoint(name, latest[name].latitude, latest[name].longitude);
-          }
-        }
-      }
-    });
-
-    // Ping lijst
-    onValue(pingsRef, (snapshot) => {
-      const data = snapshot.val();
-      const pingList = document.getElementById('pingList');
-      if (!data) {
-        pingList.innerHTML = '<div style="color:#8899aa;">Geen pings ontvangen.</div>';
-        return;
-      }
-      let html = '';
-      const keys = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp).slice(0, 20);
-      for (const key of keys) {
-        const ping = data[key];
-        html += `
-          <div class="ping-item">
-            <strong>${ping.teamName}</strong> 📍 ${ping.latitude.toFixed(4)}, ${ping.longitude.toFixed(4)}
-            <span style="color:#667788;font-size:0.7rem;">${new Date(ping.timestamp).toLocaleTimeString()}</span>
-          </div>
-        `;
-      }
-      pingList.innerHTML = html || '<div style="color:#8899aa;">Geen pings.</div>';
     });
 
     // ----- HUNTER CHAT -----
@@ -1173,23 +1228,18 @@
     hunterChatSendBtn.addEventListener('click', async () => {
       const text = hunterChatInput.value.trim();
       if (!text) return;
-      try {
-        await push(chatsRef, {
-          sender: teamName + ' (H)',
-          text: text,
-          timestamp: getTimestamp()
-        });
-        hunterChatInput.value = '';
-      } catch (err) {
-        console.error('Chat fout:', err);
-        setStatus(document.getElementById('hunterStatusBadge'), '❌ Fout bij verzenden', 'error');
-      }
+      await push(chatsRef, {
+        sender: teamName + ' (H)',
+        text: text,
+        timestamp: getTimestamp()
+      });
+      hunterChatInput.value = '';
     });
     hunterChatInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') hunterChatSendBtn.click();
     });
 
-    // ----- CRIMINELEN LIJST (toont nu ook misdrijf bij gearresteerden) -----
+    // ----- CRIMINELEN LIJST -----
     onValue(playersRef, async (snapshot) => {
       const data = snapshot.val();
       const list = document.getElementById('criminalList');
@@ -1211,7 +1261,7 @@
       list.innerHTML = html || '<div style="color:#8899aa;">Geen criminelen gevonden.</div>';
     });
 
-    // ----- VERBETERDE ARRESTATIE (drie velden) -----
+    // ----- ARRESTATIE (drie velden) -----
     const arrestCriminalInput = document.getElementById('arrestCriminalInput');
     const arrestMisdrijfInput = document.getElementById('arrestMisdrijfInput');
     const arrestBewijsInput = document.getElementById('arrestBewijsInput');
@@ -1253,7 +1303,6 @@
           return;
         }
 
-        // Update player met extra gegevens
         await update(ref(db, `klassen/${className}/players/${criminal}`), {
           isArrested: true,
           arrestedBy: teamName,
@@ -1262,7 +1311,6 @@
           bewijsvoering: bewijs
         });
 
-        // Opslaan in arrests node
         await push(ref(db, `klassen/${className}/arrests`), {
           criminal: criminal,
           hunter: teamName,
@@ -1272,12 +1320,10 @@
         });
 
         setStatus(arrestStatus, `✅ ${criminal} gearresteerd!`, 'success');
-        // Leeg de velden
         arrestCriminalInput.value = '';
         arrestMisdrijfInput.value = '';
         arrestBewijsInput.value = '';
 
-        // Stuur een chatbericht
         await push(chatsRef, {
           sender: '🚔 Arrestatie',
           text: `${teamName} heeft ${criminal} gearresteerd wegens ${misdrijf}.`,
@@ -1335,19 +1381,17 @@
       });
     });
 
-    // Missie-pins op kaart (live update)
+    // Missie-pins op kaart
     const missionMarkers = {};
     onValue(missionsRef, (snapshot) => {
       const missionsData = snapshot.val();
       if (!missionsData) return;
-      // Verwijder oude markers die niet meer bestaan
       for (const id in missionMarkers) {
         if (!missionsData[id]) {
           map.removeLayer(missionMarkers[id]);
           delete missionMarkers[id];
         }
       }
-      // Voeg nieuwe/update bestaande
       for (const [id, mission] of Object.entries(missionsData)) {
         if (mission.lat && mission.lng) {
           if (missionMarkers[id]) {
@@ -1427,7 +1471,55 @@
       incidentFeed.innerHTML = html || '<div style="color:#8899aa;">Geen incidentmeldingen.</div>';
     });
 
-    // Upload foto
+    // ----- OC COMMUNICATIE (naar docent) -----
+    const ocInput = document.getElementById('ocInput');
+    const ocSendBtn = document.getElementById('ocSendBtn');
+    const ocPhotoInput = document.getElementById('ocPhotoInput');
+    const ocUploadBtn = document.getElementById('ocUploadBtn');
+    const ocUploadStatus = document.getElementById('ocUploadStatus');
+
+    ocSendBtn.addEventListener('click', async () => {
+      const text = ocInput.value.trim();
+      if (!text) return;
+      await push(chatsRef, {
+        sender: `📡 OC Melding (${teamName})`,
+        text: text,
+        timestamp: getTimestamp()
+      });
+      ocInput.value = '';
+      setStatus(ocUploadStatus, '✅ Bericht verzonden naar OC.', 'success');
+      setTimeout(() => setStatus(ocUploadStatus, '', 'info'), 3000);
+    });
+
+    async function uploadOCPhoto(file) {
+      if (!file) return;
+      setStatus(ocUploadStatus, '⏳ Uploaden...', 'info');
+      try {
+        const fileName = `${Date.now()}_oc_${file.name}`;
+        const storageReference = storageRef(storage, `klassen/${className}/photos/${fileName}`);
+        await uploadBytes(storageReference, file);
+        const downloadURL = await getDownloadURL(storageReference);
+        await push(photosRef, {
+          uploader: `📡 OC Foto (${teamName})`,
+          imageUrl: downloadURL,
+          timestamp: getTimestamp(),
+          type: 'oc'
+        });
+        setStatus(ocUploadStatus, '✅ Foto naar OC geüpload!', 'success');
+        setTimeout(() => setStatus(ocUploadStatus, '', 'info'), 3000);
+      } catch (err) {
+        setStatus(ocUploadStatus, '❌ Fout: ' + err.message, 'error');
+      }
+    }
+
+    ocUploadBtn.addEventListener('click', () => ocPhotoInput.click());
+    ocPhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) uploadOCPhoto(file);
+      ocPhotoInput.value = '';
+    });
+
+    // ----- Upload foto (algemeen) -----
     const hunterPhotoInput = document.getElementById('hunterPhotoInput');
     const hunterUploadBtn = document.getElementById('hunterUploadPhotoBtn');
     const hunterUploadStatus = document.getElementById('hunterUploadStatus');
