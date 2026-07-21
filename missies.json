@@ -1,0 +1,128 @@
+[
+  {
+    "id": "mission1",
+    "order": 1,
+    "lat": 52.131168,
+    "lng": 5.365757,
+    "cryptic": "We krijgen zojuist een melding binnen van een verdachte situatie op de aangewezen locatie. Er zijn sterke aanwijzingen dat een criminele groepering ter plaatse is om een zojuist ingesloten handlanger op te pikken en te ontzetten.",
+    "description": "Pik hier jullie handlanger op. De handlanger mag onder geen enkele voorwaarde, tijdens jullie actie, de grond raken. Maak een foto van jullie team, met handlanger voor de schuilplaats van de handlanger.",
+    "spoor": "Poster met mugshot : lowiekevanrubber.png\nSignalemen:\n-uiterlijk: Grijs, rubberen postuur, zeer fors gebouwd;\n- haardracht: opvallende, weelderige zwarte haardos met een dikke, donkere snor; \nkleding: voornamelijke grijze kleding; \n- accessoires: behangen met extreem veel 'blingbling'. Draagt meerdere gouden kettingen (waarvan één met handboeien-hanger), een opvallend gouden horloge om de linkerpols, gouden armbanden om de rechterpols en diverse glimmende ringen om de vingers."
+  },
+  {
+    "id": "mission2",
+    "order": 2,
+    "lat": 52.131605,
+    "lng": 5.368394,
+    "cryptic": "Alle eenheden regio Amersfoort/Leusden, aanvulling op de lopende drugsgerelateerde melding op het Sintelplein 2.\n\nSituatie: Omstanders melden zojuist een verdacht voertuig dat met draaiende motor stand-by staat in de directe omgeving van de doellocatie. Het vermoeden bestaat dat dit het vluchtvoertuig is voor de lopende transactie binnen.\n\nVoertuig & Signalement: Het betreft een snelle, sportieve matzwarte sedan (mogelijk BMW of Audi). Bij het voertuig staat een robuuste man die zich zenuwachtig ophoudt. Signalement: zwarte muts, legergroene jas en opvallend veel zware gouden kettingen en ringen.\n\nInstructie: Toon spoed. Eenheden dienen de mogelijke vluchtwegen rondom het Sintelplein direct dicht te zetten en het voertuig tactisch te benaderen. Houd rekening met een directe en agressieve vluchtpoging. Verdachten zijn vermoedelijk vuurwapengevaarlijk. Bevestig positie bij aankomst. ",
+    "description": "Luister goed. De deal op het Sintelplein in Leusden is bijna rond, maar we hebben een waterdicht plan nodig om daarna te verdwijnen. Zoek nu meteen een geschikt vluchtvoertuig uit—iets snels, betrouwbaars en krachtig genoeg om weg te komen als de grond te heet onder de voeten wordt.\n\nZorg dat de wagen klaarstaat en maak een foto van onze handlanger samen met het voertuig, zodat ik zeker weet dat alles volgens mijn instructies geregeld is. Geen excuses, geen fouten, anders zijn de consequenties voor jullie. Begrepen?",
+    "spoor": ""
+  },
+  {
+    "id": "mission3",
+    "order": 3,
+    "lat": 52.13122253961656,
+    "lng": 5.355706133549783,
+    "cryptic": "De handlanger moet laten zien dat hij met een vuurwapen kan omgaan. Een foto van de handlanger met een vuurwapen is vereist.",
+    "description": "Jullie zijn vuurwapengevaarlijk. Laat zien dat jullie handlanger niet erg handig is met een vuurwapen.",
+    "spoor": ""
+  },
+  {
+    "id": "mission4",
+    "order": 4,
+    "lat": 52.132714,
+    "lng": 5.368064,
+    "cryptic": "De vlucht van de criminelen heeft een ongeluk veroorzaakt. De hunters moeten een foto van de schade zien.",
+    "description": "Jullie vluchtgedrag is erg gevaarlijk! Maak een foto van het ongeluk dat jullie veroorzaakten.",
+    "spoor": ""
+  },
+  {
+    "id": "mission5",
+    "order": 5,
+    "lat": 52.13117,
+    "lng": 5.366998,
+    "cryptic": "De geheime documenten liggen op een bepaalde plek. De handlanger moet ze controleren.",
+    "description": "Hier liggen de geheime documenten. Deze documenten moeten jullie hebben! Maak een foto dat jullie handlanger de documenten checkt.",
+    "spoor": ""
+  },
+  {
+    "id": "mission6",
+    "order": 6,
+    "lat": 52.131334,
+    "lng": 5.366343,
+    "cryptic": "Is dit een geschikte plek om de documenten te verbergen? Laat de hunters een foto zien.",
+    "description": "Is dit een geschikte plek om de documenten te verbergen? Maak een foto.",
+    "spoor": ""
+  },
+  {
+    "id": "mission7",
+    "order": 7,
+    "lat": 52.13186795395915,
+    "lng": 5.367121761395834,
+    "cryptic": "De handlanger moet contact opnemen met een persoon. Een foto van de ontmoeting is vereist.",
+    "description": "De handlanger heeft een contactpersoon. Maak een foto van de ontmoeting.",
+    "spoor": ""
+  },
+  {
+    "id": "mission8",
+    "order": 8,
+    "lat": 52.13,
+    "lng": 5.367,
+    "cryptic": "De criminelen hebben een schuilplaats nodig voor de nacht. Laat de hunters de schuilplaats zien.",
+    "description": "Zoek een schuilplaats voor de nacht. Maak een foto van de schuilplaats.",
+    "spoor": ""
+  },
+  {
+    "id": "mission9",
+    "order": 9,
+    "lat": 52.132,
+    "lng": 5.365,
+    "cryptic": "De achtervolging is ingezet. De criminelen moeten sporen uitwissen. Een foto van de afgelegde weg is vereist.",
+    "description": "De achtervolging is ingezet. Zorg dat jullie sporen uitwissen. Maak een foto van de weg die jullie hebben afgelegd.",
+    "spoor": ""
+  },
+  {
+    "id": "mission10",
+    "order": 10,
+    "lat": 52.1318,
+    "lng": 5.3685,
+    "cryptic": "De documenten bevatten geheime codes. De handlanger moet een code onthouden. Laat de hunters de code zien.",
+    "description": "De documenten bevatten geheime codes. Laat de handlanger een code onthouden. Maak een foto van de code.",
+    "spoor": ""
+  },
+  {
+    "id": "mission11",
+    "order": 11,
+    "lat": 52.1305,
+    "lng": 5.3655,
+    "cryptic": "Er is een checkpoint. De handlanger moet de wacht omkopen. Een foto van de omkoping is vereist.",
+    "description": "Er is een checkpoint. Laat de handlanger de wacht omkopen. Maak een foto van de omkoping.",
+    "spoor": ""
+  },
+  {
+    "id": "mission12",
+    "order": 12,
+    "lat": 52.131,
+    "lng": 5.3675,
+    "cryptic": "De documenten moeten worden overhandigd aan de opdrachtgever. Een foto van de overhandiging is vereist.",
+    "description": "Jullie moeten de documenten overhandigen aan de opdrachtgever. Maak een foto van de overhandiging.",
+    "spoor": ""
+  },
+  {
+    "id": "mission13",
+    "order": 13,
+    "lat": 52.1325,
+    "lng": 5.3665,
+    "cryptic": "De opdrachtgever wil een teken van loyaliteit. Laat de handlanger met een wapen zien.",
+    "description": "De opdrachtgever wil een teken van jullie loyaliteit. Maak een foto van jullie team met een wapen.",
+    "spoor": ""
+  },
+  {
+    "id": "mission14",
+    "order": 14,
+    "lat": 52.1308,
+    "lng": 5.3682,
+    "cryptic": "De ontsnapping per helikopter is de laatste stap. Een foto van de helikopter is vereist.",
+    "description": "Einddoel: ontsnapping per helikopter. Maak een foto van de helikopter.",
+    "spoor": ""
+  }
+]
