@@ -3,67 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🕵️ Hunted - Hunter / Docent</title>
+  <title>🕵️ Hunted - Hunter</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    /* === STIJLEN (ongewijzigd) === */
+    /* Stijlen ongewijzigd, plus nieuwe auto-advance marker */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0a0e17;
-      color: #e0e0e0;
-      padding: 16px;
-      max-width: 800px;
-      margin: 0 auto;
-      min-height: 100vh;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0e17; color: #e0e0e0; padding: 16px; max-width: 800px; margin: 0 auto; min-height: 100vh; }
     .container { max-width: 600px; margin: 0 auto; }
-    .card {
-      background: #1a2332;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-      border: 1px solid #2a3a4a;
-    }
-    h1 {
-      font-size: 1.8rem;
-      color: #f0c040;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .card { background: #1a2332; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); border: 1px solid #2a3a4a; }
+    h1 { font-size: 1.8rem; color: #f0c040; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
     h1 small { font-size: 1rem; color: #8899aa; font-weight: normal; }
     h2 { font-size: 1.3rem; color: #88ccff; margin-bottom: 12px; }
     .form-group { margin-bottom: 14px; }
     label { font-weight: 600; display: block; margin-bottom: 4px; color: #aabbcc; }
-    input, select, textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 8px;
-      border: 1px solid #2a3a4a;
-      background: #0d1624;
-      color: #e0e0e0;
-      font-size: 1rem;
-      font-family: inherit;
-    }
+    input, select, textarea { width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid #2a3a4a; background: #0d1624; color: #e0e0e0; font-size: 1rem; font-family: inherit; }
     textarea { resize: vertical; min-height: 80px; }
     input:focus, textarea:focus { border-color: #4a90d9; outline: none; }
-    .btn {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.2s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
+    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
     .btn:active { transform: scale(0.96); }
     .btn-primary { background: #4a90d9; color: white; }
     .btn-primary:hover { background: #357abd; }
@@ -80,434 +37,103 @@
     .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
     .btn-group .btn { flex: 1; }
     .hidden { display: none !important; }
-    #status {
-      margin-top: 12px;
-      padding: 10px;
-      border-radius: 8px;
-      background: #0d1624;
-      color: #8899aa;
-      font-size: 0.95rem;
-    }
+    #status { margin-top: 12px; padding: 10px; border-radius: 8px; background: #0d1624; color: #8899aa; font-size: 0.95rem; }
     #status.error { background: #3d1a1a; color: #ff6b6b; }
     #status.success { background: #1a3d1a; color: #6bff6b; }
     #status.warning { background: #3d3a1a; color: #ffd76b; }
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid #1a2a3a;
-      flex-wrap: wrap;
-    }
+    .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1a2a3a; flex-wrap: wrap; }
     .info-row .label { color: #8899aa; }
     .info-row .value { color: #e0e0e0; font-weight: 600; }
     .ping-list { max-height: 200px; overflow-y: auto; }
-    .ping-item {
-      padding: 6px 10px;
-      background: #0d1624;
-      border-radius: 6px;
-      margin-bottom: 4px;
-      font-size: 0.9rem;
-      border-left: 3px solid #f0c040;
-    }
-    .ping-item .cryptic {
-      color: #d4c0f0;
-      font-style: italic;
-      font-size: 0.85rem;
-      display: block;
-      margin-top: 2px;
-    }
-    .chat-messages {
-      max-height: 200px;
-      overflow-y: auto;
-      background: #0d1624;
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 8px;
-    }
-    .chat-message {
-      padding: 4px 0;
-      border-bottom: 1px solid #1a2a3a;
-      font-size: 0.9rem;
-    }
+    .ping-item { padding: 6px 10px; background: #0d1624; border-radius: 6px; margin-bottom: 4px; font-size: 0.9rem; border-left: 3px solid #f0c040; }
+    .ping-item .cryptic { color: #d4c0f0; font-style: italic; font-size: 0.85rem; display: block; margin-top: 2px; }
+    .chat-messages { max-height: 200px; overflow-y: auto; background: #0d1624; border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+    .chat-message { padding: 4px 0; border-bottom: 1px solid #1a2a3a; font-size: 0.9rem; }
     .chat-message .sender { color: #88ccff; font-weight: 600; }
     .chat-message .time { color: #667788; font-size: 0.7rem; }
-    .clue-item {
-      padding: 10px;
-      background: #0d1624;
-      border-radius: 8px;
-      margin-bottom: 6px;
-      border-left: 3px solid #4a90d9;
-    }
-    .clue-item.found { border-left-color: #28a745; opacity: 0.7; }
-    .badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
     .badge-criminal { background: #dc3545; color: white; }
     .badge-hunter { background: #4a90d9; color: white; }
-    .badge-docent { background: #f0c040; color: #1a2332; }
-    .badge-safe { background: #28a745; color: white; }
-    .badge-arrested { background: #6c757d; color: white; }
     #hunterMap { height: 300px; border-radius: 8px; background: #0d1624; margin-top: 8px; }
-    #docentMap { height: 300px; border-radius: 8px; background: #0d1624; margin-top: 8px; }
-    .mission-box {
-      background: #0d1624;
-      padding: 12px;
+    .mission-box { 
+      background: #0d1624; 
+      padding: 16px; 
+      border-left: 6px solid #8b5cf6; 
+      color: #d4c0f0; 
+      font-style: italic; 
+      font-size: 1.2rem; 
+      line-height: 1.6; 
       border-radius: 8px;
-      border-left: 4px solid #8b5cf6;
-      color: #d4c0f0;
-      font-style: italic;
-      line-height: 1.6;
     }
-    .photo-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
+    .mission-box strong { color: #f0c040; font-style: normal; }
+    .mission-box .sub { font-size: 0.95rem; color: #aabbcc; font-style: normal; margin-top: 4px; display: block; }
+    .waiting-message { background: #0d1624; border-radius: 8px; padding: 12px; border-left: 4px solid #f0c040; color: #f0c040; text-align: center; font-weight: 600; }
+    .incident-alert { background: #2a1a1a; border-radius: 8px; padding: 12px; border-left: 4px solid #ff4444; color: #ff6666; margin-bottom: 12px; display: none; font-weight: 600; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
+    .active-missions-list { max-height: 300px; overflow-y: auto; margin-top: 8px; }
+    .active-mission-item { background: #0d1624; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; border-left: 3px solid #8b5cf6; font-size: 0.9rem; }
+    .active-mission-item .team { color: #88ccff; font-weight: 600; }
+    .active-mission-item .cryptic { color: #d4c0f0; font-style: italic; }
+    .rdw-result { background: #0d1624; border-radius: 6px; padding: 8px 12px; margin-top: 6px; border-left: 3px solid #4a90d9; font-size: 0.9rem; }
+    .proximity-alert { background: #1a2a1a; border-radius: 8px; padding: 16px; border: 2px solid #4caf50; margin-bottom: 12px; animation: proximityGlow 2s infinite; }
+    .proximity-alert h3 { color: #6bff6b; margin-bottom: 8px; font-size: 1.1rem; }
+    .proximity-alert .evidence-image { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-top: 8px; border: 2px solid #3a5a3a; }
+    .proximity-alert .evidence-text { color: #c8e6c9; font-size: 0.9rem; margin-top: 8px; line-height: 1.5; }
+    .proximity-alert .distance-badge { display: inline-block; background: #4caf50; color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; }
+    @keyframes proximityGlow { 0% { box-shadow: 0 0 5px rgba(76,175,80,0.3); } 50% { box-shadow: 0 0 20px rgba(76,175,80,0.6); } 100% { box-shadow: 0 0 5px rgba(76,175,80,0.3); } }
+    #proximityEvidence { margin-top: 12px; }
+    .hunter-red-dot {
+      background: red;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 0 10px red;
     }
-    .photo-item {
-      background: #0d1624;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid #2a3a4a;
-    }
-    .photo-item img {
-      width: 100%;
-      display: block;
-    }
-    .photo-item .meta {
-      padding: 8px 12px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: #8899aa;
-    }
-    .photo-item .meta .uploader {
-      color: #88ccff;
-      font-weight: 600;
-    }
-    .photo-upload-area {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
-    .photo-upload-area input[type="file"] {
-      display: none;
-    }
-    .waiting-message {
-      background: #0d1624;
-      border-radius: 8px;
-      padding: 12px;
-      border-left: 4px solid #f0c040;
-      color: #f0c040;
+    .completed-mission-marker {
+      background: #28a745;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid white;
       text-align: center;
-      font-weight: 600;
+      line-height: 24px;
+      font-size: 14px;
+      box-shadow: 0 0 10px #28a745;
     }
-    .incident-alert {
-      background: #2a1a1a;
-      border-radius: 8px;
-      padding: 12px;
-      border-left: 4px solid #ff4444;
-      color: #ff6666;
-      margin-bottom: 12px;
-      display: none;
-      font-weight: 600;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { opacity: 0.7; }
-      50% { opacity: 1; }
-      100% { opacity: 0.7; }
-    }
-    .active-missions-list {
-      max-height: 300px;
-      overflow-y: auto;
-      margin-top: 8px;
-    }
-    .active-mission-item {
-      background: #0d1624;
-      border-radius: 6px;
-      padding: 8px 12px;
-      margin-bottom: 6px;
-      border-left: 3px solid #8b5cf6;
-      font-size: 0.9rem;
-    }
-    .active-mission-item .team {
-      color: #88ccff;
-      font-weight: 600;
-    }
-    .active-mission-item .cryptic {
-      color: #d4c0f0;
-      font-style: italic;
-    }
-    .docent-mission-item {
-      background: #0d1624;
-      border-radius: 6px;
-      padding: 8px 12px;
-      margin-bottom: 6px;
-      border-left: 3px solid #4a90d9;
-      font-size: 0.9rem;
-    }
-    .docent-mission-item .status {
-      color: #f0c040;
-      font-weight: 600;
-    }
-    #docentColumns {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 12px;
-    }
-    .class-col {
-      background: #1a2332;
-      border-radius: 16px;
-      padding: 16px;
-      border: 1px solid #2a3a4a;
-      min-height: 200px;
-    }
-    .class-col h3 {
-      color: #f0c040;
-      margin-bottom: 8px;
-      font-size: 1.1rem;
-      border-bottom: 1px solid #2a3a4a;
-      padding-bottom: 6px;
-    }
-    .class-col .class-status {
-      font-size: 0.85rem;
-      color: #8899aa;
-      margin-bottom: 8px;
-    }
-    .class-col .class-players {
-      max-height: 150px;
-      overflow-y: auto;
-      font-size: 0.85rem;
-      margin-bottom: 8px;
-    }
-    .class-col .class-players .player {
-      padding: 4px 0;
-      border-bottom: 1px solid #1a2a3a;
-      display: flex;
-      justify-content: space-between;
-    }
-    .class-col .class-players .player .role { color: #88ccff; }
-    .class-col .class-players .player .status { color: #f0c040; }
-    .class-col .class-chat {
-      margin-top: 8px;
-      border-top: 1px solid #2a3a4a;
-      padding-top: 8px;
-    }
-    .class-col .class-chat .docent-chat-messages {
-      max-height: 120px;
-      overflow-y: auto;
-      background: #0d1624;
-      border-radius: 6px;
-      padding: 8px;
-      font-size: 0.8rem;
-      margin-bottom: 6px;
-    }
-    .class-col .class-chat .docent-chat-messages .msg {
-      padding: 2px 0;
-      border-bottom: 1px solid #1a2a3a;
-    }
-    .class-col .class-chat .docent-chat-messages .msg .sender {
-      color: #88ccff;
-      font-weight: 600;
-    }
-    .class-col .class-chat .docent-chat-messages .msg .docent-sender {
-      color: #f0c040;
-      font-weight: 600;
-    }
-    .class-col .class-chat .docent-chat-input-area {
-      display: flex;
-      gap: 4px;
-    }
-    .class-col .class-chat .docent-chat-input-area input {
-      flex: 1;
-      padding: 6px 10px;
-      font-size: 0.8rem;
-      background: #0d1624;
-      border: 1px solid #2a3a4a;
-      border-radius: 4px;
-      color: #e0e0e0;
-    }
-    .class-col .class-chat .docent-chat-input-area button {
-      padding: 6px 12px;
-      font-size: 0.8rem;
-    }
-    .getuige-chat {
-      background: #0d1624;
-      border-radius: 8px;
-      padding: 12px;
-      margin-top: 8px;
-      border: 1px solid #2a3a4a;
-    }
-    .getuige-chat .messages {
-      max-height: 200px;
-      overflow-y: auto;
-      margin-bottom: 8px;
-    }
-    .getuige-chat .message {
-      padding: 4px 0;
-      border-bottom: 1px solid #1a2a3a;
-    }
-    .getuige-chat .message .role {
-      font-weight: 600;
-    }
-    .getuige-chat .message .role.getuige { color: #8b5cf6; }
-    .getuige-chat .message .role.hunter { color: #4a90d9; }
-    .getuige-chat .input-area {
-      display: flex;
-      gap: 8px;
-    }
-    .getuige-chat .input-area input {
-      flex: 1;
-    }
-    .incident-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .incident-item {
-      background: #0d1624;
-      border-radius: 6px;
-      padding: 8px 12px;
-      border-left: 3px solid #ff4444;
-      font-size: 0.9rem;
-    }
-    .incident-item .uploader {
-      color: #88ccff;
-      font-weight: 600;
-    }
-    .incident-item .time {
-      color: #667788;
-      font-size: 0.7rem;
-    }
-    .rdw-result {
-      background: #0d1624;
-      border-radius: 6px;
-      padding: 8px 12px;
-      margin-top: 6px;
-      border-left: 3px solid #4a90d9;
-      font-size: 0.9rem;
-    }
-    .rdw-result .label { color: #8899aa; }
-    .rdw-result .value { color: #e0e0e0; }
-    .oc-communicatie {
-      margin-top: 8px;
-      border-top: 1px solid #2a3a4a;
-      padding-top: 8px;
-    }
-    .oc-communicatie .oc-input-area {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-    .oc-communicatie .oc-input-area input {
-      flex: 1;
-    }
-    @media (max-width: 480px) {
-      .btn-group .btn { flex: 1 1 100%; }
-      #docentColumns { grid-template-columns: 1fr; }
+    /* Nieuwe marker voor auto-advance */
+    .auto-advance-marker {
+      background: #ff8c00;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid white;
+      text-align: center;
+      line-height: 24px;
+      font-size: 14px;
+      box-shadow: 0 0 10px #ff8c00;
     }
   </style>
 </head>
 <body>
 <div id="app">
-  <!-- LOGIN SCHERM -->
+  <!-- LOGIN -->
   <div id="loginScreen" class="container">
     <div class="card">
-      <h1>🕵️ Hunted</h1>
-      <p style="color: #8899aa; margin-bottom: 16px;">Hunter & Docent dashboard – Klasgebaseerd</p>
-      <div style="background: #0d1624; border-radius: 8px; padding: 12px; margin-bottom: 16px; border-left: 4px solid #f0c040;">
-        <p><strong>🔫 Hunter:</strong> Voorkom dat de criminelen de geheime locatie vinden. Je krijgt periodiek een pinpoint op de kaart te zien.</p>
-        <p><strong>🎓 Docent:</strong> Start en beheer het spel, voeg locaties toe en reset alle gegevens.</p>
-        <p style="font-size:0.85rem; color:#8899aa;">Kies je klas, rol en log in met de docentencode.</p>
-      </div>
+      <h1>🕵️ Hunted - Hunter</h1>
+      <p style="color: #8899aa; margin-bottom: 16px;">Kies je klas en teamnaam om te starten.</p>
       <div class="form-group">
-        <label>Kies je klas (alleen voor hunters)</label>
+        <label>Kies je klas</label>
         <select id="classSelect">
-          <option value="Alpha">Alpha</option>
-          <option value="Bravo">Bravo</option>
-          <option value="Charlie">Charlie</option>
-          <option value="Delta">Delta</option>
-          <option value="Echo">Echo</option>
-          <option value="Foxtrot">Foxtrot</option>
-          <option value="Golf">Golf</option>
-          <option value="Hotel">Hotel</option>
-          <option value="Juliett">Juliett</option>
-          <option value="Kilo">Kilo</option>
-          <option value="Mike">Mike</option>
-        </select>
-      </div>
-      <div id="docentClassSelection" class="hidden">
-        <div class="form-group">
-          <label>Klas 1</label>
-          <select id="class1Select">
-            <option value="Alpha">Alpha</option>
-            <option value="Bravo">Bravo</option>
-            <option value="Charlie">Charlie</option>
-            <option value="Delta">Delta</option>
-            <option value="Echo">Echo</option>
-            <option value="Foxtrot">Foxtrot</option>
-            <option value="Golf">Golf</option>
-            <option value="Hotel">Hotel</option>
-            <option value="Juliett">Juliett</option>
-            <option value="Kilo">Kilo</option>
-            <option value="Mike">Mike</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Klas 2</label>
-          <select id="class2Select">
-            <option value="Alpha">Alpha</option>
-            <option value="Bravo">Bravo</option>
-            <option value="Charlie">Charlie</option>
-            <option value="Delta">Delta</option>
-            <option value="Echo">Echo</option>
-            <option value="Foxtrot">Foxtrot</option>
-            <option value="Golf">Golf</option>
-            <option value="Hotel">Hotel</option>
-            <option value="Juliett">Juliett</option>
-            <option value="Kilo">Kilo</option>
-            <option value="Mike">Mike</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Klas 3</label>
-          <select id="class3Select">
-            <option value="Alpha">Alpha</option>
-            <option value="Bravo">Bravo</option>
-            <option value="Charlie">Charlie</option>
-            <option value="Delta">Delta</option>
-            <option value="Echo">Echo</option>
-            <option value="Foxtrot">Foxtrot</option>
-            <option value="Golf">Golf</option>
-            <option value="Hotel">Hotel</option>
-            <option value="Juliett">Juliett</option>
-            <option value="Kilo">Kilo</option>
-            <option value="Mike">Mike</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Kies je rol</label>
-        <select id="roleSelect">
-          <option value="hunter">🔫 Hunter</option>
-          <option value="docent">🎓 Docent / Spelmeester</option>
+          <option value="Alpha">Alpha</option><option value="Bravo">Bravo</option><option value="Charlie">Charlie</option>
+          <option value="Delta">Delta</option><option value="Echo">Echo</option><option value="Foxtrot">Foxtrot</option>
+          <option value="Golf">Golf</option><option value="Hotel">Hotel</option>
+          <option value="Juliett">Juliett</option><option value="Kilo">Kilo</option><option value="Mike">Mike</option>
         </select>
       </div>
       <div class="form-group">
         <label>Teamnaam / Gebruikersnaam</label>
         <input type="text" id="usernameInput" placeholder="Bijv. Team Alpha" />
-      </div>
-      <div class="form-group">
-        <label>Docentencode</label>
-        <input type="password" id="codeInput" placeholder="Voer de docentencode in" />
       </div>
       <button class="btn btn-primary" id="loginBtn" style="width:100%;">🚀 Inloggen</button>
       <div id="loginStatus" style="margin-top:12px;font-size:0.9rem;color:#8899aa;"></div>
@@ -517,200 +143,39 @@
   <!-- HUNTER DASHBOARD -->
   <div id="hunterScreen" class="container hidden">
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-        <h1 style="font-size:1.4rem;">🔫 Hunter</h1>
-        <span class="badge badge-hunter" id="hunterStatusBadge">Op jacht</span>
-      </div>
-      <div id="hunterInfo" class="info-row"><span class="label">Team:</span><span class="value" id="hunterTeamName">-</span></div>
-      <div id="hunterTimer" class="info-row"><span class="label">⏱️ Resterende tijd:</span><span class="value" id="hunterTimerValue">--:--</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><h1 style="font-size:1.4rem;">🔫 Hunter</h1><span class="badge badge-hunter" id="hunterStatusBadge">Op jacht</span></div>
+      <div class="info-row"><span class="label">Team:</span><span class="value" id="hunterTeamName">-</span></div>
+      <div class="info-row"><span class="label">⏱️ Resterende tijd:</span><span class="value" id="hunterTimerValue">--:--</span></div>
+      <div class="info-row"><span class="label">📍 Jouw positie:</span><span class="value" id="hunterPosition">--</span></div>
     </div>
-    <div id="hunterWaitingMessage" class="card hidden">
-      <div class="waiting-message">⏳ Wachten tot de docent het spel start...</div>
+    <div id="hunterWaitingMessage" class="card hidden"><div class="waiting-message">⏳ Wachten tot de docent het spel start...</div></div>
+    <div id="proximityEvidence" class="hidden"></div>
+    <div class="card"><h2>🕵️ Operationeel Centrum</h2>
+      <div id="missionDescription" class="mission-box">⏳ Er is nog geen actieve missie gestart...</div>
     </div>
-    <div class="card">
-      <h2>🕵️ Operationeel Centrum</h2>
-      <div id="missionDescription" class="mission-box">
-        De dieven van de kennis zijn op de vlucht met gestolen examendata. 
-        Ze moeten cryptische raadsels oplossen om de verborgen schatkamer te bereiken. 
-        Hunters, volg hun sporen en onderschep ze voordat de kluis geopend wordt!
-      </div>
-    </div>
-    <div class="card">
-      <h2>📋 Actieve missies (cryptisch)</h2>
-      <div id="activeMissionsList" class="active-missions-list">
-        <div style="color:#8899aa;">Geen actieve missies.</div>
-      </div>
-    </div>
-    <div class="card">
-      <h2>🗺️ Missielocaties</h2>
-      <div id="hunterMap"></div>
-    </div>
-    <div class="card">
-      <h2>📡 Locatie-pings van criminelen</h2>
-      <div id="pingList" class="ping-list">Geen pings ontvangen.</div>
-    </div>
-    <div class="card">
-      <h2>📸 INCINDENTENBORD</h2>
-      <div id="incidentAlert" class="incident-alert">
-        🚨 Er is een bewijsfoto van een missie geüpload! Verplaats je naar de plaats van het incident!
-      </div>
-      <div id="hunterPhotoFeed" class="photo-feed">Geen foto's.</div>
-      <div id="incidentFeed" class="incident-feed">Geen incidentmeldingen.</div>
-      <div class="photo-upload-area" style="margin-top:8px;">
-        <input type="file" id="hunterPhotoInput" accept="image/*" capture="environment" />
-        <button class="btn btn-primary" id="hunterUploadPhotoBtn">📷 Foto maken / uploaden</button>
-        <span id="hunterUploadStatus" style="font-size:0.8rem; color:#8899aa; align-self:center;"></span>
-      </div>
-      <div style="margin-top:8px; display:flex; gap:8px;">
-        <input type="text" id="incidentInput" placeholder="Meld een incident..." style="flex:1;" />
-        <button class="btn btn-danger" id="incidentBtn">🚨 Meld</button>
-      </div>
-    </div>
-    <div class="card">
-      <h2>🚗 RDW‑check</h2>
-      <div style="display:flex; gap:8px;">
-        <input type="text" id="rdwInput" placeholder="Voer kenteken in (bv. NB616NP)" style="flex:1;" />
-        <button class="btn btn-primary" id="rdwBtn">🔍 Check</button>
-      </div>
-      <div id="rdwResult" class="rdw-result hidden"></div>
-    </div>
-    <div id="getuigeChatContainer" class="card hidden">
-      <h2>🗣️ Getuigenverhoor</h2>
-      <div id="getuigeChat" class="getuige-chat">
-        <div id="getuigeMessages" class="messages"></div>
-        <div class="input-area">
-          <input type="text" id="getuigeInput" placeholder="Stel een vraag aan de getuige..." />
-          <button class="btn btn-primary" id="getuigeSendBtn">Verstuur</button>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <h2>💬 Chat (live meelezen)</h2>
-      <div id="hunterChatMessages" class="chat-messages">Geen berichten.</div>
-      <div style="display:flex; gap:8px;">
-        <input type="text" id="hunterChatInput" placeholder="Typ een bericht..." style="flex:1;" />
-        <button class="btn btn-primary" id="hunterChatSendBtn">Verstuur</button>
-      </div>
-    </div>
-
-    <!-- === OC COMMUNICATIE === -->
-    <div class="card">
-      <h2>📨 Communicatie naar OC (docent)</h2>
-      <div class="oc-communicatie">
-        <div class="oc-input-area">
-          <input type="text" id="ocInput" placeholder="Bericht naar OC..." style="flex:1;" />
-          <button class="btn btn-purple" id="ocSendBtn">📤 Stuur naar OC</button>
-        </div>
-        <div class="photo-upload-area">
-          <input type="file" id="ocPhotoInput" accept="image/*" capture="environment" />
-          <button class="btn btn-purple" id="ocUploadBtn">📷 Upload foto naar OC</button>
-          <span id="ocUploadStatus" style="font-size:0.8rem; color:#8899aa; align-self:center;"></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- === VERBETERDE ARRESTATIE-SECTIE === -->
+    <div class="card"><h2>📋 Actieve missies (cryptisch)</h2><div id="activeMissionsList" class="active-missions-list"><div style="color:#8899aa;">Geen actieve missies.</div></div></div>
+    <div class="card"><h2>🗺️ Locaties</h2><div id="hunterMap"></div></div>
+    <div class="card"><h2>📡 Locatie-pings van criminelen</h2><div id="pingList" class="ping-list">Geen pings ontvangen.</div></div>
+    <!-- INCIDENTENBORD VERWIJDERD -->
+    <div class="card"><h2>🚗 RDW‑check</h2><div style="display:flex;gap:8px;"><input type="text" id="rdwInput" placeholder="Voer kenteken in (bv. NB616NP)" style="flex:1;" /><button class="btn btn-primary" id="rdwBtn">🔍 Check</button></div><div id="rdwResult" class="rdw-result hidden"></div></div>
+    <!-- 💬 Chat verwijderd, alleen OC communicatie behouden -->
+    <div class="card"><h2>📨 Communicatie naar OC (docent)</h2><div style="display:flex;gap:8px;margin-bottom:8px;"><input type="text" id="ocInput" placeholder="Bericht naar OC..." style="flex:1;" /><button class="btn btn-purple" id="ocSendBtn">📤 Stuur</button></div></div>
     <div class="card">
       <h2>🚔 Criminelen</h2>
       <div id="criminalList">Geen criminelen gevonden.</div>
-      <div class="form-group" style="margin-top:12px;">
-        <label>Teamnaam van crimineel</label>
-        <input type="text" id="arrestCriminalInput" placeholder="Bijv. Team Zwart" />
-      </div>
-      <div class="form-group">
-        <label>Misdrijf</label>
-        <input type="text" id="arrestMisdrijfInput" placeholder="Bijv. Diefstal, heling, vernieling..." />
-      </div>
-      <div class="form-group">
-        <label>Bewijsvoering (sporen, feiten en omstandigheden)</label>
-        <textarea id="arrestBewijsInput" placeholder="Beschrijf de bewijzen..." rows="3"></textarea>
-      </div>
+      <div class="form-group" style="margin-top:12px;"><label>Teamnaam van crimineel</label><input type="text" id="arrestCriminalInput" placeholder="Bijv. Team Zwart" /></div>
+      <div class="form-group"><label>Misdrijf</label><input type="text" id="arrestMisdrijfInput" placeholder="Bijv. Diefstal, heling..." /></div>
+      <div class="form-group"><label>Bewijsvoering</label><textarea id="arrestBewijsInput" placeholder="Beschrijf de bewijzen..." rows="3"></textarea></div>
       <button class="btn btn-danger" id="arrestBtn" style="width:100%;">⛓️ Arresteer</button>
-      <div id="arrestStatus" style="margin-top:8px; font-size:0.9rem; color:#8899aa;"></div>
+      <div id="arrestStatus" style="margin-top:8px;font-size:0.9rem;color:#8899aa;"></div>
     </div>
-
     <button class="btn btn-danger" id="hunterLogoutBtn" style="width:100%;margin-top:8px;">🚪 Uitloggen</button>
-  </div>
-
-  <!-- DOCENT DASHBOARD -->
-  <div id="docentScreen" class="container hidden">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-        <h1 style="font-size:1.4rem;">🎓 Docent / Spelmeester</h1>
-        <span class="badge badge-docent">Controle</span>
-      </div>
-      <div id="docentTimer" class="info-row"><span class="label">⏱️ Resterende tijd:</span><span class="value" id="docentTimerValue">--:--</span></div>
-    </div>
-
-    <!-- KAART MET BEWERKBARE MISSIES -->
-    <div class="card">
-      <h2>🗺️ Missielocaties bewerken</h2>
-      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
-        <button class="btn btn-warning" id="toggleEditPinsBtn">✏️ Bewerk pins</button>
-        <span id="editPinsStatus" style="color:#8899aa; font-size:0.9rem;">(alleen in voorbereidingsfase)</span>
-      </div>
-      <div id="docentMap"></div>
-    </div>
-
-    <div class="card">
-      <h2>🎮 Spelstatus</h2>
-      <div id="gameStatusDisplay" class="info-row"><span class="label">Status:</span><span class="value" id="gameStatusValue">Wachten op start</span></div>
-      <div class="btn-group">
-        <button class="btn btn-success" id="startGameBtn">▶️ Start spel</button>
-        <button class="btn btn-danger" id="endGameBtn">⏹️ Beëindig spel</button>
-      </div>
-      <button class="btn btn-danger" id="resetGameBtn" style="margin-top:12px; width:100%;">🔄 Reset ALLE gegevens (harde reset)</button>
-    </div>
-
-    <div id="docentColumns">
-      <div class="class-col" id="class1Content">
-        <h3>Klas 1</h3>
-        <div class="class-status">Status: onbekend</div>
-        <div class="class-players">Geen spelers.</div>
-        <div class="class-chat">
-          <div class="docent-chat-messages" id="docentChat1">Geen berichten.</div>
-          <div class="docent-chat-input-area">
-            <input type="text" id="docentChatInput1" placeholder="Bericht naar klas 1..." />
-            <button class="btn btn-primary btn-sm" data-class="1" id="docentChatSend1">📨</button>
-          </div>
-        </div>
-      </div>
-      <div class="class-col" id="class2Content">
-        <h3>Klas 2</h3>
-        <div class="class-status">Status: onbekend</div>
-        <div class="class-players">Geen spelers.</div>
-        <div class="class-chat">
-          <div class="docent-chat-messages" id="docentChat2">Geen berichten.</div>
-          <div class="docent-chat-input-area">
-            <input type="text" id="docentChatInput2" placeholder="Bericht naar klas 2..." />
-            <button class="btn btn-primary btn-sm" data-class="2" id="docentChatSend2">📨</button>
-          </div>
-        </div>
-      </div>
-      <div class="class-col" id="class3Content">
-        <h3>Klas 3</h3>
-        <div class="class-status">Status: onbekend</div>
-        <div class="class-players">Geen spelers.</div>
-        <div class="class-chat">
-          <div class="docent-chat-messages" id="docentChat3">Geen berichten.</div>
-          <div class="docent-chat-input-area">
-            <input type="text" id="docentChatInput3" placeholder="Bericht naar klas 3..." />
-            <button class="btn btn-primary btn-sm" data-class="3" id="docentChatSend3">📨</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <button class="btn btn-danger" id="docentLogoutBtn" style="width:100%;margin-top:8px;">🚪 Uitloggen</button>
   </div>
 </div>
 
 <script type="module">
-  // ===========================================================================
-  // IMPORTS & CONFIG
-  // ===========================================================================
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-  import { getDatabase, ref, push, set, onValue, remove, get, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+  import { getDatabase, ref, push, set, onValue, get, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB12mTMBnuxdC4W4htyFO_C7Dnh3maVKew",
@@ -724,1286 +189,279 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const storage = getStorage(app);
 
-  const CLASS_CODES = {
-    Alpha: "ALPHA2025",
-    Bravo: "BRAVO2025",
-    Charlie: "CHARLIE2025",
-    Delta: "DELTA2025",
-    Echo: "ECHO2025",
-    Foxtrot: "FOXTROT2025",
-    Golf: "GOLF2025",
-    Hotel: "HOTEL2025",
-    Juliett: "JULIETT2025",
-    Kilo: "KILO2025",
-    Mike: "MIKE2025"
-  };
   const GAME_DURATION = 3600;
-  const MISSION_RADIUS = 10;
+  const PROXIMITY_RADIUS = 10; // 10 meter
 
-  // ----- NIEUWE MISSIES (14 stuks, gelijk aan criminele code) -----
-  const DEFAULT_MISSIONS = [
-    {
-      "id": "mission1",
-      "order": 1,
-      "lat": 52.131168,
-      "lng": 5.365757,
-      "cryptic": "We krijgen zojuist een melding binnen van een verdachte situatie op de aangewezen locatie. Er zijn sterke aanwijzingen dat een criminele groepering ter plaatse is om een zojuist ingesloten handlanger op te pikken en te ontzetten. Meld OC signalement van deze persoon. Bevraag de getuigen naar signalementen en gestolen goederen. Noteer jullie bevindingen.",
-      "description": "Pik hier jullie handlanger op en neem het goud mee. Ik wil er zeker van zijn dat jullie alles hebben. Maak een foto van jullie team, met handlanger en het goud.",
-      "spoor": "Poster met mugshot : lowiekevanrubber.png\nSignalemen:\n-uiterlijk: Grijs, rubberen postuur, zeer fors gebouwd;\n- haardracht: opvallende, weelderige zwarte haardos met een dikke, donkere snor; \nkleding: voornamelijke grijze kleding; \n- accessoires: behangen met extreem veel 'blingbling'. Draagt meerdere gouden kettingen (waarvan één met handboeien-hanger), een opvallend gouden horloge om de linkerpols, gouden armbanden om de rechterpols en diverse glimmende ringen om de vingers.\nKettlebell wordt meegenomen"
-    },
-    {
-      "id": "mission2",
-      "order": 2,
-      "lat": 52.131752708465726,
-      "lng": 5.368489613802097,
-      "cryptic": "Alle eenheden regio Amersfoort/Leusden, aanvulling op de lopende drugsgerelateerde melding op het Sintelplein 2.\n\nSituatie: Omstanders melden zojuist een verdacht voertuig dat met draaiende motor stand-by staat in de directe omgeving van de doellocatie. Het vermoeden bestaat dat dit het vluchtvoertuig is voor de lopende transactie binnen.\n\nVoertuig & Signalement: Het betreft een snelle, sportieve matzwarte sedan (mogelijk BMW of Audi). Bij het voertuig staat een robuuste man die zich zenuwachtig ophoudt. Signalement: zwarte muts, legergroene jas en opvallend veel zware gouden kettingen en ringen.\n\nInstructie: Toon spoed. Eenheden dienen de mogelijke vluchtwegen rondom het Sintelplein direct dicht te zetten en het voertuig tactisch te benaderen. Houd rekening met een directe en agressieve vluchtpoging. Verdachten zijn vermoedelijk vuurwapengevaarlijk. Bevestig positie bij aankomst. Meld status van het voertuig uit RDW-gegevens.",
-      "description": "Luister goed. De deal op het Sintelplein in Leusden is bijna rond, maar we hebben een waterdicht plan nodig om daarna te verdwijnen. Zoek nu meteen een geschikt vluchtvoertuig uit—iets snels, betrouwbaars en krachtig genoeg om weg te komen als de grond te heet onder de voeten wordt.\n\nZorg dat de wagen klaarstaat en maak een foto van onze handlanger samen met het voertuig, zodat ik zeker weet dat alles volgens mijn instructies geregeld is. Geen excuses, geen fouten, anders zijn de consequenties voor jullie. Begrepen?",
-      "spoor": "Kentekenplaat op auto\nIn code hunters RDW check met voertuig genoteerd als gestolen"
-    },
-    {
-      "id": "mission3",
-      "order": 3,
-      "lat": 52.130733811829295,
-      "lng": 5.364181348595629,
-      "cryptic": "PRIO 1. Verzoek om assistentie. Melding van een vuurgevecht gaande op de [Locatie in Amersfoort, bijv. Parkeerterrein Kernhem]. Meerdere verdachten, vuurwapengevaarlijk. Eenheden ter plaatse melden recent schotwisseling. Minimaal twee verdachten betrokken, een oudere man en een jongere man. Beiden dragen zwarte kleding. Een van de verdachten, een jonge man met een capuchon en sjaal, lijkt momenteel onbekwaam met zijn eigen vuurwapen en worstelt ermee. Benader met extreme voorzichtigheid. Eenheden met ballistische bescherming gewenst. Beschrijf de situatie aan de hand van de camerabeelden.",
-      "description": "Heren, de situatie op deze locatie vereist een directe aanpak; de tegenpartij weigert zich aan onze afspraken te houden. Jullie gaan daar nu naartoe in zwarte kleding om de boel recht te zetten en onze belangen te beschermen. Mocht er weerstand zijn, dan lossen jullie dat ter plekke en definitief op. En jij, jongeman—zorg dat je je wapen dit keer onder controle hebt en niet aarzelt als de eerste kogel moet vallen. Stel me niet teleur.",
-      "spoor": "afbeeldingen camerabeelden: \nincidentwapenkamer.png\nincidentwapenkamerhulzen.png"
-    },
-    {
-      "id": "mission4",
-      "order": 4,
-      "lat": 52.13080791024424,
-      "lng": 5.365163684943295,
-      "cryptic": "Aan alle beschikbare eenheden regio Amersfoort. Prioriteit 1. Dringend verzoek om assistentie bij een ernstig verkeersongeval op de Loes van Overeemlaan, nabij bushalte Schietbaan, Leusden. \n\nSituatie: Een zwart voertuig is na extreem gevaarlijk rijgedrag met hoge snelheid frontaal in botsing gekomen met een Connexxion lijnbus (Lijn 88 richting Amersfoort Station). Er is sprake van zware materiële schade aan zowel de bus als de personenauto. Mogelijk letsel bij de passagiers in de bus.\n\nBijzonderheden: Het zwarte voertuig matcht met de eerdere meldingen over het gevaarlijke vluchtgedrag. Meerdere getuigen ter plaatse melden dat de inzittenden van het voertuig op dit moment in alle haast tassen en goederen uit de auto aan het trekken zijn. Ze proberen de locatie te voet te ontvluchten nog vóór de aankomst van de eerste eenheden.\n\nInstructie: Met spoed aanrijden. Eenheden in de omgeving dienen direct de omliggende straten en vluchtwegen af te grendelen om de verdachten te onderscheppen. Ambulance en brandweer zijn met prioriteit onderweg voor de hulpverlening in de bus. Benader de verdachten met verhoogde waakzaamheid. Geef door waarheen de betrokkenen zijn gevlucht. Geef door hoe de betrokkenen zijn gevlucht.",
-      "description": "Luister goed. Er is een pakketje dat absoluut niet in de verkeerde handen mag vallen. De koerier heeft specifieke instructies gekregen: deze levering heeft prioriteit boven alles. Als er obstakels zijn, dan worden die omzeild. Als er vertraging dreigt, dan wordt er gas bijgegeven. Geen excuses, geen maren. Het belang van de familie staat op het spel. Zorg dat het aankomt, hoe dan ook..... Een ongeluk? Dit is exact het soort amateurisme waar ik een broertje dood aan heb. Ik vroeg om een snelle levering, niet om een mediaspektakel dat de hele politiemacht van de regio Amersfoort op onze nek haalt.\nAls dat pakketje nu door de recherche wordt gevonden, hebben die twee een veel groter probleem dan een paar gekneusde ribben. Zorg dat onze mensen ter plaatse zijn nog vóór de bergingsauto arriveert. De sporen moeten worden uitgewist, de auto moet leeg, en die twee malloten moeten verdwijnen uit het zicht van de autoriteiten. Incompetentie die de familie in gevaar brengt, tolereer ik niet. Regel het. Nu.",
-      "spoor": "Afbeelding ongeluk connexxionbus: verkeersongeluk.png"
-    },
-    {
-      "id": "mission5",
-      "order": 5,
-      "lat": 52.131571583234894,
-      "lng": 5.369203091268884,
-      "cryptic": "Aan alle beschikbare eenheden regio Leusden Prioriteit 1. Verzoek om onderzoek naar een verdachte situatie in een woning. Exacte adresgegevens volgen via de MDT.\n\nSituatie: Via een betrouwbare bron is informatie binnengekomen dat er op dit moment een illegale overdracht plaatsvindt in de woning. Er zou een ontmoeting gaande zijn tussen een bewoner/contactpersoon en externe partijen.\n\nBijzonderheden: De transactie betreft vermoedelijk de uitwisseling van gevoelige documenten tegen een substantiële hoeveelheid verdovende middelen (harddrugs, omschreven als 'poeder'), welke verpakt zouden zitten in een doos. Er is een reële kans dat de betrokkenen proberen de locatie snel te verlaten zodra de overdracht is afgerond.\n\nInstructie: Benader de woning onopvallend en tactisch. Stel eventuele vluchtwegen aan de achterzijde van het pand veilig alvorens aan te bellen. Houd rekening met de aanwezigheid van meerdere personen binnen. Beschrijf wat je binnen aantreft.",
-      "description": "Luister goed naar wat ik je nu ga zeggen. Op de afgesproken locatie staat een huis waar de documenten die we nodig hebben op je liggen te wachten. Dit zijn niet zomaar papieren; dit zijn de geheimen die onze positie veiligstellen.\n\nEr is binnen een contactpersoon aanwezig die precies weet waarom je komt. Je overhandigt de documenten, en in ruil daarvoor neem je onze specifieke hoeveelheid poeder mee... je weet precies wat ik bedoel, exact volgens de afspraak die we vooraf gemaakt hebben. Het staat klaar in de doos.\n\nGeen misverstanden, geen onnodige vragen. Je loopt naar binnen, handelt dit zakelijk af en zorgt dat alles geruisloos verloopt. Laat me zien dat ik op je kan rekenen. Succes.",
-      "spoor": "Lijk TLO\nDoos\nDrugs"
-    },
-    {
-      "id": "mission6",
-      "order": 6,
-      "lat": 52.1305771043951,
-      "lng": 5.3671699778875945,
-      "cryptic": "Aan alle beschikbare eenheden regio Amersfoort. Prioriteit 2. Verzoek om controle bij een leegstaande loods. Exacte locatiegegevens volgen via de MDT.\n\nSituatie: Er is zojuist een melding binnengekomen over verdachte activiteit rondom een verlaten loods. Een passant zag een persoon zich verdacht ophouden aan de achterzijde van het pand en vervolgens een oude kelderruimte betreden.\n\nBijzonderheden: Vermoeden bestaat dat deze locatie wordt gebruikt voor het stallen of verbergen van illegale goederen of bewijsmateriaal (mogelijk documenten of administratie gerelateerd aan eerdere incidenten). Er is vooralsnog geen sprake van directe dreiging of wapens, maar alertheid is geboden.\n\nInstructie: Rijdt aan zonder optische en geluidssignalen om de verdachte niet op te schrikken. Benader de achterzijde en de kelderruimte van de loods tactisch. Controleer de ruimte op eventueel achtergelaten goederen of nog aanwezige personen. Stel sporen veilig. Beschrijf wat je aantreft.",
-      "description": "Luister goed. Het goud dat je zojuist hebt veiliggesteld is op dit moment ook levensgevaarlijk. De politie spit het hele Sintelplein binnenstebuiten en we kunnen geen enkel risico nemen.\n\nJe brengt het naar de oude kelderruimte achter de loods. Achter de derde steunpilaar zit een losse baksteen in de muur. Daar schuif je ze achter. Niemand komt daar, niemand zoekt daar. Als die papieren daar liggen, is het alsof ze nooit hebben bestaan.\n\nEn onthoud één ding: vanaf dit moment weet jij van niets, heb je niets gezien en ken je de naam van de contactpersoon niet meer. Als er ook maar één detail uitlekt naar de autoriteiten, dan weet je dat de familie dat niet ongestraft laat. Zorg dat het geregeld wordt, met de nodige discretie.",
-      "spoor": "Stapel stenen"
-    },
-    {
-      "id": "mission7",
-      "order": 7,
-      "lat": 52.1326780223426,
-      "lng": 5.368076571798458,
-      "cryptic": "Aan alle beschikbare eenheden regio Leusden Prioriteit 2. Verzoek om verhoogde surveillance en waakzaamheid rondom het bedrijfspand. Exacte objectgegevens volgen direct via de MDT.\n\nSituatie: Er is zojuist via een interne veiligheidslijn een melding binnengekomen over een verdachte ontmoeting nabij de personeelsingang van het object. Een onbekende man heeft daar contact gezocht met een van de aanwezige beveiligers.\n\nBijzonderheden: Het sterke vermoeden bestaat dat er sprake is van een poging tot omkoping of intimidatie van het beveiligingspersoneel ('platleggen' van de beveiliging) met het oog op een geplande inbraak of insluiping tijdens de avonduren. De beveiliger in kwestie wordt momenteel intern gehoord. Er is mogelijk een foto van de ontmoeting gemaakt door een handlanger in de buurt.\n\nInstructie: Neem het object en de directe omgeving op in de lopende surveillance voor de avond- en nachtdienst. Let specifiek op personen die zich ophouden rondom de camera-opstellingen of nooduitgangen. Meld eventuele verdachte voertuigen direct aan de meldkamer. Geef signalement van verdachte personen.",
-      "description": "Luister goed. Vanavond is de avond dat we het pand aan de binnenkant gaan bekijken, maar ik wil geen alarmbellen, geen honden en absoluut geen politie aan de deur. De beveiliging moet plat liggen nog vóór de zon ondergaat.\n\nEr loopt daar een bewaker rond die vatbaar is voor de juiste motivatie. Je zoekt hem op, je neemt hem apart en je zorgt ervoor dat hij inziet dat een goedgevulde envelop beter is voor zijn gezondheid en zijn portemonnee dan de held uithangen. Vertel hem precies hoe laat hij zijn ronde de andere kant op moet lopen en welke camera's er toevallig een uurtje 'storing' moeten hebben.\n\nEn ik wil bewijs dat de afspraak staat. Maak onopvallend een foto van de ontmoeting, zodat ik kan zien dat de deal gesloten is. Als die lichten vanavond uitgaan, slaan we onze slag. Zorg dat hij meewerkt—of zorg dat hij spijt krijgt dat hij ooit 'nee' heeft gezegd. Regel het.",
-      "spoor": "Geld voor corruptie\nEnvelop voor criminelen met Geheime documenten 'classified.pdf'"
-    },
-    {
-      "id": "mission8",
-      "order": 8,
-      "lat": 52.131564996774756,
-      "lng": 5.36609709267856,
-      "cryptic": "Aan alle eenheden regio en grensbewaking. Prioriteit 1. Verzoek om scherpe controle en uitkijken naar een verdachte die tracht het land te ontvluchten middels identiteitsfraude.\n\nSituatie: Uit tactische informatie is gebleken dat het subject, bekend onder de alias 'Lowieke van Rubber', actief bezig is met het aannemen van een valse identiteit. Er zijn aanwijzingen dat er vervalste reisbescheiden en pasfoto's zijn klaargemaakt voor internationale vluchten, met als vermoedelijke bestemmingen Tokyo of Rio de Janeiro.\n\nBijzonderheden: De verdachte maakt gebruik van hoogwaardig vervalste documenten en zal proberen de grenscontrole te passeren onder een gefingeerde naam. Het subject staat gesignaleerd.\n\nInstructie: Directe afstemming met de Koninklijke Marechaussee op de uitvalswegen en luchthavens. Bij aantreffen van personen die voldoen aan het signalement van de eerdere mugshots, direct overgaan tot staandehouding en verificatie van de biometrische gegevens. Benadering met verhoogde waakzaamheid. Maak een lijst op van reisplannen en bestemmingen.",
-      "description": "Luister goed naar me. De grond onder onze voeten wordt te heet. De recherche spit elk dossier door en die OC-meldingen bewijzen dat ze ons op het spoor zijn. Het is tijd voor het noodplan. Tokyo en Rio de Janeiro liggen klaar, maar je gaat niet als jezelf de grens over.\n\nLowieke van Rubber bestaat vanaf vandaag niet meer voor de douane. Je pakt die valse pasfoto's en de klaargemaakte reisbescheiden die we hebben gefabriceerd. Vanaf dit moment neem je de identiteit aan van de persoon op die papieren. Je leert zijn naam, zijn geboortedatum en zijn achtergrond uit je hoofd. Geen aarzeling bij de grenscontrole, geen zenuwachtig gedrag.\n\nAls ze je paspoort scannen, ben jij die ander. Je stapt dat vliegtuig in, laat je oude leven hier achter en zorgt dat je aan de andere kant van de wereld onder de radar verdwijnt. Identiteitsfraude is onze enige ticket naar vrijheid. Verpruts het niet, want een tweede kans krijg je niet van me. Verdwijn.",
-      "spoor": "reisbescheiden japan, Brazillië , alles\ndoos met reispapieren in Souterrain"
-    },
-    {
-      "id": "mission9",
-      "order": 9,
-      "lat": 52.132,
-      "lng": 5.365,
-      "cryptic": "De achtervolging is ingezet. De criminelen moeten sporen uitwissen. Een foto van de afgelegde weg is vereist.",
-      "description": "De achtervolging is ingezet. Zorg dat jullie sporen uitwissen. Maak een foto van de weg die jullie hebben afgelegd.",
-      "spoor": ""
-    },
-    {
-      "id": "mission10",
-      "order": 10,
-      "lat": 52.13257263059253,
-      "lng": 5.371316703933494,
-      "cryptic": "De documenten bevatten geheime codes. De handlanger moet een code onthouden. Laat de hunters de code zien.",
-      "description": "De documenten bevatten geheime codes. Laat de handlanger een code onthouden. Maak een foto van de code.",
-      "spoor": ""
-    },
-    {
-      "id": "mission11",
-      "order": 11,
-      "lat": 52.1305,
-      "lng": 5.3655,
-      "cryptic": "Er is een checkpoint. De handlanger moet de wacht omkopen. Een foto van de omkoping is vereist.",
-      "description": "Er is een checkpoint. Laat de handlanger de wacht omkopen. Maak een foto van de omkoping.",
-      "spoor": ""
-    },
-    {
-      "id": "mission12",
-      "order": 12,
-      "lat": 52.131,
-      "lng": 5.3675,
-      "cryptic": "De documenten moeten worden overhandigd aan de opdrachtgever. Een foto van de overhandiging is vereist.",
-      "description": "Jullie moeten de documenten overhandigen aan de opdrachtgever. Maak een foto van de overhandiging.",
-      "spoor": ""
-    },
-    {
-      "id": "mission13",
-      "order": 13,
-      "lat": 52.1325,
-      "lng": 5.3665,
-      "cryptic": "De opdrachtgever wil een teken van loyaliteit. Laat de handlanger met een wapen zien.",
-      "description": "De opdrachtgever wil een teken van jullie loyaliteit. Maak een foto van jullie team met een wapen.",
-      "spoor": ""
-    },
-    {
-      "id": "mission14",
-      "order": 14,
-      "lat": 52.1308,
-      "lng": 5.3682,
-      "cryptic": "De ontsnapping per helikopter is de laatste stap. Een foto van de helikopter is vereist.",
-      "description": "Einddoel: ontsnapping per helikopter. Maak een foto van de helikopter.",
-      "spoor": ""
-    }
+  // ---- BASIS MISSIES (zelfde als bij criminelen) ----
+  const BASE_MISSIONS = [
+    { "id": "mission1", "order": 1, "lat": 52.131168, "lng": 5.365757, "cryptic": "OC-MELDING: Verdachte ontmoeting gerapporteerd.", "description": "GODFATHER: Handlanger ophalen, goud (dumbbell) ophalen, naam handlanger doorgeven.", "spoor": "Camerabeelden", "proximityImage": "lowiekevanrubber.png", "proximityText": "📸 Signalement Lowieke van Rubber", "proximityRDW": null },
+    { "id": "mission2", "order": 2, "lat": 52.131605, "lng": 5.368394, "cryptic": "OC-MELDING: Vluchtvoertuig gesignaleerd.", "description": "GODFATHER: Kies een snelle wagen. Foto maken.", "spoor": "Kentekenregistratie", "proximityImage": "kentekenplaat.png", "proximityText": "🚗 Kenteken NB616NP", "proximityRDW": "NB616NP" },
+    { "id": "mission3", "order": 3, "lat": 52.130893, "lng": 5.364418, "cryptic": "OC-MELDING: Vuurwapen gezien.", "description": "GODFATHER: Laat sukkel wapen vasthouden. Foto.", "spoor": "Wapenbeschrijving", "proximityImage": "wapenkamer.png", "proximityImage2": "lowieketussenhulzen.png", "proximityText": "🔫 Camerabeelden wapenkamer" },
+    { "id": "mission4", "order": 4, "lat": 52.132714, "lng": 5.368064, "cryptic": "OC-MELDING: Aanrijding gemeld.", "description": "GODFATHER: Schade vastleggen. Foto's maken.", "spoor": "Schaderapport", "proximityImage": "verkeersongeluk.png", "proximityText": "🚨 Foto verkeersongeval" },
+    { "id": "mission5", "order": 5, "lat": 52.131334, "lng": 5.366343, "cryptic": "OC-MELDING: Safehouse ontdekt.", "description": "GODFATHER: Check schuilplek. Geen sporen.", "spoor": "DNA-sporen", "proximityImage": "reisbescheidenalles.png", "proximityText": "🛄 Reisbescheiden Tokyo, Rio" },
+    { "id": "mission6", "order": 6, "lat": 52.131500, "lng": 5.366800, "cryptic": "OC-MELDING: Contactpersoon.", "description": "GODFATHER: Ontmoeting. Foto maken.", "spoor": "Afluisterapparatuur", "proximityImage": null },
+    { "id": "mission7", "order": 7, "lat": 52.130800, "lng": 5.368200, "cryptic": "OC-MELDING: Sporenwisserij.", "description": "GODFATHER: Grote schoonmaak. Verbrand alles.", "spoor": "Verbrandingsresten", "proximityImage": null }
   ];
 
-  // ----- RDW-data (uitgebreid) -----
-  const RDW_DATA = {
-    'NB616NP': {
-      merk: 'Ford',
-      model: 'C-Max',
-      kleur: 'Wit',
-      kenteken: 'NB616NP',
-      status: 'Gestolen gemeld op 12-07-2026',
-      opmerking: 'Voertuig is mogelijk gebruikt bij een misdrijf.'
-    },
-    'AB123CD': {
-      merk: 'Volkswagen',
-      model: 'Golf',
-      kleur: 'Blauw',
-      kenteken: 'AB123CD',
-      status: 'Geen bijzonderheden',
-      opmerking: 'Voertuig is eerder gesignaleerd in de buurt.'
-    },
-    'XY987ZZ': {
-      merk: 'BMW',
-      model: 'X5',
-      kleur: 'Zwart',
-      kenteken: 'XY987ZZ',
-      status: 'Gestolen op 01-01-2026',
-      opmerking: 'Betrokken bij een achtervolging.'
-    }
+  // ---- KLAS-SPECIFIEKE VOLGORDE (zelfde als bij criminelen) ----
+  const CLASS_ORDER_MAP = {
+    Alpha: ["mission1", "mission2", "mission3", "mission4", "mission5", "mission6", "mission7"],
+    Bravo: ["mission1", "mission3", "mission2", "mission5", "mission4", "mission7", "mission6"],
+    Charlie: ["mission1", "mission4", "mission2", "mission6", "mission3", "mission5", "mission7"],
+    Delta: ["mission1", "mission5", "mission3", "mission7", "mission2", "mission6", "mission4"],
+    Echo: ["mission1", "mission6", "mission4", "mission2", "mission7", "mission3", "mission5"],
+    Foxtrot: ["mission1", "mission7", "mission5", "mission3", "mission6", "mission4", "mission2"],
+    Golf: ["mission1", "mission2", "mission6", "mission4", "mission7", "mission5", "mission3"],
+    Hotel: ["mission1", "mission3", "mission7", "mission5", "mission2", "mission4", "mission6"],
+    Juliett: ["mission1", "mission4", "mission7", "mission6", "mission3", "mission2", "mission5"],
+    Kilo: ["mission1", "mission5", "mission2", "mission7", "mission4", "mission6", "mission3"],
+    Mike: ["mission1", "mission6", "mission3", "mission7", "mission5", "mission2", "mission4"]
   };
 
-  // DOM-refs
-  const loginScreen = document.getElementById('loginScreen');
-  const hunterScreen = document.getElementById('hunterScreen');
-  const docentScreen = document.getElementById('docentScreen');
-  const classSelect = document.getElementById('classSelect');
-  const roleSelect = document.getElementById('roleSelect');
-  const usernameInput = document.getElementById('usernameInput');
-  const codeInput = document.getElementById('codeInput');
-  const loginBtn = document.getElementById('loginBtn');
-  const loginStatus = document.getElementById('loginStatus');
-  const docentClassSelection = document.getElementById('docentClassSelection');
-  const class1Select = document.getElementById('class1Select');
-  const class2Select = document.getElementById('class2Select');
-  const class3Select = document.getElementById('class3Select');
+  // RDW-data voor een specifiek kenteken
+  const RDW_DATA = { 'NB616NP': { merk: 'Ford', model: 'C-Max', kleur: 'Wit', kenteken: 'NB616NP', status: 'Gestolen gemeld op 12-07-2026' } };
 
-  let className = 'Alpha';
-  let pingDisplayTimer = null;
-  let teamName = '';
-  let gameStarted = false;
-  let incidentAlertShown = false;
-  let docentClasses = [];
-  let getuigeActive = false;
-  let getuigeMissionId = null;
-  let getuigeData = null;
-  let watchPositionIdHunter = null;
+  let className = 'Alpha', pingDisplayTimer, teamName = '', gameStarted = false, watchPositionIdHunter;
+  let hunterPosition, discoveredProximities = {}, proximityCheckInterval;
+  let missionsMap = {};      // alle missie-data per id
+  let missionOrder = [];     // volgorde voor deze klas
+  let activeMissionId = null; // actieve missie-id voor deze klas
 
-  // ----- HULPFUNCTIES -----
-  function setStatus(el, msg, type = 'info') {
-    if (!el) return;
-    el.textContent = msg;
-    el.className = type;
-  }
-
-  function showScreen(screenId) {
-    [loginScreen, hunterScreen, docentScreen].forEach(s => s.classList.add('hidden'));
-    document.getElementById(screenId).classList.remove('hidden');
-  }
-
+  function setStatus(el, msg, type = 'info') { if(el) { el.textContent = msg; el.className = type; } }
+  function showScreen(id) { ['loginScreen','hunterScreen'].forEach(s => document.getElementById(s).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
   function getTimestamp() { return Date.now(); }
+  function deg2rad(d) { return d * Math.PI/180; }
+  function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) { const R=6371000, dLat=deg2rad(lat2-lat1), dLon=deg2rad(lon2-lon1), a=Math.sin(dLat/2)**2+Math.cos(deg2rad(lat1))*Math.cos(deg2rad(lat2))*Math.sin(dLon/2)**2; return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); }
+  function updateTimer(elId, cls) { const el = document.getElementById(elId); if(!el||!cls) return; get(ref(db,`klassen/${cls}/game/startTime`)).then(snap => { const s = snap.val(); if(!s) { el.textContent = '--:--'; return; } const r = Math.max(0, GAME_DURATION - Math.floor((Date.now()-s)/1000)); el.textContent = String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0'); }); }
+  function logout() { clearTimeout(pingDisplayTimer); if(watchPositionIdHunter)navigator.geolocation.clearWatch(watchPositionIdHunter); clearInterval(proximityCheckInterval); showScreen('loginScreen'); }
 
-  function updateTimer(elementId, className) {
-    const el = document.getElementById(elementId);
-    if (!el || !className) return;
-    get(ref(db, `klassen/${className}/game/startTime`)).then(snapshot => {
-      const start = snapshot.val();
-      if (!start) {
-        el.textContent = '--:--';
-        return;
+  // ---- Laad missies voor de klas - altijd overschrijven met juiste volgorde ----
+  async function loadMissionsForClass(className) {
+    const order = CLASS_ORDER_MAP[className] || CLASS_ORDER_MAP.Alpha;
+    const missions = {};
+    order.forEach((id, idx) => {
+      const base = BASE_MISSIONS.find(m => m.id === id);
+      if (base) {
+        missions[id] = { ...base, order: idx + 1 };
       }
-      const elapsed = Math.floor((Date.now() - start) / 1000);
-      const remaining = Math.max(0, GAME_DURATION - elapsed);
-      const mins = Math.floor(remaining / 60);
-      const secs = remaining % 60;
-      el.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     });
+    await set(ref(db, `klassen/${className}/missions`), missions);
+    return missions;
   }
 
-  function logout() {
-    if (pingDisplayTimer) clearTimeout(pingDisplayTimer);
-    if (watchPositionIdHunter) navigator.geolocation.clearWatch(watchPositionIdHunter);
-    showScreen('loginScreen');
-    setStatus(loginStatus, 'Uitgelogd.', 'info');
+  async function loadMissionsFromDB() {
+    // Altijd opnieuw genereren volgens de map om foute oude data te overschrijven
+    const missions = await loadMissionsForClass(className);
+    missionsMap = {};
+    for (const [id, mission] of Object.entries(missions)) missionsMap[id] = mission;
+    missionOrder = CLASS_ORDER_MAP[className] || CLASS_ORDER_MAP.Alpha;
+    return missions;
   }
 
-  function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-    const R = 6371000;
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-  function deg2rad(deg) { return deg * (Math.PI / 180); }
-
-  // ===========================================================================
-  // LOGIN
-  // ===========================================================================
-  loginBtn.addEventListener('click', async () => {
-    const role = roleSelect.value;
-    const name = usernameInput.value.trim();
-    const code = codeInput.value.trim();
-    className = classSelect.value;
-
-    if (!name) {
-      setStatus(loginStatus, 'Voer een teamnaam in.', 'error');
+  // ---- Bijwerken van het Operationeel Centrum met de actieve missie ----
+  function updateOperationeelCentrum(missionId) {
+    const el = document.getElementById('missionDescription');
+    if (!missionId || !missionsMap[missionId]) {
+      activeMissionId = null;
+      el.innerHTML = '⏳ Er is nog geen actieve missie gestart...';
       return;
     }
-    const expectedCode = CLASS_CODES[className];
-    if (!expectedCode || code !== expectedCode) {
-      setStatus(loginStatus, '❌ Ongeldige docentencode voor deze klas.', 'error');
-      return;
-    }
+    activeMissionId = missionId;
+    const m = missionsMap[missionId];
+    el.innerHTML = `<strong>📨 Actieve missie:</strong> ${m.cryptic}<br><span class="sub">${m.description}</span>`;
+  }
 
-    setStatus(loginStatus, '🔄 Inloggen...', 'info');
-
-    if (role === 'docent') {
-      const class1 = class1Select.value;
-      const class2 = class2Select.value;
-      const class3 = class3Select.value;
-      docentClasses = [class1, class2, class3];
-      for (const cls of docentClasses) {
-        if (!CLASS_CODES[cls]) {
-          setStatus(loginStatus, `❌ Onbekende klas: ${cls}`, 'error');
-          return;
-        }
-      }
-      setStatus(loginStatus, `✅ Ingelogd als docent voor ${docentClasses.join(', ')}`, 'success');
-      showScreen('docentScreen');
-      initDocentDashboard(docentClasses);
-    } else {
-      try {
-        const playerRef = ref(db, `klassen/${className}/players/${name}`);
-        const snapshot = await get(playerRef);
-        if (snapshot.exists()) {
-          setStatus(loginStatus, '❌ Deze teamnaam is al in gebruik in deze klas.', 'error');
-          return;
-        }
-        const playerData = {
-          role: 'hunter',
-          teamName: name,
-          className: className,
-          joinedAt: getTimestamp(),
-          status: 'hunting',
-          cluesFound: [],
-          isArrested: false,
-          extractReached: false,
-          currentLocationId: null,
-          completedLocations: [],
-          hunterTimerEnd: null,
-          locationStartTime: null
-        };
-        await set(playerRef, playerData);
-        teamName = name;
-        setStatus(loginStatus, `✅ Ingelogd als hunter in klas ${className}`, 'success');
-        showScreen('hunterScreen');
-        initHunterDashboard(teamName, className);
-      } catch (err) {
-        setStatus(loginStatus, '❌ Fout bij inloggen: ' + err.message, 'error');
+  // ---- Probeer de huidige actieve missie te bepalen uit de players ----
+  async function setInitialActiveMission() {
+    const snap = await get(ref(db, `klassen/${className}/players`));
+    if (!snap.exists()) return;
+    const players = snap.val();
+    let activeId = null;
+    for (const [name, data] of Object.entries(players)) {
+      if (data.role === 'criminal' && data.currentMissionId) {
+        activeId = data.currentMissionId;
+        break;
       }
     }
+    if (activeId) updateOperationeelCentrum(activeId);
+  }
+
+  function startProximityCheck() {
+    if(proximityCheckInterval) clearInterval(proximityCheckInterval);
+    proximityCheckInterval = setInterval(() => {
+      if(!gameStarted || !hunterPosition || !activeMissionId) return;
+      const mission = missionsMap[activeMissionId];
+      if (!mission || !mission.lat || !mission.lng) return;
+      if (discoveredProximities[activeMissionId]) return;
+      const dist = getDistanceFromLatLonInMeters(hunterPosition.lat, hunterPosition.lng, mission.lat, mission.lng);
+      if (dist <= PROXIMITY_RADIUS) {
+        discoveredProximities[activeMissionId] = true;
+        showProximityEvidence(activeMissionId, mission, dist);
+      }
+    }, 5000);
+  }
+
+  function showProximityEvidence(id, mission, dist) {
+    const container = document.getElementById('proximityEvidence');
+    let html = `<div class="proximity-alert"><span class="distance-badge">📍 ${Math.round(dist)}m</span><h3>🔍 Bewijs bij missie ${mission.order}</h3>`;
+    if(mission.proximityImage) html += `<img src="${mission.proximityImage}" class="evidence-image" onerror="this.style.display='none'">`;
+    if(mission.proximityImage2) html += `<img src="${mission.proximityImage2}" class="evidence-image" style="margin-top:8px" onerror="this.style.display='none'">`;
+    if(mission.proximityText) html += `<div class="evidence-text">${mission.proximityText}</div>`;
+    if(mission.proximityRDW) html += `<div class="evidence-text" style="color:#ffd54f;">💡 RDW-check: ${mission.proximityRDW}</div>`;
+    html += `</div>`;
+    container.innerHTML += html; container.classList.remove('hidden');
+    push(ref(db,`klassen/${className}/chats`),{sender:'🔍 Bewijs',text:`Nieuwe informatie bij missie ${mission.order}: ${mission.proximityText||'Visueel bewijs'}`,timestamp:getTimestamp(),isSystem:true});
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    const name = document.getElementById('usernameInput').value.trim();
+    className = document.getElementById('classSelect').value;
+    if(!name) { setStatus(document.getElementById('loginStatus'),'Naam verplicht','error'); return; }
+    try {
+      const playerRef = ref(db,`klassen/${className}/players/${name}`);
+      if((await get(playerRef)).exists()) { setStatus(document.getElementById('loginStatus'),'Teamnaam in gebruik','error'); return; }
+      await set(playerRef, { role:'hunter', teamName:name, className, joinedAt:getTimestamp(), status:'hunting', cluesFound:[], isArrested:false, extractReached:false });
+      teamName = name; discoveredProximities = {};
+      showScreen('hunterScreen');
+      initHunterDashboard(teamName, className);
+    } catch(err) { setStatus(document.getElementById('loginStatus'),'Fout: '+err.message,'error'); }
   });
 
-  roleSelect.addEventListener('change', () => {
-    if (roleSelect.value === 'docent') {
-      docentClassSelection.classList.remove('hidden');
-      classSelect.parentElement.style.display = 'none';
-    } else {
-      docentClassSelection.classList.add('hidden');
-      classSelect.parentElement.style.display = 'block';
-    }
-  });
-  docentClassSelection.classList.add('hidden');
-  classSelect.parentElement.style.display = 'block';
-
-  // ===========================================================================
-  // HUNTER DASHBOARD (met pings + cryptic)
-  // ===========================================================================
   function initHunterDashboard(teamName, className) {
-    // Timer
-    updateTimer('hunterTimerValue', className);
-    setInterval(() => updateTimer('hunterTimerValue', className), 1000);
-    document.getElementById('hunterTeamName').textContent = teamName + ' (' + className + ')';
-
-    const map = L.map('hunterMap').setView([52.0, 5.0], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    const markers = {};
-    const markerTimers = {};
-    const waitingMsg = document.getElementById('hunterWaitingMessage');
-
-    // ----- Map voor missie-cryptic per crimineel -----
-    const criminalMissionMap = new Map(); // team -> missionId
-
-    // Luister naar spelers om currentMissionId te updaten
-    const playersRef = ref(db, `klassen/${className}/players`);
-    onValue(playersRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-      for (const [name, player] of Object.entries(data)) {
-        if (player.role === 'criminal') {
-          criminalMissionMap.set(name, player.currentMissionId || null);
-        }
-      }
-    });
-
-    // ----- Pings (live) met cryptic -----
-    const pingsRef = ref(db, `klassen/${className}/pings`);
-    const pingList = document.getElementById('pingList');
-
-    // Houd laatste ping per team bij
-    const latestPings = {};
-
-    onValue(pingsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) {
-        pingList.innerHTML = '<div style="color:#8899aa;">Geen pings ontvangen.</div>';
-        return;
-      }
-      // Update latestPings
-      for (const key of Object.keys(data)) {
-        const ping = data[key];
-        if (!latestPings[ping.teamName] || ping.timestamp > latestPings[ping.teamName].timestamp) {
-          latestPings[ping.teamName] = ping;
-        }
-      }
-      // Bouw lijst met cryptic
-      let html = '';
-      const sorted = Object.values(latestPings).sort((a,b) => b.timestamp - a.timestamp);
-      for (const ping of sorted) {
-        const missionId = criminalMissionMap.get(ping.teamName);
-        let crypticText = '';
-        if (missionId) {
-          // Zoek missie in DEFAULT_MISSIONS (of in database, maar we gebruiken DEFAULT_MISSIONS)
-          const mission = DEFAULT_MISSIONS.find(m => m.id === missionId);
-          if (mission) crypticText = mission.cryptic || '';
-        }
-        html += `
-          <div class="ping-item">
-            <strong>${ping.teamName}</strong> 📍 ${ping.latitude.toFixed(4)}, ${ping.longitude.toFixed(4)}
-            <span style="color:#667788;font-size:0.7rem;">${new Date(ping.timestamp).toLocaleTimeString()}</span>
-            ${crypticText ? `<span class="cryptic">📜 ${crypticText}</span>` : '<span class="cryptic" style="color:#8899aa;">(geen actieve missie)</span>'}
-          </div>
-        `;
-      }
-      pingList.innerHTML = html || '<div style="color:#8899aa;">Geen pings.</div>';
-    });
-
-    // ----- Kaart markers voor pings (met cryptic in popup) -----
-    function showPinpoint(team, lat, lng) {
-      if (markers[team]) {
-        map.removeLayer(markers[team]);
-        clearTimeout(markerTimers[team]);
-      }
-      const missionId = criminalMissionMap.get(team);
-      let crypticText = '';
-      if (missionId) {
-        const mission = DEFAULT_MISSIONS.find(m => m.id === missionId);
-        if (mission) crypticText = mission.cryptic || '';
-      }
-      const popupContent = `
-        <strong>${team}</strong><br>
-        📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}<br>
-        ${crypticText ? `📜 ${crypticText}` : 'Geen actieve missie'}
-      `;
-      const marker = L.marker([lat, lng]).addTo(map)
-        .bindPopup(popupContent);
-      markers[team] = marker;
-      markerTimers[team] = setTimeout(() => {
-        if (markers[team]) {
-          map.removeLayer(markers[team]);
-          delete markers[team];
-        }
-      }, 30000);
-    }
-
-    // ----- Ping display interval (toont willekeurig pings met 30s-3min interval) -----
-    function schedulePingDisplay() {
-      if (pingDisplayTimer) clearTimeout(pingDisplayTimer);
-      const interval = Math.floor(Math.random() * (3 * 60 * 1000 - 30 * 1000) + 30 * 1000);
-      pingDisplayTimer = setTimeout(() => {
-        if (!gameStarted) return;
-        const latest = Object.values(latestPings);
-        for (const ping of latest) {
-          get(ref(db, `klassen/${className}/players/${ping.teamName}`)).then(snap => {
-            const player = snap.val();
-            if (player && player.role === 'criminal' && !player.isArrested && !player.extractReached) {
-              showPinpoint(ping.teamName, ping.latitude, ping.longitude);
-            }
-          });
-        }
-        schedulePingDisplay();
-      }, interval);
-    }
-
-    // ----- Game status -----
-    const gameStatusRef = ref(db, `klassen/${className}/game/status`);
-    onValue(gameStatusRef, (snapshot) => {
-      const status = snapshot.val();
-      if (status === 'running') {
-        gameStarted = true;
-        waitingMsg.classList.add('hidden');
-        if (!pingDisplayTimer) schedulePingDisplay();
+    loadMissionsFromDB().then(() => {
+      const list = document.getElementById('activeMissionsList');
+      if (missionOrder.length === 0) {
+        list.innerHTML = '<div style="color:#8899aa;">Geen missies.</div>';
       } else {
-        gameStarted = false;
-        waitingMsg.classList.remove('hidden');
-        if (pingDisplayTimer) {
-          clearTimeout(pingDisplayTimer);
-          pingDisplayTimer = null;
-        }
-      }
-    });
-
-    // ----- HUNTER CHAT -----
-    const chatsRef = ref(db, `klassen/${className}/chats`);
-    const hunterChatMessages = document.getElementById('hunterChatMessages');
-    const hunterChatInput = document.getElementById('hunterChatInput');
-    const hunterChatSendBtn = document.getElementById('hunterChatSendBtn');
-
-    onValue(chatsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) {
-        hunterChatMessages.innerHTML = '<div style="color:#8899aa;">Geen berichten.</div>';
-        return;
-      }
-      let html = '';
-      const keys = Object.keys(data).sort((a,b) => data[a].timestamp - data[b].timestamp);
-      for (const key of keys) {
-        const msg = data[key];
-        html += `
-          <div class="chat-message">
-            <span class="sender">${msg.sender || 'Onbekend'}:</span>
-            <span>${msg.text}</span>
-            <span class="time">${new Date(msg.timestamp).toLocaleTimeString()}</span>
-          </div>
-        `;
-      }
-      hunterChatMessages.innerHTML = html || '<div style="color:#8899aa;">Geen berichten.</div>';
-      hunterChatMessages.scrollTop = hunterChatMessages.scrollHeight;
-    });
-
-    hunterChatSendBtn.addEventListener('click', async () => {
-      const text = hunterChatInput.value.trim();
-      if (!text) return;
-      await push(chatsRef, {
-        sender: teamName + ' (H)',
-        text: text,
-        timestamp: getTimestamp()
-      });
-      hunterChatInput.value = '';
-    });
-    hunterChatInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') hunterChatSendBtn.click();
-    });
-
-    // ----- CRIMINELEN LIJST -----
-    onValue(playersRef, async (snapshot) => {
-      const data = snapshot.val();
-      const list = document.getElementById('criminalList');
-      if (!data) {
-        list.innerHTML = '<div style="color:#8899aa;">Geen spelers.</div>';
-        return;
-      }
-      let html = '';
-      for (const [name, player] of Object.entries(data)) {
-        if (player.role !== 'criminal') continue;
-        const status = player.isArrested ? '⛓️ Gearresteerd' : (player.extractReached ? '✅ Ontsnapt!' : '🏃 Op de vlucht');
-        html += `
-          <div class="ping-item" style="border-left-color: ${player.isArrested ? '#6c757d' : (player.extractReached ? '#28a745' : '#dc3545')};">
-            <strong>${name}</strong> - ${status}
-            ${player.isArrested && player.misdrijf ? `<br><span style="font-size:0.8rem;color:#8899aa;">Misdrijf: ${player.misdrijf}</span>` : ''}
-          </div>
-        `;
-      }
-      list.innerHTML = html || '<div style="color:#8899aa;">Geen criminelen gevonden.</div>';
-    });
-
-    // ----- ARRESTATIE (drie velden) -----
-    const arrestCriminalInput = document.getElementById('arrestCriminalInput');
-    const arrestMisdrijfInput = document.getElementById('arrestMisdrijfInput');
-    const arrestBewijsInput = document.getElementById('arrestBewijsInput');
-    const arrestBtn = document.getElementById('arrestBtn');
-    const arrestStatus = document.getElementById('arrestStatus');
-
-    arrestBtn.addEventListener('click', async () => {
-      const criminal = arrestCriminalInput.value.trim();
-      const misdrijf = arrestMisdrijfInput.value.trim();
-      const bewijs = arrestBewijsInput.value.trim();
-
-      if (!criminal || !misdrijf || !bewijs) {
-        setStatus(arrestStatus, '❌ Vul alle drie de velden in.', 'error');
-        return;
-      }
-
-      if (!gameStarted) {
-        setStatus(arrestStatus, '⏳ Het spel is nog niet gestart!', 'warning');
-        return;
-      }
-
-      try {
-        const snapshot = await get(ref(db, `klassen/${className}/players/${criminal}`));
-        if (!snapshot.exists()) {
-          setStatus(arrestStatus, '❌ Speler niet gevonden.', 'error');
-          return;
-        }
-        const player = snapshot.val();
-        if (player.role !== 'criminal') {
-          setStatus(arrestStatus, '❌ Dit is geen crimineel.', 'error');
-          return;
-        }
-        if (player.isArrested) {
-          setStatus(arrestStatus, '⚠️ Deze crimineel is al gearresteerd.', 'warning');
-          return;
-        }
-        if (player.extractReached) {
-          setStatus(arrestStatus, '⚠️ Deze crimineel is al ontsnapt!', 'warning');
-          return;
-        }
-
-        await update(ref(db, `klassen/${className}/players/${criminal}`), {
-          isArrested: true,
-          arrestedBy: teamName,
-          arrestedAt: getTimestamp(),
-          misdrijf: misdrijf,
-          bewijsvoering: bewijs
-        });
-
-        await push(ref(db, `klassen/${className}/arrests`), {
-          criminal: criminal,
-          hunter: teamName,
-          misdrijf: misdrijf,
-          bewijsvoering: bewijs,
-          timestamp: getTimestamp()
-        });
-
-        setStatus(arrestStatus, `✅ ${criminal} gearresteerd!`, 'success');
-        arrestCriminalInput.value = '';
-        arrestMisdrijfInput.value = '';
-        arrestBewijsInput.value = '';
-
-        await push(chatsRef, {
-          sender: '🚔 Arrestatie',
-          text: `${teamName} heeft ${criminal} gearresteerd wegens ${misdrijf}.`,
-          timestamp: getTimestamp()
-        });
-
-      } catch (err) {
-        setStatus(arrestStatus, '❌ Fout bij arrestatie: ' + err.message, 'error');
-      }
-    });
-
-    // ----- MISSIES (actief & kaart-pins) -----
-    const missionsRef = ref(db, `klassen/${className}/missions`);
-    const activeMissionsList = document.getElementById('activeMissionsList');
-
-    function updateActiveMissions(playersData, missionsData) {
-      if (!playersData || !missionsData) {
-        activeMissionsList.innerHTML = '<div style="color:#8899aa;">Geen actieve missies.</div>';
-        return;
-      }
-      const activeMissionIds = new Set();
-      const missionTeams = {};
-      for (const [name, player] of Object.entries(playersData)) {
-        if (player.role === 'criminal' && !player.isArrested && !player.extractReached && player.currentMissionId) {
-          activeMissionIds.add(player.currentMissionId);
-          if (!missionTeams[player.currentMissionId]) missionTeams[player.currentMissionId] = [];
-          missionTeams[player.currentMissionId].push(name);
-        }
-      }
-      if (activeMissionIds.size === 0) {
-        activeMissionsList.innerHTML = '<div style="color:#8899aa;">Geen actieve missies.</div>';
-        return;
-      }
-      let html = '';
-      for (const missionId of activeMissionIds) {
-        const mission = missionsData[missionId];
-        if (mission && mission.cryptic) {
-          const teams = missionTeams[missionId] || [];
-          html += `
-            <div class="active-mission-item">
-              <div class="team">${teams.join(', ')}</div>
-              <div class="cryptic">${mission.cryptic}</div>
-            </div>
-          `;
-        }
-      }
-      activeMissionsList.innerHTML = html || '<div style="color:#8899aa;">Geen actieve missies.</div>';
-    }
-
-    onValue(playersRef, (snapshot) => {
-      const playersData = snapshot.val();
-      get(missionsRef).then(missSnap => {
-        const missionsData = missSnap.val();
-        updateActiveMissions(playersData, missionsData);
-      });
-    });
-
-    // Missie-pins op kaart
-    const missionMarkers = {};
-    onValue(missionsRef, (snapshot) => {
-      const missionsData = snapshot.val();
-      if (!missionsData) return;
-      for (const id in missionMarkers) {
-        if (!missionsData[id]) {
-          map.removeLayer(missionMarkers[id]);
-          delete missionMarkers[id];
-        }
-      }
-      for (const [id, mission] of Object.entries(missionsData)) {
-        if (mission.lat && mission.lng) {
-          if (missionMarkers[id]) {
-            missionMarkers[id].setLatLng([mission.lat, mission.lng]);
-            missionMarkers[id].getPopup().setContent(`<strong>OC melding</strong><br>${mission.cryptic || 'Geen cryptische omschrijving'}`);
-          } else {
-            const marker = L.marker([mission.lat, mission.lng]).addTo(map)
-              .bindPopup(`<strong>OC melding</strong><br>${mission.cryptic || 'Geen cryptische omschrijving'}`);
-            missionMarkers[id] = marker;
-          }
-        }
-      }
-    });
-
-    // ----- FOTO's & INCIDENTEN -----
-    const photosRef = ref(db, `klassen/${className}/photos`);
-    const incidentRef = ref(db, `klassen/${className}/incidenten`);
-    const hunterPhotoFeed = document.getElementById('hunterPhotoFeed');
-    const incidentFeed = document.getElementById('incidentFeed');
-    const incidentAlert = document.getElementById('incidentAlert');
-
-    onValue(photosRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) {
-        hunterPhotoFeed.innerHTML = '<div style="color:#8899aa;">Geen foto’s.</div>';
-        return;
-      }
-      let html = '';
-      let hasNewProof = false;
-      const keys = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
-      for (const key of keys) {
-        const photo = data[key];
-        if (photo.type === 'proof' && !photo.alertShown) {
-          hasNewProof = true;
-        }
-        html += `
-          <div class="photo-item">
-            <img src="${photo.imageUrl}" alt="Foto" loading="lazy" />
-            <div class="meta">
-              <span class="uploader">${photo.uploader || 'Onbekend'}</span>
-              <span>${new Date(photo.timestamp).toLocaleString()}</span>
-              ${photo.type === 'proof' ? ' <span style="color:#f0c040;">📜 Bewijs</span>' : ''}
-            </div>
-          </div>
-        `;
-      }
-      hunterPhotoFeed.innerHTML = html || '<div style="color:#8899aa;">Geen foto’s.</div>';
-      if (hasNewProof && !incidentAlertShown && gameStarted) {
-        incidentAlert.style.display = 'block';
-        incidentAlertShown = true;
-        push(chatsRef, {
-          sender: '🚨 Systeem',
-          text: '🚨 Er is een bewijsfoto van een missie geüpload! Verplaats je naar de plaats van het incident!',
-          timestamp: getTimestamp()
-        }).catch(err => console.warn('Chat push failed:', err));
-      }
-    });
-
-    onValue(incidentRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) {
-        incidentFeed.innerHTML = '<div style="color:#8899aa;">Geen incidentmeldingen.</div>';
-        return;
-      }
-      let html = '';
-      const keys = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
-      for (const key of keys) {
-        const inc = data[key];
-        html += `
-          <div class="incident-item">
-            <span class="uploader">${inc.uploader || 'Onbekend'}</span>
-            <span>${inc.text}</span>
-            <span class="time">${new Date(inc.timestamp).toLocaleString()}</span>
-          </div>
-        `;
-      }
-      incidentFeed.innerHTML = html || '<div style="color:#8899aa;">Geen incidentmeldingen.</div>';
-    });
-
-    // ----- OC COMMUNICATIE (naar docent) -----
-    const ocInput = document.getElementById('ocInput');
-    const ocSendBtn = document.getElementById('ocSendBtn');
-    const ocPhotoInput = document.getElementById('ocPhotoInput');
-    const ocUploadBtn = document.getElementById('ocUploadBtn');
-    const ocUploadStatus = document.getElementById('ocUploadStatus');
-
-    ocSendBtn.addEventListener('click', async () => {
-      const text = ocInput.value.trim();
-      if (!text) return;
-      await push(chatsRef, {
-        sender: `📡 OC Melding (${teamName})`,
-        text: text,
-        timestamp: getTimestamp()
-      });
-      ocInput.value = '';
-      setStatus(ocUploadStatus, '✅ Bericht verzonden naar OC.', 'success');
-      setTimeout(() => setStatus(ocUploadStatus, '', 'info'), 3000);
-    });
-
-    async function uploadOCPhoto(file) {
-      if (!file) return;
-      setStatus(ocUploadStatus, '⏳ Uploaden...', 'info');
-      try {
-        const fileName = `${Date.now()}_oc_${file.name}`;
-        const storageReference = storageRef(storage, `klassen/${className}/photos/${fileName}`);
-        await uploadBytes(storageReference, file);
-        const downloadURL = await getDownloadURL(storageReference);
-        await push(photosRef, {
-          uploader: `📡 OC Foto (${teamName})`,
-          imageUrl: downloadURL,
-          timestamp: getTimestamp(),
-          type: 'oc'
-        });
-        setStatus(ocUploadStatus, '✅ Foto naar OC geüpload!', 'success');
-        setTimeout(() => setStatus(ocUploadStatus, '', 'info'), 3000);
-      } catch (err) {
-        setStatus(ocUploadStatus, '❌ Fout: ' + err.message, 'error');
-      }
-    }
-
-    ocUploadBtn.addEventListener('click', () => ocPhotoInput.click());
-    ocPhotoInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) uploadOCPhoto(file);
-      ocPhotoInput.value = '';
-    });
-
-    // ----- Upload foto (algemeen) -----
-    const hunterPhotoInput = document.getElementById('hunterPhotoInput');
-    const hunterUploadBtn = document.getElementById('hunterUploadPhotoBtn');
-    const hunterUploadStatus = document.getElementById('hunterUploadStatus');
-
-    async function hunterUploadPhoto(file) {
-      if (!file) return;
-      setStatus(hunterUploadStatus, '⏳ Uploaden...', 'info');
-      try {
-        const fileName = `${Date.now()}_${file.name}`;
-        const storageReference = storageRef(storage, `klassen/${className}/photos/${fileName}`);
-        await uploadBytes(storageReference, file);
-        const downloadURL = await getDownloadURL(storageReference);
-        await push(photosRef, {
-          uploader: teamName + ' (H)',
-          imageUrl: downloadURL,
-          timestamp: getTimestamp()
-        });
-        setStatus(hunterUploadStatus, '✅ Foto geüpload!', 'success');
-      } catch (err) {
-        setStatus(hunterUploadStatus, '❌ Fout: ' + err.message, 'error');
-      }
-    }
-    hunterUploadBtn.addEventListener('click', () => hunterPhotoInput.click());
-    hunterPhotoInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) hunterUploadPhoto(file);
-      hunterPhotoInput.value = '';
-    });
-
-    document.getElementById('incidentBtn').addEventListener('click', async () => {
-      const text = document.getElementById('incidentInput').value.trim();
-      if (!text) return;
-      await push(incidentRef, {
-        uploader: teamName + ' (H)',
-        text: text,
-        timestamp: getTimestamp()
-      });
-      document.getElementById('incidentInput').value = '';
-    });
-
-    // ----- RDW-check -----
-    const rdwInput = document.getElementById('rdwInput');
-    const rdwBtn = document.getElementById('rdwBtn');
-    const rdwResult = document.getElementById('rdwResult');
-
-    rdwBtn.addEventListener('click', async () => {
-      const kenteken = rdwInput.value.trim().toUpperCase();
-      if (!kenteken) {
-        setStatus(rdwResult, 'Voer een kenteken in.', 'error');
-        rdwResult.classList.remove('hidden');
-        return;
-      }
-      const data = RDW_DATA[kenteken];
-      if (data) {
-        rdwResult.innerHTML = `
-          <div><span class="label">Kenteken:</span> <span class="value">${data.kenteken}</span></div>
-          <div><span class="label">Merk:</span> <span class="value">${data.merk}</span></div>
-          <div><span class="label">Model:</span> <span class="value">${data.model}</span></div>
-          <div><span class="label">Kleur:</span> <span class="value">${data.kleur}</span></div>
-          <div><span class="label">Status:</span> <span class="value">${data.status}</span></div>
-          <div><span class="label">Opmerking:</span> <span class="value">${data.opmerking}</span></div>
-        `;
-        rdwResult.className = 'rdw-result';
-        await push(incidentRef, {
-          uploader: 'RDW-systeem',
-          text: `RDW-check: ${kenteken} -> ${data.merk} ${data.model} (${data.status})`,
-          timestamp: getTimestamp()
-        });
-      } else {
-        rdwResult.innerHTML = `<div class="label">Geen gegevens gevonden voor kenteken ${kenteken}.</div>`;
-        rdwResult.className = 'rdw-result';
-      }
-      rdwResult.classList.remove('hidden');
-    });
-
-    // ----- GETUIGE CHATBOT -----
-    const getuigeChatContainer = document.getElementById('getuigeChatContainer');
-    const getuigeMessages = document.getElementById('getuigeMessages');
-    const getuigeInput = document.getElementById('getuigeInput');
-    const getuigeSendBtn = document.getElementById('getuigeSendBtn');
-    let getuigeCheckInterval = null;
-
-    function startGetuigeCheck() {
-      if (getuigeCheckInterval) clearInterval(getuigeCheckInterval);
-      getuigeCheckInterval = setInterval(() => {
-        if (!gameStarted) return;
-        get(missionsRef).then(snap => {
-          const missions = snap.val();
-          if (!missions) return;
-          navigator.geolocation.getCurrentPosition(pos => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            for (const [id, mission] of Object.entries(missions)) {
-              if (mission.lat && mission.lng) {
-                const dist = getDistanceFromLatLonInMeters(lat, lng, mission.lat, mission.lng);
-                if (dist <= MISSION_RADIUS) {
-                  if (mission.spoor && mission.spoor.includes('Neem het getuigeverhoor af')) {
-                    if (!getuigeActive || getuigeMissionId !== id) {
-                      getuigeData = {
-                        naam: 'Hendrik de Vries',
-                        verhaal: mission.spoor
-                      };
-                      getuigeActive = true;
-                      getuigeMissionId = id;
-                      getuigeChatContainer.classList.remove('hidden');
-                      addGetuigeMessage('getuige', `Hallo, ik ben een getuige. Stel me vragen over wat ik heb gezien.`);
-                      push(incidentRef, {
-                        uploader: 'Getuige',
-                        text: `Getuige ${getuigeData.naam} is gehoord op locatie van missie ${mission.order}.`,
-                        timestamp: getTimestamp()
-                      });
-                    }
-                    break;
-                  }
-                }
-              }
-            }
-          }, err => console.warn('Positie error:', err), { enableHighAccuracy: true });
-        });
-      }, 5000);
-    }
-
-    function addGetuigeMessage(role, text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'message';
-      msgDiv.innerHTML = `<span class="role ${role}">${role === 'getuige' ? '🗣️ Getuige' : '🔫 Hunter'}:</span> ${text}`;
-      getuigeMessages.appendChild(msgDiv);
-      getuigeMessages.scrollTop = getuigeMessages.scrollHeight;
-    }
-
-    getuigeSendBtn.addEventListener('click', () => {
-      const vraag = getuigeInput.value.trim();
-      if (!vraag) return;
-      addGetuigeMessage('hunter', vraag);
-      getuigeInput.value = '';
-      setTimeout(() => {
-        let antwoord = '';
-        if (vraag.toLowerCase().includes('naam')) {
-          antwoord = `Ik heet ${getuigeData.naam}.`;
-        } else if (vraag.toLowerCase().includes('zie') || vraag.toLowerCase().includes('zag')) {
-          antwoord = `Ik zag een groep rennen met een zware man. Ze waren aan het schelden en vloeken.`;
-        } else if (vraag.toLowerCase().includes('auto') || vraag.toLowerCase().includes('kenteken')) {
-          antwoord = `Het was een witte Ford C-Max, kenteken NB616NP.`;
-        } else if (vraag.toLowerCase().includes('richting')) {
-          antwoord = `Ze vertrokken in de richting van Amersfoort.`;
-        } else {
-          antwoord = `Sorry, ik weet het niet precies. Kun je me iets specifiekers vragen?`;
-        }
-        addGetuigeMessage('getuige', antwoord);
-      }, 1000);
-    });
-
-    onValue(gameStatusRef, (snapshot) => {
-      const status = snapshot.val();
-      if (status === 'running' && !getuigeCheckInterval) {
-        startGetuigeCheck();
-      } else if (status !== 'running' && getuigeCheckInterval) {
-        clearInterval(getuigeCheckInterval);
-        getuigeCheckInterval = null;
-        getuigeActive = false;
-        getuigeChatContainer.classList.add('hidden');
-      }
-    });
-
-    // Mission description
-    const missionDescRef = ref(db, `klassen/${className}/game/missionDescription`);
-    onValue(missionDescRef, (snapshot) => {
-      const desc = snapshot.val();
-      document.getElementById('missionDescription').textContent = desc || 
-        'De dieven van de kennis zijn op de vlucht met gestolen examendata. ' +
-        'Ze moeten cryptische raadsels oplossen om de verborgen schatkamer te bereiken. ' +
-        'Hunters, volg hun sporen en onderschep ze voordat de kluis geopend wordt!';
-    });
-
-    // Logout
-    document.getElementById('hunterLogoutBtn').addEventListener('click', () => {
-      if (confirm('Weet je zeker dat je wilt uitloggen?')) {
-        if (pingDisplayTimer) clearTimeout(pingDisplayTimer);
-        if (getuigeCheckInterval) clearInterval(getuigeCheckInterval);
-        logout();
-      }
-    });
-  }
-
-  // ===========================================================================
-  // DOCENT DASHBOARD (met bewerkbare missie-pins)
-  // ===========================================================================
-  function initDocentDashboard(classes) {
-    const primaryClass = classes[0];
-
-    // ---- Kaart initialiseren ----
-    const map = L.map('docentMap').setView([52.0, 5.0], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    const missionMarkers = {};
-    let editMode = false;
-    let gameStatus = 'waiting';
-
-    const toggleBtn = document.getElementById('toggleEditPinsBtn');
-    const editStatus = document.getElementById('editPinsStatus');
-
-    // Luister naar game status (alleen voor de primary class)
-    const gameStatusRef = ref(db, `klassen/${primaryClass}/game/status`);
-    onValue(gameStatusRef, (snapshot) => {
-      gameStatus = snapshot.val() || 'waiting';
-      if (gameStatus === 'running' || gameStatus === 'finished') {
-        if (editMode) toggleEditMode(false);
-        toggleBtn.disabled = true;
-        toggleBtn.style.opacity = '0.5';
-        editStatus.textContent = '(niet beschikbaar tijdens spel)';
-      } else {
-        toggleBtn.disabled = false;
-        toggleBtn.style.opacity = '1';
-        editStatus.textContent = '(alleen in voorbereidingsfase)';
-      }
-    });
-
-    // Laad missies en toon markers (live)
-    const missionsRef = ref(db, `klassen/${primaryClass}/missions`);
-    onValue(missionsRef, (snapshot) => {
-      const missionsData = snapshot.val();
-      if (!missionsData) return;
-      // Update markers
-      for (const [id, mission] of Object.entries(missionsData)) {
-        if (mission.lat && mission.lng) {
-          if (missionMarkers[id]) {
-            const marker = missionMarkers[id];
-            const currentLatLng = marker.getLatLng();
-            if (currentLatLng.lat !== mission.lat || currentLatLng.lng !== mission.lng) {
-              marker.setLatLng([mission.lat, mission.lng]);
-              marker.getPopup().setContent(`<strong>${mission.order}. ${mission.cryptic || 'Missie'}</strong>`);
-            }
-          } else {
-            const marker = L.marker([mission.lat, mission.lng], { draggable: false })
-              .bindPopup(`<strong>${mission.order}. ${mission.cryptic || 'Missie'}</strong>`);
-            if (editMode) marker.dragging.enable();
-            marker.addTo(map);
-            missionMarkers[id] = marker;
-            marker.on('dragend', function(e) {
-              const newPos = marker.getLatLng();
-              update(ref(db, `klassen/${primaryClass}/missions/${id}`), {
-                lat: newPos.lat,
-                lng: newPos.lng
-              }).then(() => {
-                setStatus(editStatus, `✅ Missie ${mission.order} verplaatst!`, 'success');
-                setTimeout(() => {
-                  if (editStatus) editStatus.textContent = '(alleen in voorbereidingsfase)';
-                }, 3000);
-              }).catch(err => {
-                setStatus(editStatus, '❌ Fout bij opslaan: ' + err.message, 'error');
-              });
-            });
-          }
-        }
-      }
-      // Verwijder markers die niet meer bestaan
-      for (const id in missionMarkers) {
-        if (!missionsData[id]) {
-          map.removeLayer(missionMarkers[id]);
-          delete missionMarkers[id];
-        }
-      }
-    });
-
-    // Toggle edit mode
-    function toggleEditMode(enable) {
-      editMode = enable;
-      for (const id in missionMarkers) {
-        const marker = missionMarkers[id];
-        if (enable) {
-          marker.dragging.enable();
-        } else {
-          marker.dragging.disable();
-        }
-      }
-      toggleBtn.textContent = enable ? '🔒 Pins vastzetten' : '✏️ Bewerk pins';
-      toggleBtn.classList.toggle('btn-warning', !enable);
-      toggleBtn.classList.toggle('btn-success', enable);
-      if (editStatus) {
-        if (enable) {
-          editStatus.textContent = '⚠️ Sleep de pins naar de gewenste locatie.';
-          editStatus.style.color = '#f0c040';
-        } else {
-          editStatus.textContent = '(alleen in voorbereidingsfase)';
-          editStatus.style.color = '#8899aa';
-        }
-      }
-    }
-
-    toggleBtn.addEventListener('click', () => {
-      if (toggleBtn.disabled) return;
-      toggleEditMode(!editMode);
-    });
-
-    // ---- Spelbesturing (start, stop, reset) ----
-    const gameStatusDisplay = document.getElementById('gameStatusDisplay');
-    const gameStatusValue = document.getElementById('gameStatusValue');
-    const startBtn = document.getElementById('startGameBtn');
-    const endBtn = document.getElementById('endGameBtn');
-    const resetBtn = document.getElementById('resetGameBtn');
-    const logoutBtn = document.getElementById('docentLogoutBtn');
-
-    if (!gameStatusDisplay || !gameStatusValue || !startBtn || !endBtn || !resetBtn || !logoutBtn) {
-      console.error('Docent DOM-elementen niet gevonden!');
-      return;
-    }
-
-    // Reset
-    resetBtn.addEventListener('click', async () => {
-      if (!confirm('⚠️ Weet je zeker dat je ALLE gegevens van ALLE klassen wilt verwijderen? Dit kan niet ongedaan worden gemaakt!')) return;
-      try {
-        await remove(ref(db, `klassen`));
-        setStatus(gameStatusDisplay, '✅ Alle gegevens gewist.', 'success');
-        gameStatusValue.textContent = '⏳ Gereset';
-      } catch (err) {
-        setStatus(gameStatusDisplay, '❌ Fout bij resetten: ' + err.message, 'error');
-      }
-    });
-
-    // Start
-    startBtn.addEventListener('click', async () => {
-      try {
-        for (const cls of classes) {
-          const gsRef = ref(db, `klassen/${cls}/game/status`);
-          const startTimeRef = ref(db, `klassen/${cls}/game/startTime`);
-          const durationRef = ref(db, `klassen/${cls}/game/duration`);
-          await seedMissionsForClass(cls);
-          await set(gsRef, 'running');
-          await set(startTimeRef, getTimestamp());
-          await set(durationRef, GAME_DURATION);
-        }
-        gameStatusValue.textContent = '🟢 Gestart';
-        setStatus(gameStatusDisplay, 'Spel gestart voor alle klassen!', 'success');
-        if (editMode) toggleEditMode(false);
-      } catch (err) {
-        setStatus(gameStatusDisplay, '❌ Fout bij starten: ' + err.message, 'error');
-      }
-    });
-
-    // Beëindig
-    endBtn.addEventListener('click', async () => {
-      if (!confirm('Weet je zeker dat je het spel voor alle klassen wilt beëindigen?')) return;
-      try {
-        for (const cls of classes) {
-          await set(ref(db, `klassen/${cls}/game/status`), 'finished');
-        }
-        gameStatusValue.textContent = '🔴 Beëindigd';
-        setStatus(gameStatusDisplay, 'Spel beëindigd voor alle klassen.', 'warning');
-        if (editMode) toggleEditMode(false);
-      } catch (err) {
-        setStatus(gameStatusDisplay, '❌ Fout bij beëindigen: ' + err.message, 'error');
-      }
-    });
-
-    // Uitloggen
-    logoutBtn.addEventListener('click', () => {
-      if (confirm('Weet je zeker dat je wilt uitloggen?')) {
-        logout();
-      }
-    });
-
-    // Timer
-    if (classes.length > 0) {
-      updateTimer('docentTimerValue', classes[0]);
-      setInterval(() => updateTimer('docentTimerValue', classes[0]), 1000);
-    }
-
-    async function seedMissionsForClass(cls) {
-      const missionsRef = ref(db, `klassen/${cls}/missions`);
-      const snapshot = await get(missionsRef);
-      if (!snapshot.exists()) {
-        for (const mission of DEFAULT_MISSIONS) {
-          await set(ref(db, `klassen/${cls}/missions/${mission.id}`), mission);
-        }
-      }
-    }
-
-    // ---- KOLOMMEN (klassenoverzicht) ----
-    const classContainers = [
-      document.getElementById('class1Content'),
-      document.getElementById('class2Content'),
-      document.getElementById('class3Content')
-    ];
-
-    classes.forEach((cls, idx) => {
-      const container = classContainers[idx];
-      if (!container) return;
-      const title = container.querySelector('h3');
-      if (title) title.textContent = `Klas ${cls}`;
-
-      const statusDiv = container.querySelector('.class-status');
-      const playersDiv = container.querySelector('.class-players');
-
-      const gsRef = ref(db, `klassen/${cls}/game/status`);
-      onValue(gsRef, (snapshot) => {
-        const status = snapshot.val();
-        if (statusDiv) {
-          statusDiv.textContent = `Status: ${status === 'running' ? '🟢 Actief' : status === 'finished' ? '🔴 Beëindigd' : '⏳ Wachten'}`;
-          statusDiv.style.color = status === 'running' ? '#6bff6b' : status === 'finished' ? '#ff6b6b' : '#f0c040';
-        }
-      });
-
-      const playersRef = ref(db, `klassen/${cls}/players`);
-      onValue(playersRef, (snapshot) => {
-        const data = snapshot.val();
-        if (!data) {
-          playersDiv.innerHTML = 'Geen spelers.';
-          return;
-        }
         let html = '';
-        for (const [name, player] of Object.entries(data)) {
-          const role = player.role === 'criminal' ? '🔫 Crimineel' : '🕵️ Hunter';
-          const status = player.isArrested ? '⛓️ Gearresteerd' : (player.extractReached ? '✅ Ontsnapt' : '🏃 Actief');
-          let extra = '';
-          if (player.isArrested && player.misdrijf) {
-            extra = `<br><span style="font-size:0.7rem;color:#8899aa;">Misdrijf: ${player.misdrijf}</span>`;
+        missionOrder.forEach((id, idx) => {
+          const m = missionsMap[id];
+          if (m) {
+            html += `<div class="active-mission-item"><span class="team">${idx+1}. ${m.cryptic}</span></div>`;
           }
-          html += `
-            <div class="player">
-              <span><strong>${name}</strong> <span class="role">(${role})</span></span>
-              <span class="status">${status}${extra}</span>
-            </div>
-          `;
-        }
-        playersDiv.innerHTML = html || 'Geen spelers.';
-      });
-
-      // Docent chat per klas
-      const chatMessagesDiv = document.getElementById(`docentChat${idx+1}`);
-      const chatInput = document.getElementById(`docentChatInput${idx+1}`);
-      const chatSendBtn = document.getElementById(`docentChatSend${idx+1}`);
-
-      if (chatMessagesDiv) {
-        const chatsRef = ref(db, `klassen/${cls}/chats`);
-        onValue(chatsRef, (snapshot) => {
-          const data = snapshot.val();
-          if (!data) {
-            chatMessagesDiv.innerHTML = 'Geen berichten.';
-            return;
-          }
-          let html = '';
-          const keys = Object.keys(data).sort((a,b) => data[a].timestamp - data[b].timestamp);
-          for (const key of keys) {
-            const msg = data[key];
-            const senderClass = msg.sender && msg.sender.includes('Docent') ? 'docent-sender' : 'sender';
-            html += `
-              <div class="msg">
-                <span class="${senderClass}">${msg.sender || 'Onbekend'}:</span>
-                <span>${msg.text}</span>
-                <span style="color:#667788;font-size:0.6rem;">${new Date(msg.timestamp).toLocaleTimeString()}</span>
-              </div>
-            `;
-          }
-          chatMessagesDiv.innerHTML = html || 'Geen berichten.';
-          chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         });
+        list.innerHTML = html;
       }
+      setInitialActiveMission();
+    });
 
-      if (chatSendBtn && chatInput) {
-        chatSendBtn.addEventListener('click', async () => {
-          const text = chatInput.value.trim();
-          if (!text) return;
-          const chatsRef = ref(db, `klassen/${cls}/chats`);
-          await push(chatsRef, {
-            sender: '🎓 Docent',
-            text: text,
-            timestamp: getTimestamp()
+    updateTimer('hunterTimerValue', className); setInterval(()=>updateTimer('hunterTimerValue', className), 1000);
+    document.getElementById('hunterTeamName').textContent = teamName + ' ('+className+')';
+    if(navigator.geolocation) watchPositionIdHunter = navigator.geolocation.watchPosition(pos => { hunterPosition = { lat:pos.coords.latitude, lng:pos.coords.longitude }; document.getElementById('hunterPosition').textContent = hunterPosition.lat.toFixed(4)+', '+hunterPosition.lng.toFixed(4); }, err=>console.warn('GPS:',err), {enableHighAccuracy:true,maximumAge:10000});
+    const map = L.map('hunterMap').setView([52.13,5.366],14); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    const markers = {}, markerTimers = {}, latestPings = {}, waitingMsg = document.getElementById('hunterWaitingMessage'), chatsRef = ref(db,`klassen/${className}/chats`), playersRef = ref(db,`klassen/${className}/players`), criminalMissionMap = new Map();
+    let hunterMarker;
+    const redIcon = L.divIcon({ className: 'hunter-red-dot', iconSize: [12,12], iconAnchor: [6,6] });
+    const completedMissionMarkers = L.layerGroup().addTo(map);
+    let processedEvents = new Set();
+
+    // ---- Luister naar hunters events (mission_started, mission_completed, auto_advance) ----
+    onValue(ref(db, `klassen/${className}/hunters`), (snap) => {
+      const data = snap.val();
+      if (!data) return;
+      for (const [key, event] of Object.entries(data)) {
+        if (processedEvents.has(key)) continue;
+        processedEvents.add(key);
+
+        if (event.type === 'mission_started' && event.mission) {
+          updateOperationeelCentrum(event.mission);
+        }
+
+        if (event.type === 'mission_completed' && event.lat && event.lng) {
+          const marker = L.marker([event.lat, event.lng], {
+            icon: L.divIcon({ className: 'completed-mission-marker', html: '✅', iconSize: [24,24], iconAnchor: [12,12] })
+          }).addTo(completedMissionMarkers)
+            .bindPopup(`✅ Missie volbracht door ${event.team}<br>Mission: ${event.mission}`);
+          push(ref(db, `klassen/${className}/chats`), {
+            sender: '📋 Voltooide missie',
+            text: `Team ${event.team} heeft missie ${event.mission} voltooid op locatie ${event.lat.toFixed(4)}, ${event.lng.toFixed(4)}`,
+            timestamp: getTimestamp(),
+            isSystem: true
           });
-          chatInput.value = '';
-        });
-        chatInput.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') chatSendBtn.click();
-        });
+        }
+
+        // ---- NIEUW: auto_advance afhandelen ----
+        if (event.type === 'auto_advance' && event.lat && event.lng) {
+          const marker = L.marker([event.lat, event.lng], {
+            icon: L.divIcon({ className: 'auto-advance-marker', html: '⏱️', iconSize: [24,24], iconAnchor: [12,12] })
+          }).addTo(completedMissionMarkers)
+            .bindPopup(`⏱️ Missie overgeslagen door ${event.team}<br>Mission: ${event.mission}`);
+          push(ref(db, `klassen/${className}/chats`), {
+            sender: '⏱️ Auto-advance',
+            text: `Team ${event.team} heeft missie ${event.mission} niet op tijd voltooid. Locatie: ${event.lat.toFixed(4)}, ${event.lng.toFixed(4)}`,
+            timestamp: getTimestamp(),
+            isSystem: true
+          });
+        }
       }
     });
+
+    setInterval(()=>{
+      if(hunterPosition){
+        if(hunterMarker) hunterMarker.setLatLng([hunterPosition.lat, hunterPosition.lng]);
+        else hunterMarker = L.marker([hunterPosition.lat, hunterPosition.lng], { icon: redIcon }).addTo(map).bindPopup('Jouw positie');
+      }
+    }, 3000);
+
+    onValue(playersRef, snap => { const d = snap.val(); if(!d) return; for(const [n,p] of Object.entries(d)) if(p.role==='criminal') criminalMissionMap.set(n, p.currentMissionId||null); });
+    onValue(ref(db,`klassen/${className}/pings`), snap => {
+      const d = snap.val(); const list = document.getElementById('pingList');
+      if(!d) { list.innerHTML = '<div style="color:#8899aa;">Geen pings</div>'; return; }
+      for(const k of Object.keys(d)) { const p = d[k]; if(!latestPings[p.teamName] || p.timestamp > latestPings[p.teamName].timestamp) latestPings[p.teamName] = p; }
+      let html = '';
+      for(const p of Object.values(latestPings).sort((a,b)=>b.timestamp-a.timestamp)) {
+        const mid = criminalMissionMap.get(p.teamName);
+        let cryptic = '';
+        if(mid) {
+          const m = missionsMap[mid];
+          if(m) cryptic = m.cryptic||'';
+        }
+        html += `<div class="ping-item"><strong>${p.teamName}</strong> 📍 ${p.latitude.toFixed(4)},${p.longitude.toFixed(4)} <span style="color:#667788;font-size:0.7rem;">${new Date(p.timestamp).toLocaleTimeString()}</span>${cryptic?`<span class="cryptic">📜 ${cryptic}</span>`:''}</div>`;
+      }
+      list.innerHTML = html || '<div style="color:#8899aa;">Geen pings</div>';
+    });
+    function showPinpoint(team, lat, lng) { if(markers[team]){map.removeLayer(markers[team]);clearTimeout(markerTimers[team]);} const mid = criminalMissionMap.get(team); let c=''; if(mid){const m = missionsMap[mid]; if(m)c=m.cryptic||'';} const mk = L.marker([lat,lng]).addTo(map).bindPopup(`<strong>${team}</strong><br>📍 ${lat.toFixed(6)},${lng.toFixed(6)}${c?`<br>📜 ${c}`:''}`); markers[team]=mk; markerTimers[team]=setTimeout(()=>{if(markers[team]){map.removeLayer(markers[team]);delete markers[team];}},30000); }
+    function schedulePingDisplay() { if(pingDisplayTimer) clearTimeout(pingDisplayTimer); pingDisplayTimer = setTimeout(() => { if(!gameStarted) return; for(const p of Object.values(latestPings)){ get(ref(db,`klassen/${className}/players/${p.teamName}`)).then(s=>{ const pl = s.val(); if(pl&&pl.role==='criminal'&&!pl.isArrested&&!pl.extractReached) showPinpoint(p.teamName, p.latitude, p.longitude); }); } schedulePingDisplay(); }, Math.floor(Math.random()*150000+30000)); }
+    onValue(ref(db,`klassen/${className}/game/status`), snap => {
+      if(snap.val()==='running'){ gameStarted=true; waitingMsg.classList.add('hidden'); if(!pingDisplayTimer) schedulePingDisplay(); startProximityCheck(); }
+      else { gameStarted=false; waitingMsg.classList.remove('hidden'); if(pingDisplayTimer){clearTimeout(pingDisplayTimer);pingDisplayTimer=null;} if(proximityCheckInterval){clearInterval(proximityCheckInterval);proximityCheckInterval=null;} }
+    });
+
+    // ---- OC Communicatie ----
+    document.getElementById('ocSendBtn').addEventListener('click',async()=>{
+      const t=document.getElementById('ocInput').value.trim();
+      if(!t) return;
+      await push(chatsRef,{sender:`📡 OC (${teamName})`,text:t,timestamp:getTimestamp()});
+      document.getElementById('ocInput').value='';
+    });
+
+    // ---- AANGEPASTE RDW-CHECK ----
+    document.getElementById('rdwBtn').addEventListener('click', () => {
+      const k = document.getElementById('rdwInput').value.trim().toUpperCase();
+      const r = document.getElementById('rdwResult');
+      if (!k) {
+        r.innerHTML = 'Voer een geldig kenteken in.';
+        r.classList.remove('hidden');
+        return;
+      }
+      const d = RDW_DATA[k];
+      if (d) {
+        r.innerHTML = `<strong>${d.kenteken}</strong> | ${d.merk} ${d.model} (${d.kleur}) | ${d.status}`;
+      } else {
+        r.innerHTML = `Kenteken <strong>${k}</strong> staat als gestolen genoteerd in het RDW-systeem.`;
+      }
+      r.classList.remove('hidden');
+    });
+
+    // ---- Criminelen lijst en arrestatie ----
+    onValue(playersRef, async snap => { const d=snap.val(); const list=document.getElementById('criminalList'); if(!d){list.innerHTML='<div style="color:#8899aa;">Geen spelers.</div>';return;} let h=''; for(const[n,p]of Object.entries(d)){if(p.role!=='criminal')continue; const s=p.isArrested?'⛓️ Gearresteerd':(p.extractReached?'✅ Ontsnapt!':'🏃 Op de vlucht'); h+=`<div class="ping-item" style="border-left-color:${p.isArrested?'#6c757d':(p.extractReached?'#28a745':'#dc3545')};"><strong>${n}</strong> - ${s}${p.isArrested&&p.misdrijf?`<br><span style="font-size:0.8rem;color:#8899aa;">Misdrijf: ${p.misdrijf}</span>`:''}</div>`;} list.innerHTML=h||'<div style="color:#8899aa;">Geen criminelen.</div>'; });
+    document.getElementById('arrestBtn').addEventListener('click',async()=>{const crim=document.getElementById('arrestCriminalInput').value.trim(),mis=document.getElementById('arrestMisdrijfInput').value.trim(),bew=document.getElementById('arrestBewijsInput').value.trim();if(!crim||!mis||!bew)return;if(!gameStarted){setStatus(document.getElementById('arrestStatus'),'⏳ Spel niet gestart!','warning');return;}const snap=await get(ref(db,`klassen/${className}/players/${crim}`));if(!snap.exists()||snap.val().role!=='criminal'||snap.val().isArrested)return;await update(ref(db,`klassen/${className}/players/${crim}`),{isArrested:true,arrestedBy:teamName,arrestedAt:getTimestamp(),misdrijf:mis,bewijsvoering:bew});await push(ref(db,`klassen/${className}/arrests`),{criminal:crim,hunter:teamName,misdrijf:mis,bewijsvoering:bew,timestamp:getTimestamp()});document.getElementById('arrestCriminalInput').value='';document.getElementById('arrestMisdrijfInput').value='';document.getElementById('arrestBewijsInput').value='';});
+
+    document.getElementById('hunterLogoutBtn').addEventListener('click', ()=>{ if(confirm('Uitloggen?')) logout(); });
   }
 
-  // ===========================================================================
-  // START
-  // ===========================================================================
   showScreen('loginScreen');
-  setStatus(loginStatus, 'Kies je klas, rol en log in met de docentencode.', 'info');
 </script>
 </body>
 </html>
