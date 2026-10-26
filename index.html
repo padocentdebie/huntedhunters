@@ -3,465 +3,1045 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🕵️ Hunted - Hunter</title>
+  <title>Hunted Academie – C2000 & Speurtocht</title>
+  
+  <!-- Tailwind CSS & FontAwesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet Kaart CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
   <style>
-    /* Stijlen ongewijzigd, plus nieuwe auto-advance marker */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0e17; color: #e0e0e0; padding: 16px; max-width: 800px; margin: 0 auto; min-height: 100vh; }
-    .container { max-width: 600px; margin: 0 auto; }
-    .card { background: #1a2332; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); border: 1px solid #2a3a4a; }
-    h1 { font-size: 1.8rem; color: #f0c040; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-    h1 small { font-size: 1rem; color: #8899aa; font-weight: normal; }
-    h2 { font-size: 1.3rem; color: #88ccff; margin-bottom: 12px; }
-    .form-group { margin-bottom: 14px; }
-    label { font-weight: 600; display: block; margin-bottom: 4px; color: #aabbcc; }
-    input, select, textarea { width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid #2a3a4a; background: #0d1624; color: #e0e0e0; font-size: 1rem; font-family: inherit; }
-    textarea { resize: vertical; min-height: 80px; }
-    input:focus, textarea:focus { border-color: #4a90d9; outline: none; }
-    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-    .btn:active { transform: scale(0.96); }
-    .btn-primary { background: #4a90d9; color: white; }
-    .btn-primary:hover { background: #357abd; }
-    .btn-success { background: #28a745; color: white; }
-    .btn-success:hover { background: #218838; }
-    .btn-danger { background: #dc3545; color: white; }
-    .btn-danger:hover { background: #c82333; }
-    .btn-warning { background: #f0c040; color: #1a2332; }
-    .btn-warning:hover { background: #d4a830; }
-    .btn-secondary { background: #3a4a5a; color: white; }
-    .btn-secondary:hover { background: #2a3a4a; }
-    .btn-purple { background: #8b5cf6; color: white; }
-    .btn-purple:hover { background: #7c3aed; }
-    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-    .btn-group .btn { flex: 1; }
-    .hidden { display: none !important; }
-    #status { margin-top: 12px; padding: 10px; border-radius: 8px; background: #0d1624; color: #8899aa; font-size: 0.95rem; }
-    #status.error { background: #3d1a1a; color: #ff6b6b; }
-    #status.success { background: #1a3d1a; color: #6bff6b; }
-    #status.warning { background: #3d3a1a; color: #ffd76b; }
-    .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1a2a3a; flex-wrap: wrap; }
-    .info-row .label { color: #8899aa; }
-    .info-row .value { color: #e0e0e0; font-weight: 600; }
-    .ping-list { max-height: 200px; overflow-y: auto; }
-    .ping-item { padding: 6px 10px; background: #0d1624; border-radius: 6px; margin-bottom: 4px; font-size: 0.9rem; border-left: 3px solid #f0c040; }
-    .ping-item .cryptic { color: #d4c0f0; font-style: italic; font-size: 0.85rem; display: block; margin-top: 2px; }
-    .chat-messages { max-height: 200px; overflow-y: auto; background: #0d1624; border-radius: 8px; padding: 10px; margin-bottom: 8px; }
-    .chat-message { padding: 4px 0; border-bottom: 1px solid #1a2a3a; font-size: 0.9rem; }
-    .chat-message .sender { color: #88ccff; font-weight: 600; }
-    .chat-message .time { color: #667788; font-size: 0.7rem; }
-    .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-    .badge-criminal { background: #dc3545; color: white; }
-    .badge-hunter { background: #4a90d9; color: white; }
-    #hunterMap { height: 300px; border-radius: 8px; background: #0d1624; margin-top: 8px; }
-    .mission-box { 
-      background: #0d1624; 
-      padding: 16px; 
-      border-left: 6px solid #8b5cf6; 
-      color: #d4c0f0; 
-      font-style: italic; 
-      font-size: 1.2rem; 
-      line-height: 1.6; 
-      border-radius: 8px;
+    body { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    .lcd-screen {
+      background-color: #55724b;
+      color: #081507;
+      font-family: 'Courier New', Courier, monospace;
+      text-shadow: 1px 1px 0px rgba(255,255,255,0.25);
     }
-    .mission-box strong { color: #f0c040; font-style: normal; }
-    .mission-box .sub { font-size: 0.95rem; color: #aabbcc; font-style: normal; margin-top: 4px; display: block; }
-    .waiting-message { background: #0d1624; border-radius: 8px; padding: 12px; border-left: 4px solid #f0c040; color: #f0c040; text-align: center; font-weight: 600; }
-    .incident-alert { background: #2a1a1a; border-radius: 8px; padding: 12px; border-left: 4px solid #ff4444; color: #ff6666; margin-bottom: 12px; display: none; font-weight: 600; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
-    .active-missions-list { max-height: 300px; overflow-y: auto; margin-top: 8px; }
-    .active-mission-item { background: #0d1624; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; border-left: 3px solid #8b5cf6; font-size: 0.9rem; }
-    .active-mission-item .team { color: #88ccff; font-weight: 600; }
-    .active-mission-item .cryptic { color: #d4c0f0; font-style: italic; }
-    .rdw-result { background: #0d1624; border-radius: 6px; padding: 8px 12px; margin-top: 6px; border-left: 3px solid #4a90d9; font-size: 0.9rem; }
-    .proximity-alert { background: #1a2a1a; border-radius: 8px; padding: 16px; border: 2px solid #4caf50; margin-bottom: 12px; animation: proximityGlow 2s infinite; }
-    .proximity-alert h3 { color: #6bff6b; margin-bottom: 8px; font-size: 1.1rem; }
-    .proximity-alert .evidence-image { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-top: 8px; border: 2px solid #3a5a3a; }
-    .proximity-alert .evidence-text { color: #c8e6c9; font-size: 0.9rem; margin-top: 8px; line-height: 1.5; }
-    .proximity-alert .distance-badge { display: inline-block; background: #4caf50; color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; }
-    @keyframes proximityGlow { 0% { box-shadow: 0 0 5px rgba(76,175,80,0.3); } 50% { box-shadow: 0 0 20px rgba(76,175,80,0.6); } 100% { box-shadow: 0 0 5px rgba(76,175,80,0.3); } }
-    #proximityEvidence { margin-top: 12px; }
-    .hunter-red-dot {
-      background: red;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      border: 2px solid white;
-      box-shadow: 0 0 10px red;
+    .ptt-active {
+      background-color: #dc2626 !important;
+      transform: scale(0.97);
+      box-shadow: inset 0 4px 8px rgba(0,0,0,0.5);
     }
-    .completed-mission-marker {
-      background: #28a745;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 2px solid white;
-      text-align: center;
-      line-height: 24px;
-      font-size: 14px;
-      box-shadow: 0 0 10px #28a745;
+    .scanlines {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+      background-size: 100% 3px, 4px 100%;
     }
-    /* Nieuwe marker voor auto-advance */
-    .auto-advance-marker {
-      background: #ff8c00;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 2px solid white;
-      text-align: center;
-      line-height: 24px;
-      font-size: 14px;
-      box-shadow: 0 0 10px #ff8c00;
-    }
+    #map { height: 100%; width: 100%; z-index: 10; }
   </style>
 </head>
-<body>
-<div id="app">
-  <!-- LOGIN -->
-  <div id="loginScreen" class="container">
-    <div class="card">
-      <h1>🕵️ Hunted - Hunter</h1>
-      <p style="color: #8899aa; margin-bottom: 16px;">Kies je klas en teamnaam om te starten.</p>
-      <div class="form-group">
-        <label>Kies je klas</label>
-        <select id="classSelect">
-          <option value="Alpha">Alpha</option><option value="Bravo">Bravo</option><option value="Charlie">Charlie</option>
-          <option value="Delta">Delta</option><option value="Echo">Echo</option><option value="Foxtrot">Foxtrot</option>
-          <option value="Golf">Golf</option><option value="Hotel">Hotel</option>
-          <option value="Juliett">Juliett</option><option value="Kilo">Kilo</option><option value="Mike">Mike</option>
-        </select>
+<body class="bg-slate-900 text-slate-100 min-h-screen pb-20 font-sans select-none antialiased flex flex-col justify-between">
+
+  <!-- =========================================================================
+       INLOGMODAL: KLAS & ROL KEUZE
+       ========================================================================= -->
+  <div id="login-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl text-slate-100 space-y-4">
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 text-2xl font-black inline-flex items-center justify-center shadow">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h2 class="text-base font-black tracking-wide uppercase text-amber-400">Hunted Academie Game</h2>
+        <p class="text-xs text-slate-400">Log in met jouw klas en taakverdeling</p>
       </div>
-      <div class="form-group">
-        <label>Teamnaam / Gebruikersnaam</label>
-        <input type="text" id="usernameInput" placeholder="Bijv. Team Alpha" />
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">1. Kies jouw Klas:</label>
+          <select id="login-class-select" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs font-bold text-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500">
+            <!-- Gevuld via JS met Alpha t/m Mike -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">2. Kies jouw Rol:</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="btn-role-rapporteur" onclick="selectLoginRole('rapporteur')" class="py-2.5 px-3 rounded-xl border-2 border-blue-500 bg-blue-950/50 text-blue-300 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+              🏃 Rapporteur (7x)
+            </button>
+            <button type="button" id="btn-role-oc" onclick="selectLoginRole('oc')" class="py-2.5 px-3 rounded-xl border-2 border-slate-700 bg-slate-800 text-slate-400 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+              🎧 OC / Meldkamer (1x)
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">3. Roepnummer / Naam:</label>
+          <input type="text" id="login-user-name" placeholder="bijv. Eenheid 3.1 of OC-Regie" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+        </div>
       </div>
-      <button class="btn btn-primary" id="loginBtn" style="width:100%;">🚀 Inloggen</button>
-      <div id="loginStatus" style="margin-top:12px;font-size:0.9rem;color:#8899aa;"></div>
+
+      <button onclick="confirmLogin()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition">
+        <i class="fa-solid fa-play"></i> Start Hunted Missie
+      </button>
     </div>
   </div>
 
-  <!-- HUNTER DASHBOARD -->
-  <div id="hunterScreen" class="container hidden">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><h1 style="font-size:1.4rem;">🔫 Hunter</h1><span class="badge badge-hunter" id="hunterStatusBadge">Op jacht</span></div>
-      <div class="info-row"><span class="label">Team:</span><span class="value" id="hunterTeamName">-</span></div>
-      <div class="info-row"><span class="label">⏱️ Resterende tijd:</span><span class="value" id="hunterTimerValue">--:--</span></div>
-      <div class="info-row"><span class="label">📍 Jouw positie:</span><span class="value" id="hunterPosition">--</span></div>
+  <!-- =========================================================================
+       TOPBAR & STATUS
+       ========================================================================= -->
+  <header class="bg-slate-800/90 backdrop-blur border-b border-slate-700 px-3 py-2 flex items-center justify-between sticky top-0 z-40">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <div>
+        <div class="text-[11px] font-black tracking-wide text-white flex items-center gap-1.5">
+          <span id="topbar-class-badge" class="bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded text-[10px] font-mono border border-amber-500/30">KLAS</span>
+          <span id="topbar-role-badge" class="text-slate-300 font-bold">ROL</span>
+        </div>
+      </div>
     </div>
-    <div id="hunterWaitingMessage" class="card hidden"><div class="waiting-message">⏳ Wachten tot de docent het spel start...</div></div>
-    <div id="proximityEvidence" class="hidden"></div>
-    <div class="card"><h2>🕵️ Operationeel Centrum</h2>
-      <div id="missionDescription" class="mission-box">⏳ Er is nog geen actieve missie gestart...</div>
+
+    <!-- Timer & GPS info -->
+    <div class="flex items-center gap-3">
+      <div class="text-right">
+        <span class="text-[9px] text-slate-400 block font-mono">RESTERENDE TIJD</span>
+        <span id="game-timer" class="text-xs font-black text-amber-400 font-mono">60:00</span>
+      </div>
+      <button onclick="openSimulationModal()" title="GPS Simulatiewerkbalk" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs px-2 py-1 rounded border border-slate-600">
+        <i class="fa-solid fa-location-crosshairs"></i>
+      </button>
     </div>
-    <div class="card"><h2>📋 Actieve missies (cryptisch)</h2><div id="activeMissionsList" class="active-missions-list"><div style="color:#8899aa;">Geen actieve missies.</div></div></div>
-    <div class="card"><h2>🗺️ Locaties</h2><div id="hunterMap"></div></div>
-    <div class="card"><h2>📡 Locatie-pings van criminelen</h2><div id="pingList" class="ping-list">Geen pings ontvangen.</div></div>
-    <!-- INCIDENTENBORD VERWIJDERD -->
-    <div class="card"><h2>🚗 RDW‑check</h2><div style="display:flex;gap:8px;"><input type="text" id="rdwInput" placeholder="Voer kenteken in (bv. NB616NP)" style="flex:1;" /><button class="btn btn-primary" id="rdwBtn">🔍 Check</button></div><div id="rdwResult" class="rdw-result hidden"></div></div>
-    <!-- 💬 Chat verwijderd, alleen OC communicatie behouden -->
-    <div class="card"><h2>📨 Communicatie naar OC (docent)</h2><div style="display:flex;gap:8px;margin-bottom:8px;"><input type="text" id="ocInput" placeholder="Bericht naar OC..." style="flex:1;" /><button class="btn btn-purple" id="ocSendBtn">📤 Stuur</button></div></div>
-    <div class="card">
-      <h2>🚔 Criminelen</h2>
-      <div id="criminalList">Geen criminelen gevonden.</div>
-      <div class="form-group" style="margin-top:12px;"><label>Teamnaam van crimineel</label><input type="text" id="arrestCriminalInput" placeholder="Bijv. Team Zwart" /></div>
-      <div class="form-group"><label>Misdrijf</label><input type="text" id="arrestMisdrijfInput" placeholder="Bijv. Diefstal, heling..." /></div>
-      <div class="form-group"><label>Bewijsvoering</label><textarea id="arrestBewijsInput" placeholder="Beschrijf de bewijzen..." rows="3"></textarea></div>
-      <button class="btn btn-danger" id="arrestBtn" style="width:100%;">⛓️ Arresteer</button>
-      <div id="arrestStatus" style="margin-top:8px;font-size:0.9rem;color:#8899aa;"></div>
+  </header>
+
+  <!-- =========================================================================
+       HOOFDSCHERMEN (TABS)
+       ========================================================================= -->
+  <main class="flex-1 max-w-md w-full mx-auto p-3 overflow-y-auto">
+
+    <!-- -----------------------------------------------------------------------
+         TAB 1: LEAFLET KAART & GPS
+         ----------------------------------------------------------------------- -->
+    <section id="view-map" class="space-y-3">
+      <!-- Kaart Container -->
+      <div class="relative w-full h-[360px] rounded-2xl overflow-hidden border-2 border-slate-700 shadow-xl bg-slate-950">
+        <div id="map"></div>
+        
+        <!-- Live GPS Overlay Badge -->
+        <div class="absolute bottom-2 left-2 z-20 bg-slate-900/90 border border-slate-700 text-white p-2 rounded-xl text-[10px] font-mono shadow backdrop-blur">
+          <div><i class="fa-solid fa-satellite text-emerald-400 mr-1"></i> <span id="gps-status-label">GPS: Zoeken...</span></div>
+          <div id="distance-badge" class="text-amber-300 font-bold mt-0.5">Afstand tot doel: -- m</div>
+        </div>
+      </div>
+
+      <!-- Proximity Trigger Status Card -->
+      <div id="proximity-card" class="bg-slate-800 p-3 rounded-2xl border border-slate-700 space-y-2">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-amber-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-radar text-amber-500 animate-pulse"></i> LOCATIEDETECTIE (10M RADIUS)
+          </span>
+          <span id="proximity-badge" class="bg-slate-700 text-slate-300 text-[10px] px-2 py-0.5 rounded-full font-mono">Buiten bereik</span>
+        </div>
+        <p id="proximity-instruction" class="text-xs text-slate-300">
+          Beweeg richting de coördinaten van de actieve melding. Bewijsmateriaal ontgrendelt automatisch binnen 10 meter.
+        </p>
+      </div>
+
+      <!-- Ontgrendeld Bewijsmateriaal Container (Zichtbaar binnen 10 meter) -->
+      <div id="evidence-container" class="hidden bg-slate-800 p-3 rounded-2xl border-2 border-emerald-500 shadow-xl space-y-2">
+        <div class="flex justify-between items-center text-xs text-emerald-400 font-bold border-b border-slate-700 pb-1">
+          <span><i class="fa-solid fa-unlock-keyhole"></i> TER PLAATSE: BEWIJS ONTGRENDELD</span>
+          <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">&lt; 10M</span>
+        </div>
+        <div id="evidence-media" class="space-y-2"></div>
+        <button onclick="navigateToTab('mutatie')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition">
+          <i class="fa-solid fa-pen-to-square"></i> Stel Ter Plaatse Mutatie Op
+        </button>
+      </div>
+    </section>
+
+    <!-- -----------------------------------------------------------------------
+         TAB 2: C2000 PORTOFOON (VOLLEDIGE CORE ARCHITECTUUR)
+         ----------------------------------------------------------------------- -->
+    <section id="view-porto" class="hidden space-y-3">
+      <div class="bg-slate-800 rounded-3xl p-4 border-2 border-slate-700 shadow-xl relative text-slate-100">
+        <div class="w-3.5 h-7 bg-slate-700 absolute -top-7 left-8 rounded-t border-t border-slate-500"></div>
+
+        <!-- Speaker grill -->
+        <div class="flex justify-center gap-1 mb-2">
+          <div class="w-8 h-1 bg-slate-900 rounded-full"></div>
+          <div class="w-12 h-1 bg-slate-900 rounded-full"></div>
+          <div class="w-8 h-1 bg-slate-900 rounded-full"></div>
+        </div>
+
+        <!-- LCD Scherm -->
+        <div class="lcd-screen rounded-xl p-3 mb-3 border-2 border-slate-600 shadow-inner flex flex-col justify-between min-h-[115px]">
+          <div class="flex justify-between items-center text-[10px] font-black border-b border-slate-900/20 pb-1">
+            <span id="lcd-channel-label">CH: ALPHA</span>
+            <span id="lcd-status-label">● STAND-BY</span>
+          </div>
+          <div class="py-2 text-center">
+            <div id="lcd-main-title" class="text-xs font-black tracking-wider uppercase leading-tight">KANAAL OPEN</div>
+            <div id="lcd-sub-title" class="text-[10px] font-bold mt-0.5 opacity-85">Houd PTT ingedrukt</div>
+          </div>
+          <div class="flex justify-between items-center text-[9px] pt-1 border-t border-slate-900/20 font-bold">
+            <span id="lcd-role-label">ROL: RAPPORTEUR</span>
+            <span id="lcd-cas-label">CASUS: 1/7</span>
+          </div>
+        </div>
+
+        <!-- PTT Knop -->
+        <div class="space-y-1">
+          <button id="btn-ptt" class="w-full bg-amber-600 hover:bg-amber-500 active:bg-red-600 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition select-none cursor-pointer">
+            <i class="fa-solid fa-microphone text-base"></i>
+            <span id="ptt-label">HOUD INGEDRUKT OM TE PRATEN (PTT)</span>
+          </button>
+          <div class="text-[9px] text-center text-slate-400">
+            Microfoon zendt direct uit naar jouw hele klas
+          </div>
+        </div>
+
+        <!-- OC Dispatch Box (Alleen zichtbaar voor OC) -->
+        <div id="oc-dispatch-panel" class="hidden mt-3 pt-3 border-t border-slate-700 space-y-2">
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs space-y-1">
+            <span class="text-amber-400 font-bold block text-[10px] uppercase">
+              <i class="fa-solid fa-bullhorn mr-1"></i> OC Zendinstructie:
+            </span>
+            <p id="oc-spreektekst" class="font-mono text-slate-300 text-[11px] italic"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -----------------------------------------------------------------------
+         TAB 3: MUTATIE & OC CONTROLEPOST
+         ----------------------------------------------------------------------- -->
+    <section id="view-mutatie" class="hidden space-y-3">
+      
+      <!-- OC WEERGAVE: Te beoordelen mutaties -->
+      <div id="oc-approval-view" class="hidden space-y-3">
+        <div class="bg-slate-800 p-3 rounded-2xl border border-slate-700 space-y-2">
+          <h2 class="text-xs font-black text-amber-400 uppercase tracking-wide flex items-center gap-1.5">
+            <i class="fa-solid fa-clipboard-check"></i> OC Beoordeling Ter Plaatse Mutatie
+          </h2>
+          <div id="oc-pending-mutation-box" class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs space-y-1 text-slate-300 font-mono">
+            Geen mutatie in behandeling. Wacht op rapporteurs ter plaatse...
+          </div>
+          <button id="btn-approve-mission" onclick="approveCurrentMission()" disabled class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow transition">
+            <i class="fa-solid fa-check-double"></i> Keur Goed &amp; Ontgrendel Volgende Casus
+          </button>
+        </div>
+      </div>
+
+      <!-- RAPPORTEUR WEERGAVE: ASTMA Mutatieformulier -->
+      <div id="rapporteur-form-view" class="space-y-3">
+        <div class="bg-blue-950/40 p-3 rounded-2xl border border-blue-500/40 text-xs text-blue-200">
+          <strong class="text-white block font-bold mb-0.5">Meldkamer informeren:</strong>
+          Geef door wat er ter plaatse is aangetroffen om de missie af te ronden en een nieuwe opdracht te ontvangen.
+        </div>
+
+        <form id="astma-form" onsubmit="submitRapporteurMutation(event)" class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-2.5 text-xs">
+          <div>
+            <label class="block text-slate-300 font-bold mb-1">A – Aanleiding (Melding van OC):</label>
+            <input type="text" id="input-a" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-bold mb-1">S – Situatie (Aantreffen op coördinaat):</label>
+            <input type="text" id="input-s" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-bold mb-1">T – Toedracht (Gevonden bewijs/spoor):</label>
+            <textarea id="input-t" rows="3" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-mono"></textarea>
+          </div>
+          <div>
+            <label class="block text-slate-300 font-bold mb-1">M – Maatregel &amp; A – Afhandeling:</label>
+            <input type="text" id="input-ma" required placeholder="Veiliggesteld, dossier opgemaakt..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white">
+          </div>
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl uppercase tracking-wider flex items-center justify-center gap-1.5 shadow transition">
+            <i class="fa-solid fa-paper-plane"></i> Verzend Naar OC Ter Goedkeuring
+          </button>
+        </form>
+      </div>
+
+    </section>
+
+    <!-- -----------------------------------------------------------------------
+         TAB 4: RDW BEVRAGING TOOL
+         ----------------------------------------------------------------------- -->
+    <section id="view-rdw" class="hidden space-y-3">
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3 text-xs">
+        <div class="flex items-center gap-2 border-b border-slate-700 pb-2">
+          <i class="fa-solid fa-car text-amber-400 text-base"></i>
+          <div>
+            <h2 class="font-bold text-white uppercase">RDW Kentekenregister</h2>
+            <p class="text-[10px] text-slate-400">Verifieer verdachte vluchtvoertuigen</p>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <input type="text" id="rdw-input" placeholder="Bijv. NB616NP" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl p-2 font-mono text-center uppercase font-bold text-amber-300">
+          <button onclick="performRDWLookup()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 rounded-xl text-xs uppercase">
+            Bevragen
+          </button>
+        </div>
+
+        <div id="rdw-result-box" class="hidden p-3 rounded-xl font-mono text-xs border"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       VASTE NAVIGATIE ONDERAAN
+       ========================================================================= -->
+  <nav class="fixed bottom-0 inset-x-0 bg-slate-800/95 backdrop-blur border-t border-slate-700 z-40 px-3 py-1 flex justify-around">
+    <button onclick="navigateToTab('map')" id="nav-map" class="flex flex-col items-center py-1 px-3 rounded-xl text-amber-400 font-bold">
+      <i class="fa-solid fa-map-location-dot text-base"></i>
+      <span class="text-[10px] mt-0.5">Kaart</span>
+    </button>
+    <button onclick="navigateToTab('porto')" id="nav-porto" class="flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-medium">
+      <i class="fa-solid fa-walkie-talkie text-base"></i>
+      <span class="text-[10px] mt-0.5">Porto</span>
+    </button>
+    <button onclick="navigateToTab('mutatie')" id="nav-mutatie" class="flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-medium relative">
+      <i class="fa-solid fa-clipboard-list text-base"></i>
+      <span class="text-[10px] mt-0.5">Mutatie/OC</span>
+      <span id="mutatie-alert-dot" class="w-2 h-2 rounded-full bg-red-500 absolute top-1 right-3 hidden"></span>
+    </button>
+    <button onclick="navigateToTab('rdw')" id="nav-rdw" class="flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-medium">
+      <i class="fa-solid fa-car-rear text-base"></i>
+      <span class="text-[10px] mt-0.5">RDW</span>
+    </button>
+  </nav>
+
+  <!-- MODAL: GPS SIMULATIE (TESTEN BINNENSHUIS) -->
+  <div id="sim-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-4 space-y-3 text-xs text-white">
+      <div class="flex justify-between items-center border-b border-slate-700 pb-1.5">
+        <h3 class="font-bold text-amber-400"><i class="fa-solid fa-satellite-dish mr-1"></i> GPS Simulator (Test-tool)</h3>
+        <button onclick="closeSimulationModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-slate-300 text-[11px]">
+        Sta je binnen of wil je testen zonder te lopen? Teleporteer je positie direct naar de actieve casuscoördinaat:
+      </p>
+      <button onclick="simulateTeleportToTarget()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-2.5 rounded-xl uppercase">
+        📍 Teleporteer naar Casus (< 10 meter)
+      </button>
+      <button onclick="resetSimulation()" class="w-full bg-slate-700 hover:bg-slate-600 font-bold py-2 rounded-xl text-slate-300">
+        Herstel Echte GPS
+      </button>
     </div>
-    <button class="btn btn-danger" id="hunterLogoutBtn" style="width:100%;margin-top:8px;">🚪 Uitloggen</button>
   </div>
-</div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-  import { getDatabase, ref, push, set, onValue, get, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyB12mTMBnuxdC4W4htyFO_C7Dnh3maVKew",
-    authDomain: "decoroefening.firebaseapp.com",
-    databaseURL: "https://decoroefening-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "decoroefening",
-    storageBucket: "decoroefening.firebasestorage.app",
-    messagingSenderId: "945998495824",
-    appId: "1:945998495824:web:a76dc7519b3b262a021155"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  const GAME_DURATION = 3600;
-  const PROXIMITY_RADIUS = 10; // 10 meter
-
-  // ---- BASIS MISSIES (zelfde als bij criminelen) ----
-  const BASE_MISSIONS = [
-    { "id": "mission1", "order": 1, "lat": 52.131168, "lng": 5.365757, "cryptic": "OC-MELDING: Verdachte ontmoeting gerapporteerd.", "description": "GODFATHER: Handlanger ophalen, goud (dumbbell) ophalen, naam handlanger doorgeven.", "spoor": "Camerabeelden", "proximityImage": "lowiekevanrubber.png", "proximityText": "📸 Signalement Lowieke van Rubber", "proximityRDW": null },
-    { "id": "mission2", "order": 2, "lat": 52.131605, "lng": 5.368394, "cryptic": "OC-MELDING: Vluchtvoertuig gesignaleerd.", "description": "GODFATHER: Kies een snelle wagen. Foto maken.", "spoor": "Kentekenregistratie", "proximityImage": "kentekenplaat.png", "proximityText": "🚗 Kenteken NB616NP", "proximityRDW": "NB616NP" },
-    { "id": "mission3", "order": 3, "lat": 52.130893, "lng": 5.364418, "cryptic": "OC-MELDING: Vuurwapen gezien.", "description": "GODFATHER: Laat sukkel wapen vasthouden. Foto.", "spoor": "Wapenbeschrijving", "proximityImage": "wapenkamer.png", "proximityImage2": "lowieketussenhulzen.png", "proximityText": "🔫 Camerabeelden wapenkamer" },
-    { "id": "mission4", "order": 4, "lat": 52.132714, "lng": 5.368064, "cryptic": "OC-MELDING: Aanrijding gemeld.", "description": "GODFATHER: Schade vastleggen. Foto's maken.", "spoor": "Schaderapport", "proximityImage": "verkeersongeluk.png", "proximityText": "🚨 Foto verkeersongeval" },
-    { "id": "mission5", "order": 5, "lat": 52.131334, "lng": 5.366343, "cryptic": "OC-MELDING: Safehouse ontdekt.", "description": "GODFATHER: Check schuilplek. Geen sporen.", "spoor": "DNA-sporen", "proximityImage": "reisbescheidenalles.png", "proximityText": "🛄 Reisbescheiden Tokyo, Rio" },
-    { "id": "mission6", "order": 6, "lat": 52.131500, "lng": 5.366800, "cryptic": "OC-MELDING: Contactpersoon.", "description": "GODFATHER: Ontmoeting. Foto maken.", "spoor": "Afluisterapparatuur", "proximityImage": null },
-    { "id": "mission7", "order": 7, "lat": 52.130800, "lng": 5.368200, "cryptic": "OC-MELDING: Sporenwisserij.", "description": "GODFATHER: Grote schoonmaak. Verbrand alles.", "spoor": "Verbrandingsresten", "proximityImage": null }
-  ];
-
-  // ---- KLAS-SPECIFIEKE VOLGORDE (zelfde als bij criminelen) ----
-  const CLASS_ORDER_MAP = {
-    Alpha: ["mission1", "mission2", "mission3", "mission4", "mission5", "mission6", "mission7"],
-    Bravo: ["mission1", "mission3", "mission2", "mission5", "mission4", "mission7", "mission6"],
-    Charlie: ["mission1", "mission4", "mission2", "mission6", "mission3", "mission5", "mission7"],
-    Delta: ["mission1", "mission5", "mission3", "mission7", "mission2", "mission6", "mission4"],
-    Echo: ["mission1", "mission6", "mission4", "mission2", "mission7", "mission3", "mission5"],
-    Foxtrot: ["mission1", "mission7", "mission5", "mission3", "mission6", "mission4", "mission2"],
-    Golf: ["mission1", "mission2", "mission6", "mission4", "mission7", "mission5", "mission3"],
-    Hotel: ["mission1", "mission3", "mission7", "mission5", "mission2", "mission4", "mission6"],
-    Juliett: ["mission1", "mission4", "mission7", "mission6", "mission3", "mission2", "mission5"],
-    Kilo: ["mission1", "mission5", "mission2", "mission7", "mission4", "mission6", "mission3"],
-    Mike: ["mission1", "mission6", "mission3", "mission7", "mission5", "mission2", "mission4"]
-  };
-
-  // RDW-data voor een specifiek kenteken
-  const RDW_DATA = { 'NB616NP': { merk: 'Ford', model: 'C-Max', kleur: 'Wit', kenteken: 'NB616NP', status: 'Gestolen gemeld op 12-07-2026' } };
-
-  let className = 'Alpha', pingDisplayTimer, teamName = '', gameStarted = false, watchPositionIdHunter;
-  let hunterPosition, discoveredProximities = {}, proximityCheckInterval;
-  let missionsMap = {};      // alle missie-data per id
-  let missionOrder = [];     // volgorde voor deze klas
-  let activeMissionId = null; // actieve missie-id voor deze klas
-
-  function setStatus(el, msg, type = 'info') { if(el) { el.textContent = msg; el.className = type; } }
-  function showScreen(id) { ['loginScreen','hunterScreen'].forEach(s => document.getElementById(s).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
-  function getTimestamp() { return Date.now(); }
-  function deg2rad(d) { return d * Math.PI/180; }
-  function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) { const R=6371000, dLat=deg2rad(lat2-lat1), dLon=deg2rad(lon2-lon1), a=Math.sin(dLat/2)**2+Math.cos(deg2rad(lat1))*Math.cos(deg2rad(lat2))*Math.sin(dLon/2)**2; return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); }
-  function updateTimer(elId, cls) { const el = document.getElementById(elId); if(!el||!cls) return; get(ref(db,`klassen/${cls}/game/startTime`)).then(snap => { const s = snap.val(); if(!s) { el.textContent = '--:--'; return; } const r = Math.max(0, GAME_DURATION - Math.floor((Date.now()-s)/1000)); el.textContent = String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0'); }); }
-  function logout() { clearTimeout(pingDisplayTimer); if(watchPositionIdHunter)navigator.geolocation.clearWatch(watchPositionIdHunter); clearInterval(proximityCheckInterval); showScreen('loginScreen'); }
-
-  // ---- Laad missies voor de klas - altijd overschrijven met juiste volgorde ----
-  async function loadMissionsForClass(className) {
-    const order = CLASS_ORDER_MAP[className] || CLASS_ORDER_MAP.Alpha;
-    const missions = {};
-    order.forEach((id, idx) => {
-      const base = BASE_MISSIONS.find(m => m.id === id);
-      if (base) {
-        missions[id] = { ...base, order: idx + 1 };
+  <!-- =========================================================================
+       JAVASCRIPT MOTOR: HUNTED & PORTO ARCHITECTUUR
+       ========================================================================= -->
+  <script>
+    /* -------------------------------------------------------------------------
+       1. DATASTRUCTUUR: CASUSSEN & VOLGORDE PER KLAS
+       ------------------------------------------------------------------------- */
+    const BASE_MISSIONS = {
+      1: {
+        id: 1,
+        naam: "Verdachte ontmoeting",
+        lat: 52.131168,
+        lng: 5.365757,
+        ocMelding: "OC-MELDING: Verdachte ontmoeting gerapporteerd.",
+        godfather: "Handlanger ophalen, goud (dumbbell) ophalen, naam handlanger doorgeven.",
+        spoor: "Camerabeelden",
+        bewijsTekst: "📸 Signalement Lowieke van Rubber",
+        images: ["lowiekevanrubber.png"]
+      },
+      2: {
+        id: 2,
+        naam: "Vluchtvoertuig",
+        lat: 52.131605,
+        lng: 5.368394,
+        ocMelding: "OC-MELDING: Vluchtvoertuig gesignaleerd.",
+        godfather: "Kies een snelle wagen. Foto maken.",
+        spoor: "Kentekenregistratie",
+        bewijsTekst: "🚗 Kenteken NB616NP",
+        images: ["kentekenplaat.png"]
+      },
+      3: {
+        id: 3,
+        naam: "Vuurwapen",
+        lat: 52.130893,
+        lng: 5.364418,
+        ocMelding: "OC-MELDING: Vuurwapen gezien.",
+        godfather: "Laat sukkel wapen vasthouden. Foto.",
+        spoor: "Wapenbeschrijving",
+        bewijsTekst: "🔫 Camerabeelden wapenkamer",
+        images: ["wapenkamer.png", "lowieketussenhulzen.png"]
+      },
+      4: {
+        id: 4,
+        naam: "Aanrijding",
+        lat: 52.132714,
+        lng: 5.368064,
+        ocMelding: "OC-MELDING: Aanrijding gemeld.",
+        godfather: "Schade vastleggen. Foto's maken.",
+        spoor: "Schaderapport",
+        bewijsTekst: "🚨 Foto verkeersongeval",
+        images: ["verkeersongeluk.png"]
+      },
+      5: {
+        id: 5,
+        naam: "Safehouse",
+        lat: 52.131334,
+        lng: 5.366343,
+        ocMelding: "OC-MELDING: Safehouse ontdekt.",
+        godfather: "Check schuilplek. Geen sporen.",
+        spoor: "DNA-sporen",
+        bewijsTekst: "🛄 Reisbescheiden Tokyo, Rio",
+        images: ["reisbescheidenalles.png"]
+      },
+      6: {
+        id: 6,
+        naam: "Contactpersoon",
+        lat: 52.131500,
+        lng: 5.366800,
+        ocMelding: "OC-MELDING: Contactpersoon.",
+        godfather: "Ontmoeting. Foto maken.",
+        spoor: "Afluisterapparatuur",
+        bewijsTekst: "Geen beeldmateriaal beschikbaar",
+        images: []
+      },
+      7: {
+        id: 7,
+        naam: "Sporenwisserij",
+        lat: 52.130800,
+        lng: 5.368200,
+        ocMelding: "OC-MELDING: Sporenwisserij.",
+        godfather: "Grote schoonmaak. Verbrand alles.",
+        spoor: "Verbrandingsresten",
+        bewijsTekst: "Geen beeldmateriaal beschikbaar",
+        images: []
       }
-    });
-    await set(ref(db, `klassen/${className}/missions`), missions);
-    return missions;
-  }
+    };
 
-  async function loadMissionsFromDB() {
-    // Altijd opnieuw genereren volgens de map om foute oude data te overschrijven
-    const missions = await loadMissionsForClass(className);
-    missionsMap = {};
-    for (const [id, mission] of Object.entries(missions)) missionsMap[id] = mission;
-    missionOrder = CLASS_ORDER_MAP[className] || CLASS_ORDER_MAP.Alpha;
-    return missions;
-  }
+    const CLASS_ORDER_MAP = {
+      'Alpha':   [1, 2, 3, 4, 5, 6, 7],
+      'Bravo':   [1, 3, 2, 5, 4, 7, 6],
+      'Charlie': [1, 4, 2, 6, 3, 5, 7],
+      'Delta':   [1, 5, 3, 7, 2, 6, 4],
+      'Echo':    [1, 6, 4, 2, 7, 3, 5],
+      'Foxtrot': [1, 7, 5, 3, 6, 4, 2],
+      'Golf':    [1, 2, 6, 4, 7, 5, 3],
+      'Hotel':   [1, 3, 7, 5, 2, 4, 6],
+      'Juliett': [1, 4, 7, 6, 3, 2, 5],
+      'Kilo':    [1, 5, 2, 7, 4, 6, 3],
+      'Mike':    [1, 6, 3, 7, 5, 2, 4]
+    };
 
-  // ---- Bijwerken van het Operationeel Centrum met de actieve missie ----
-  function updateOperationeelCentrum(missionId) {
-    const el = document.getElementById('missionDescription');
-    if (!missionId || !missionsMap[missionId]) {
-      activeMissionId = null;
-      el.innerHTML = '⏳ Er is nog geen actieve missie gestart...';
-      return;
+    /* -------------------------------------------------------------------------
+       2. FIREBASE & GLOBALE STATE
+       ------------------------------------------------------------------------- */
+    const firebaseConfig = {
+      apiKey: "AIzaSyBj8dXkl1rEfyx54_MDy_tYd2P7kAeU8VQ",
+      authDomain: "q2les3samirgem.firebaseapp.com",
+      databaseURL: "https://q2les3samirgem-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "q2les3samirgem",
+      storageBucket: "q2les3samirgem.firebasestorage.app"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let selectedClass = 'Alpha';
+    let userRole = 'rapporteur'; // 'rapporteur' of 'oc'
+    let userName = 'Rapporteur';
+    let currentStepIndex = 0; // 0 t/m 6
+    let activeCasus = null;
+    let completedCasusIds = [];
+    let userLatLng = null;
+    let simulatedLatLng = null;
+    let lastVoiceTimestamp = Date.now();
+
+    /* -------------------------------------------------------------------------
+       3. LEAFLET KAART INITIALISATIE & PINS
+       ------------------------------------------------------------------------- */
+    let map = null;
+    let userMarker = null;
+    let completedMarkersLayer = null;
+
+    function initLeafletMap() {
+      map = L.map('map', { zoomControl: false }).setView([52.1315, 5.3665], 16);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      completedMarkersLayer = L.layerGroup().addTo(map);
+
+      // Gebruiker marker (blauw pulserend)
+      const userIcon = L.divIcon({
+        className: 'custom-user-icon',
+        html: `<div class="w-4 h-4 bg-blue-500 border-2 border-white rounded-full shadow-lg animate-ping"></div>`,
+        iconSize: [16, 16]
+      });
+      userMarker = L.marker([52.1315, 5.3665], { icon: userIcon }).addTo(map);
     }
-    activeMissionId = missionId;
-    const m = missionsMap[missionId];
-    el.innerHTML = `<strong>📨 Actieve missie:</strong> ${m.cryptic}<br><span class="sub">${m.description}</span>`;
-  }
 
-  // ---- Probeer de huidige actieve missie te bepalen uit de players ----
-  async function setInitialActiveMission() {
-    const snap = await get(ref(db, `klassen/${className}/players`));
-    if (!snap.exists()) return;
-    const players = snap.val();
-    let activeId = null;
-    for (const [name, data] of Object.entries(players)) {
-      if (data.role === 'criminal' && data.currentMissionId) {
-        activeId = data.currentMissionId;
-        break;
+    function addCompletedPinToMap(casus) {
+      const greenIcon = L.divIcon({
+        className: 'completed-pin',
+        html: `
+          <div class="bg-emerald-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs border-2 border-white shadow-lg">
+            ✓
+          </div>
+        `,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+
+      const m = L.marker([casus.lat, casus.lng], { icon: greenIcon });
+      m.bindPopup(`
+        <div class="text-slate-900 text-xs font-sans">
+          <strong class="text-emerald-700 block">Afgerond: Casus ${casus.id}</strong>
+          <b>${casus.naam}</b><br>
+          <span class="text-[10px] text-slate-500">${casus.spoor}</span>
+        </div>
+      `);
+      completedMarkersLayer.addLayer(m);
+    }
+
+    /* -------------------------------------------------------------------------
+       4. GPS AFSTAND & PROXIMITY CHECK (10 METER)
+       ------------------------------------------------------------------------- */
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371e3;
+      const φ1 = lat1 * Math.PI / 180;
+      const φ2 = lat2 * Math.PI / 180;
+      const Δφ = (lat2 - lat1) * Math.PI / 180;
+      const Δλ = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return Math.round(R * c);
+    }
+
+    function trackLocation() {
+      if ('geolocation' in navigator) {
+        navigator.geolocation.watchPosition(
+          pos => {
+            if (!simulatedLatLng) {
+              userLatLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              handleNewPosition();
+            }
+          },
+          err => {
+            document.getElementById('gps-status-label').textContent = "GPS: Handmatig / Sim";
+          },
+          { enableHighAccuracy: true, maximumAge: 1000 }
+        );
       }
     }
-    if (activeId) updateOperationeelCentrum(activeId);
-  }
 
-  function startProximityCheck() {
-    if(proximityCheckInterval) clearInterval(proximityCheckInterval);
-    proximityCheckInterval = setInterval(() => {
-      if(!gameStarted || !hunterPosition || !activeMissionId) return;
-      const mission = missionsMap[activeMissionId];
-      if (!mission || !mission.lat || !mission.lng) return;
-      if (discoveredProximities[activeMissionId]) return;
-      const dist = getDistanceFromLatLonInMeters(hunterPosition.lat, hunterPosition.lng, mission.lat, mission.lng);
-      if (dist <= PROXIMITY_RADIUS) {
-        discoveredProximities[activeMissionId] = true;
-        showProximityEvidence(activeMissionId, mission, dist);
-      }
-    }, 5000);
-  }
+    function handleNewPosition() {
+      const pos = simulatedLatLng || userLatLng;
+      if (!pos || !activeCasus) return;
 
-  function showProximityEvidence(id, mission, dist) {
-    const container = document.getElementById('proximityEvidence');
-    let html = `<div class="proximity-alert"><span class="distance-badge">📍 ${Math.round(dist)}m</span><h3>🔍 Bewijs bij missie ${mission.order}</h3>`;
-    if(mission.proximityImage) html += `<img src="${mission.proximityImage}" class="evidence-image" onerror="this.style.display='none'">`;
-    if(mission.proximityImage2) html += `<img src="${mission.proximityImage2}" class="evidence-image" style="margin-top:8px" onerror="this.style.display='none'">`;
-    if(mission.proximityText) html += `<div class="evidence-text">${mission.proximityText}</div>`;
-    if(mission.proximityRDW) html += `<div class="evidence-text" style="color:#ffd54f;">💡 RDW-check: ${mission.proximityRDW}</div>`;
-    html += `</div>`;
-    container.innerHTML += html; container.classList.remove('hidden');
-    push(ref(db,`klassen/${className}/chats`),{sender:'🔍 Bewijs',text:`Nieuwe informatie bij missie ${mission.order}: ${mission.proximityText||'Visueel bewijs'}`,timestamp:getTimestamp(),isSystem:true});
-  }
+      document.getElementById('gps-status-label').textContent = `GPS: Actief (${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)})`;
+      userMarker.setLatLng([pos.lat, pos.lng]);
 
-  document.getElementById('loginBtn').addEventListener('click', async () => {
-    const name = document.getElementById('usernameInput').value.trim();
-    className = document.getElementById('classSelect').value;
-    if(!name) { setStatus(document.getElementById('loginStatus'),'Naam verplicht','error'); return; }
-    try {
-      const playerRef = ref(db,`klassen/${className}/players/${name}`);
-      if((await get(playerRef)).exists()) { setStatus(document.getElementById('loginStatus'),'Teamnaam in gebruik','error'); return; }
-      await set(playerRef, { role:'hunter', teamName:name, className, joinedAt:getTimestamp(), status:'hunting', cluesFound:[], isArrested:false, extractReached:false });
-      teamName = name; discoveredProximities = {};
-      showScreen('hunterScreen');
-      initHunterDashboard(teamName, className);
-    } catch(err) { setStatus(document.getElementById('loginStatus'),'Fout: '+err.message,'error'); }
-  });
+      const dist = calculateDistance(pos.lat, pos.lng, activeCasus.lat, activeCasus.lng);
+      document.getElementById('distance-badge').textContent = `Afstand tot doel: ${dist} meter`;
 
-  function initHunterDashboard(teamName, className) {
-    loadMissionsFromDB().then(() => {
-      const list = document.getElementById('activeMissionsList');
-      if (missionOrder.length === 0) {
-        list.innerHTML = '<div style="color:#8899aa;">Geen missies.</div>';
+      const proxBadge = document.getElementById('proximity-badge');
+      const proxInstruction = document.getElementById('proximity-instruction');
+      const evidenceBox = document.getElementById('evidence-container');
+
+      if (dist <= 10) {
+        proxBadge.textContent = "BINNEN 10 METER!";
+        proxBadge.className = "bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded-full font-mono font-bold animate-pulse";
+        proxInstruction.textContent = "Je bent op de locatie aangekomen! Het bewijs is hieronder ontgrendeld:";
+        renderProximityEvidence(activeCasus);
+        evidenceBox.classList.remove('hidden');
       } else {
-        let html = '';
-        missionOrder.forEach((id, idx) => {
-          const m = missionsMap[id];
-          if (m) {
-            html += `<div class="active-mission-item"><span class="team">${idx+1}. ${m.cryptic}</span></div>`;
-          }
+        proxBadge.textContent = `${dist}m verwijderd`;
+        proxBadge.className = "bg-slate-700 text-slate-300 text-[10px] px-2 py-0.5 rounded-full font-mono";
+        proxInstruction.textContent = "Beweeg richting de coördinaten. Bewijsmateriaal ontgrendelt automatisch binnen 10 meter.";
+        evidenceBox.classList.add('hidden');
+      }
+    }
+
+    function renderProximityEvidence(c) {
+      const container = document.getElementById('evidence-media');
+      let html = `<p class="text-xs font-bold text-amber-300">${c.bewijsTekst}</p>`;
+
+      if (c.images.length > 0) {
+        c.images.forEach(img => {
+          html += `
+            <div class="relative rounded-xl overflow-hidden border border-slate-700 bg-black">
+              <img src="${img}" alt="Camerabeeld" class="w-full max-h-48 object-cover block mx-auto" onerror="handleImgFallback(this, '${c.naam}')">
+              <div class="absolute inset-0 scanlines pointer-events-none opacity-25"></div>
+              <div class="absolute top-0 inset-x-0 bg-black/70 px-2 py-0.5 text-[9px] font-mono text-red-400 flex justify-between">
+                <span>● CAM BEWAKING</span>
+                <span>${c.spoor}</span>
+              </div>
+            </div>
+          `;
         });
-        list.innerHTML = html;
+      } else {
+        html += `<p class="text-[11px] text-slate-400 italic">Geen direct beeldmateriaal beschikbaar voor deze casus. Onderzoek de omgeving grondig.</p>`;
       }
-      setInitialActiveMission();
-    });
+      container.innerHTML = html;
+    }
 
-    updateTimer('hunterTimerValue', className); setInterval(()=>updateTimer('hunterTimerValue', className), 1000);
-    document.getElementById('hunterTeamName').textContent = teamName + ' ('+className+')';
-    if(navigator.geolocation) watchPositionIdHunter = navigator.geolocation.watchPosition(pos => { hunterPosition = { lat:pos.coords.latitude, lng:pos.coords.longitude }; document.getElementById('hunterPosition').textContent = hunterPosition.lat.toFixed(4)+', '+hunterPosition.lng.toFixed(4); }, err=>console.warn('GPS:',err), {enableHighAccuracy:true,maximumAge:10000});
-    const map = L.map('hunterMap').setView([52.13,5.366],14); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    const markers = {}, markerTimers = {}, latestPings = {}, waitingMsg = document.getElementById('hunterWaitingMessage'), chatsRef = ref(db,`klassen/${className}/chats`), playersRef = ref(db,`klassen/${className}/players`), criminalMissionMap = new Map();
-    let hunterMarker;
-    const redIcon = L.divIcon({ className: 'hunter-red-dot', iconSize: [12,12], iconAnchor: [6,6] });
-    const completedMissionMarkers = L.layerGroup().addTo(map);
-    let processedEvents = new Set();
+    function handleImgFallback(img, title) {
+      img.onerror = null;
+      img.parentElement.innerHTML = `
+        <div class="p-6 text-center bg-slate-950 font-mono text-xs text-amber-400 border border-slate-700 rounded-xl">
+          <i class="fa-solid fa-camera-retro text-2xl text-slate-500 mb-1 block"></i>
+          POLITIE CAM BEELD: [${title}]<br>
+          <span class="text-[10px] text-slate-400">Bestand veiliggesteld op dossier</span>
+        </div>
+      `;
+    }
 
-    // ---- Luister naar hunters events (mission_started, mission_completed, auto_advance) ----
-    onValue(ref(db, `klassen/${className}/hunters`), (snap) => {
-      const data = snap.val();
-      if (!data) return;
-      for (const [key, event] of Object.entries(data)) {
-        if (processedEvents.has(key)) continue;
-        processedEvents.add(key);
+    /* -------------------------------------------------------------------------
+       5. DE VOLLEDIGE C2000 PORTO ARCHITECTUUR (WEB AUDIO & FIREBASE PTT)
+       ------------------------------------------------------------------------- */
+    let audioCtx = null;
+    let micStream = null;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
 
-        if (event.type === 'mission_started' && event.mission) {
-          updateOperationeelCentrum(event.mission);
-        }
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
 
-        if (event.type === 'mission_completed' && event.lat && event.lng) {
-          const marker = L.marker([event.lat, event.lng], {
-            icon: L.divIcon({ className: 'completed-mission-marker', html: '✅', iconSize: [24,24], iconAnchor: [12,12] })
-          }).addTo(completedMissionMarkers)
-            .bindPopup(`✅ Missie volbracht door ${event.team}<br>Mission: ${event.mission}`);
-          push(ref(db, `klassen/${className}/chats`), {
-            sender: '📋 Voltooide missie',
-            text: `Team ${event.team} heeft missie ${event.mission} voltooid op locatie ${event.lat.toFixed(4)}, ${event.lng.toFixed(4)}`,
-            timestamp: getTimestamp(),
-            isSystem: true
-          });
-        }
+    function playRadioChirp() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-        // ---- NIEUW: auto_advance afhandelen ----
-        if (event.type === 'auto_advance' && event.lat && event.lng) {
-          const marker = L.marker([event.lat, event.lng], {
-            icon: L.divIcon({ className: 'auto-advance-marker', html: '⏱️', iconSize: [24,24], iconAnchor: [12,12] })
-          }).addTo(completedMissionMarkers)
-            .bindPopup(`⏱️ Missie overgeslagen door ${event.team}<br>Mission: ${event.mission}`);
-          push(ref(db, `klassen/${className}/chats`), {
-            sender: '⏱️ Auto-advance',
-            text: `Team ${event.team} heeft missie ${event.mission} niet op tijd voltooid. Locatie: ${event.lat.toFixed(4)}, ${event.lng.toFixed(4)}`,
-            timestamp: getTimestamp(),
-            isSystem: true
-          });
-        }
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(920, now);
+        osc.frequency.setValueAtTime(1250, now + 0.08);
+
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.18);
+      } catch(e) {}
+    }
+
+    function playSquelchNoise() {
+      try {
+        const ctx = getAudioContext();
+        const duration = 0.11;
+        const bufferSize = ctx.sampleRate * duration;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1400;
+        filter.Q.value = 2;
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start();
+      } catch(e) {}
+    }
+
+    async function initMicrophone() {
+      if (!micStream) {
+        micStream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: false, autoGainControl: true }
+        });
       }
-    });
+    }
 
-    setInterval(()=>{
-      if(hunterPosition){
-        if(hunterMarker) hunterMarker.setLatLng([hunterPosition.lat, hunterPosition.lng]);
-        else hunterMarker = L.marker([hunterPosition.lat, hunterPosition.lng], { icon: redIcon }).addTo(map).bindPopup('Jouw positie');
-      }
-    }, 3000);
-
-    onValue(playersRef, snap => { const d = snap.val(); if(!d) return; for(const [n,p] of Object.entries(d)) if(p.role==='criminal') criminalMissionMap.set(n, p.currentMissionId||null); });
-    onValue(ref(db,`klassen/${className}/pings`), snap => {
-      const d = snap.val(); const list = document.getElementById('pingList');
-      if(!d) { list.innerHTML = '<div style="color:#8899aa;">Geen pings</div>'; return; }
-      for(const k of Object.keys(d)) { const p = d[k]; if(!latestPings[p.teamName] || p.timestamp > latestPings[p.teamName].timestamp) latestPings[p.teamName] = p; }
-      let html = '';
-      for(const p of Object.values(latestPings).sort((a,b)=>b.timestamp-a.timestamp)) {
-        const mid = criminalMissionMap.get(p.teamName);
-        let cryptic = '';
-        if(mid) {
-          const m = missionsMap[mid];
-          if(m) cryptic = m.cryptic||'';
-        }
-        html += `<div class="ping-item"><strong>${p.teamName}</strong> 📍 ${p.latitude.toFixed(4)},${p.longitude.toFixed(4)} <span style="color:#667788;font-size:0.7rem;">${new Date(p.timestamp).toLocaleTimeString()}</span>${cryptic?`<span class="cryptic">📜 ${cryptic}</span>`:''}</div>`;
-      }
-      list.innerHTML = html || '<div style="color:#8899aa;">Geen pings</div>';
-    });
-    function showPinpoint(team, lat, lng) { if(markers[team]){map.removeLayer(markers[team]);clearTimeout(markerTimers[team]);} const mid = criminalMissionMap.get(team); let c=''; if(mid){const m = missionsMap[mid]; if(m)c=m.cryptic||'';} const mk = L.marker([lat,lng]).addTo(map).bindPopup(`<strong>${team}</strong><br>📍 ${lat.toFixed(6)},${lng.toFixed(6)}${c?`<br>📜 ${c}`:''}`); markers[team]=mk; markerTimers[team]=setTimeout(()=>{if(markers[team]){map.removeLayer(markers[team]);delete markers[team];}},30000); }
-    function schedulePingDisplay() { if(pingDisplayTimer) clearTimeout(pingDisplayTimer); pingDisplayTimer = setTimeout(() => { if(!gameStarted) return; for(const p of Object.values(latestPings)){ get(ref(db,`klassen/${className}/players/${p.teamName}`)).then(s=>{ const pl = s.val(); if(pl&&pl.role==='criminal'&&!pl.isArrested&&!pl.extractReached) showPinpoint(p.teamName, p.latitude, p.longitude); }); } schedulePingDisplay(); }, Math.floor(Math.random()*150000+30000)); }
-    onValue(ref(db,`klassen/${className}/game/status`), snap => {
-      if(snap.val()==='running'){ gameStarted=true; waitingMsg.classList.add('hidden'); if(!pingDisplayTimer) schedulePingDisplay(); startProximityCheck(); }
-      else { gameStarted=false; waitingMsg.classList.remove('hidden'); if(pingDisplayTimer){clearTimeout(pingDisplayTimer);pingDisplayTimer=null;} if(proximityCheckInterval){clearInterval(proximityCheckInterval);proximityCheckInterval=null;} }
-    });
-
-    // ---- OC Communicatie ----
-    document.getElementById('ocSendBtn').addEventListener('click',async()=>{
-      const t=document.getElementById('ocInput').value.trim();
-      if(!t) return;
-      await push(chatsRef,{sender:`📡 OC (${teamName})`,text:t,timestamp:getTimestamp()});
-      document.getElementById('ocInput').value='';
-    });
-
-    // ---- AANGEPASTE RDW-CHECK ----
-    document.getElementById('rdwBtn').addEventListener('click', () => {
-      const k = document.getElementById('rdwInput').value.trim().toUpperCase();
-      const r = document.getElementById('rdwResult');
-      if (!k) {
-        r.innerHTML = 'Voer een geldig kenteken in.';
-        r.classList.remove('hidden');
+    async function startVoiceRecording() {
+      if (isRecording) return;
+      try {
+        await initMicrophone();
+      } catch (err) {
+        alert("Microfoon vereist: " + err.message);
         return;
       }
-      const d = RDW_DATA[k];
-      if (d) {
-        r.innerHTML = `<strong>${d.kenteken}</strong> | ${d.merk} ${d.model} (${d.kleur}) | ${d.status}`;
-      } else {
-        r.innerHTML = `Kenteken <strong>${k}</strong> staat als gestolen genoteerd in het RDW-systeem.`;
+
+      isRecording = true;
+      audioChunks = [];
+
+      document.getElementById('btn-ptt').classList.add('ptt-active');
+      document.getElementById('ptt-label').textContent = "● SPREEK NU...";
+      document.getElementById('lcd-status-label').textContent = "● TX (ZENDEN)";
+      document.getElementById('lcd-main-title').textContent = "AAN HET ZENDEN";
+
+      playRadioChirp();
+
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+        ? 'audio/webm;codecs=opus' 
+        : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4');
+
+      mediaRecorder = new MediaRecorder(micStream, { mimeType });
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+      mediaRecorder.onstop = uploadVoicePayload;
+      mediaRecorder.start();
+    }
+
+    function stopVoiceRecording() {
+      if (!isRecording) return;
+      isRecording = false;
+
+      document.getElementById('btn-ptt').classList.remove('ptt-active');
+      document.getElementById('ptt-label').textContent = "HOUD INGEDRUKT OM TE PRATEN (PTT)";
+      document.getElementById('lcd-status-label').textContent = "● STAND-BY";
+      document.getElementById('lcd-main-title').textContent = "KANAAL OPEN";
+
+      playSquelchNoise();
+
+      // Trailing buffer van 80ms om afkappen van woorden te voorkomen
+      setTimeout(() => {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+      }, 80);
+    }
+
+    function uploadVoicePayload() {
+      if (audioChunks.length === 0) return;
+      const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        db.ref(`hunted_${selectedClass}/voiceMsg`).set({
+          audio: reader.result,
+          senderRole: userRole,
+          timestamp: Date.now()
+        });
+      };
+    }
+
+    function listenForClassVoice() {
+      db.ref(`hunted_${selectedClass}/voiceMsg`).off();
+      db.ref(`hunted_${selectedClass}/voiceMsg`).on('value', snap => {
+        const data = snap.val();
+        if (!data) return;
+
+        if (data.timestamp > lastVoiceTimestamp && data.senderRole !== userRole) {
+          lastVoiceTimestamp = data.timestamp;
+          playIncomingRadio(data.audio);
+        }
+      });
+    }
+
+    function playIncomingRadio(base64Audio) {
+      playRadioChirp();
+
+      setTimeout(() => {
+        const audio = new Audio(base64Audio);
+
+        document.getElementById('lcd-status-label').textContent = "● RX (SPRAAK)";
+        document.getElementById('lcd-main-title').textContent = "BERICHT ONTVANGEN";
+
+        audio.play().catch(e => console.log("Autoplay block:", e));
+
+        audio.onended = () => {
+          playSquelchNoise();
+          document.getElementById('lcd-status-label').textContent = "● STAND-BY";
+          document.getElementById('lcd-main-title').textContent = "KANAAL OPEN";
+        };
+      }, 200);
+    }
+
+    const pttBtn = document.getElementById('btn-ptt');
+    pttBtn.addEventListener('mousedown', startVoiceRecording);
+    pttBtn.addEventListener('mouseup', stopVoiceRecording);
+    pttBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startVoiceRecording(); });
+    pttBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopVoiceRecording(); });
+    pttBtn.addEventListener('touchcancel', (e) => { e.preventDefault(); stopVoiceRecording(); });
+
+    /* -------------------------------------------------------------------------
+       6. MISSIE PROGRESSIE, MUTATIES & FIREBASE SYNC
+       ------------------------------------------------------------------------- */
+    function syncClassGameState() {
+      db.ref(`hunted_${selectedClass}/gameState`).on('value', snap => {
+        const state = snap.val();
+        if (!state) {
+          // Eerste initialisatie voor de klas
+          db.ref(`hunted_${selectedClass}/gameState`).set({
+            currentStep: 0,
+            completedIds: [],
+            pendingMutation: null
+          });
+          return;
+        }
+
+        currentStepIndex = state.currentStep || 0;
+        completedCasusIds = state.completedIds || [];
+
+        // Update Pins op de kaart
+        completedMarkersLayer.clearLayers();
+        completedCasusIds.forEach(id => {
+          addCompletedPinToMap(BASE_MISSIONS[id]);
+        });
+
+        // Bepaal de actieve casus via CLASS_ORDER_MAP
+        const orderList = CLASS_ORDER_MAP[selectedClass];
+        if (currentStepIndex < orderList.length) {
+          const activeCasusId = orderList[currentStepIndex];
+          activeCasus = BASE_MISSIONS[activeCasusId];
+          updateCasusUI();
+        } else {
+          showGameCompletedCelebration();
+        }
+
+        // Toon ingezonden mutatie bij het OC
+        if (userRole === 'oc') {
+          handlePendingMutationForOC(state.pendingMutation);
+        }
+      });
+    }
+
+    function updateCasusUI() {
+      if (!activeCasus) return;
+
+      document.getElementById('lcd-cas-label').textContent = `CASUS: ${currentStepIndex + 1}/7`;
+      document.getElementById('topbar-class-badge').textContent = `KLAS: ${selectedClass.toUpperCase()}`;
+      document.getElementById('topbar-role-badge').textContent = userRole === 'oc' ? '🎧 OC' : '🏃 RAPPORT';
+
+      if (userRole === 'oc') {
+        document.getElementById('oc-dispatch-panel').classList.remove('hidden');
+        document.getElementById('oc-spreektekst').textContent = 
+          `"${activeCasus.ocMelding} Aan alle eenheden: ga naar coördinaten ${activeCasus.lat}, ${activeCasus.lng}. Opdracht: ${activeCasus.godfather}"`;
       }
-      r.classList.remove('hidden');
+
+      handleNewPosition();
+    }
+
+    // Rapporteur dient mutatie in
+    function submitRapporteurMutation(e) {
+      e.preventDefault();
+      const a = document.getElementById('input-a').value;
+      const s = document.getElementById('input-s').value;
+      const t = document.getElementById('input-t').value;
+      const ma = document.getElementById('input-ma').value;
+
+      const payload = {
+        rapporteur: userName,
+        casusId: activeCasus.id,
+        casusTitel: activeCasus.naam,
+        a, s, t, ma,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      db.ref(`hunted_${selectedClass}/gameState/pendingMutation`).set(payload);
+      alert("✅ Mutatie verzonden naar het Operationeel Centrum ter goedkeuring.");
+      document.getElementById('astma-form').reset();
+    }
+
+    // OC ontvangt en beoordeelt mutatie
+    function handlePendingMutationForOC(mut) {
+      const box = document.getElementById('oc-pending-mutation-box');
+      const approveBtn = document.getElementById('btn-approve-mission');
+      const dot = document.getElementById('mutatie-alert-dot');
+
+      if (!mut) {
+        box.innerHTML = `<span class="text-slate-500 italic">Geen mutatie in behandeling. Wacht op rapporteurs ter plaatse...</span>`;
+        approveBtn.disabled = true;
+        dot.classList.add('hidden');
+        return;
+      }
+
+      dot.classList.remove('hidden');
+      box.innerHTML = `
+        <div class="space-y-1">
+          <div class="text-amber-400 font-bold border-b border-slate-700 pb-1 flex justify-between">
+            <span>MUTATIE: ${mut.casusTitel}</span>
+            <span class="text-slate-400 font-normal">${mut.timestamp}</span>
+          </div>
+          <div><strong class="text-blue-400">Aanleiding:</strong> ${mut.a}</div>
+          <div><strong class="text-blue-400">Situatie:</strong> ${mut.s}</div>
+          <div><strong class="text-amber-400">Toedracht/Spoor:</strong> ${mut.t}</div>
+          <div><strong class="text-blue-400">Afhandeling:</strong> ${mut.ma}</div>
+          <div class="text-[10px] text-slate-400 mt-1">Opgemaakt door: ${mut.rapporteur}</div>
+        </div>
+      `;
+      approveBtn.disabled = false;
+    }
+
+    // OC keurt goed -> Volgende casus start
+    function approveCurrentMission() {
+      if (!activeCasus) return;
+
+      const nextStep = currentStepIndex + 1;
+      const updatedCompleted = [...completedCasusIds, activeCasus.id];
+
+      db.ref(`hunted_${selectedClass}/gameState`).update({
+        currentStep: nextStep,
+        completedIds: updatedCompleted,
+        pendingMutation: null
+      });
+
+      playRadioChirp();
+      alert(`Casus ${activeCasus.id} goedgekeurd! Pin is op de kaart geplaatst.`);
+    }
+
+    function showGameCompletedCelebration() {
+      document.getElementById('lcd-main-title').textContent = "MISSIES VOLTOOID!";
+      alert("🎉 GEFELICITEERD!\n\nJullie klas heeft alle 7 Hunted-casussen succesvol opgelost en afgerond!");
+    }
+
+    /* -------------------------------------------------------------------------
+       7. RDW KENTEKEN TOOL
+       ------------------------------------------------------------------------- */
+    function performRDWLookup() {
+      const input = document.getElementById('rdw-input').value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+      const resBox = document.getElementById('rdw-result-box');
+      resBox.classList.remove('hidden');
+
+      if (input === 'NB616NP') {
+        resBox.className = "p-3 rounded-xl font-mono text-xs border border-red-500 bg-red-950/60 text-red-200 space-y-1";
+        resBox.innerHTML = `
+          <div class="font-bold text-red-400 flex items-center gap-1">
+            <i class="fa-solid fa-triangle-exclamation"></i> GESTOLEN VOERTUIG HIT
+          </div>
+          <div><strong>Kenteken:</strong> NB-616-NP</div>
+          <div><strong>Merk/Model:</strong> Ford C-Max</div>
+          <div><strong>Kleur:</strong> Wit</div>
+          <div class="text-red-300 font-bold">Status: Gestolen gemeld op 12-07-2026</div>
+        `;
+      } else if (input.length > 0) {
+        resBox.className = "p-3 rounded-xl font-mono text-xs border border-amber-500 bg-amber-950/50 text-amber-200";
+        resBox.innerHTML = `
+          <div><strong>Kenteken:</strong> ${input}</div>
+          <div><strong>Status:</strong> Staat als gestolen genoteerd in het RDW-systeem.</div>
+        `;
+      } else {
+        resBox.innerHTML = "Voer een geldig kenteken in.";
+      }
+    }
+
+    /* -------------------------------------------------------------------------
+       8. LOGIN & NAVIGATIE LOGICA
+       ------------------------------------------------------------------------- */
+    function populateClasses() {
+      const sel = document.getElementById('login-class-select');
+      Object.keys(CLASS_ORDER_MAP).forEach(cls => {
+        const opt = document.createElement('option');
+        opt.value = cls;
+        opt.textContent = `Klas ${cls}`;
+        sel.appendChild(opt);
+      });
+    }
+
+    function selectLoginRole(role) {
+      userRole = role;
+      const btnRap = document.getElementById('btn-role-rapporteur');
+      const btnOc = document.getElementById('btn-role-oc');
+
+      if (role === 'rapporteur') {
+        btnRap.className = "py-2.5 px-3 rounded-xl border-2 border-blue-500 bg-blue-950/50 text-blue-300 font-bold text-xs flex items-center justify-center gap-1.5 transition";
+        btnOc.className = "py-2.5 px-3 rounded-xl border-2 border-slate-700 bg-slate-800 text-slate-400 font-bold text-xs flex items-center justify-center gap-1.5 transition";
+      } else {
+        btnOc.className = "py-2.5 px-3 rounded-xl border-2 border-amber-500 bg-amber-950/50 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 transition";
+        btnRap.className = "py-2.5 px-3 rounded-xl border-2 border-slate-700 bg-slate-800 text-slate-400 font-bold text-xs flex items-center justify-center gap-1.5 transition";
+      }
+    }
+
+    function confirmLogin() {
+      selectedClass = document.getElementById('login-class-select').value;
+      const customName = document.getElementById('login-user-name').value.trim();
+      if (customName) userName = customName;
+
+      document.getElementById('lcd-channel-label').textContent = `CH: ${selectedClass.toUpperCase()}`;
+      document.getElementById('lcd-role-label').textContent = `ROL: ${userRole.toUpperCase()}`;
+
+      // Pas weergaves aan op basis van rol
+      if (userRole === 'oc') {
+        document.getElementById('oc-approval-view').classList.remove('hidden');
+        document.getElementById('rapporteur-form-view').classList.add('hidden');
+      } else {
+        document.getElementById('oc-approval-view').classList.add('hidden');
+        document.getElementById('rapporteur-form-view').classList.remove('hidden');
+      }
+
+      document.getElementById('login-modal').classList.add('hidden');
+      
+      initLeafletMap();
+      trackLocation();
+      listenForClassVoice();
+      syncClassGameState();
+      startCountdownTimer();
+      playRadioChirp();
+    }
+
+    function navigateToTab(tabId) {
+      ['map', 'porto', 'mutatie', 'rdw'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        document.getElementById(`nav-${t}`).className = "flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 font-medium";
+      });
+
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      document.getElementById(`nav-${tabId}`).className = "flex flex-col items-center py-1 px-3 rounded-xl text-amber-400 font-bold";
+
+      if (tabId === 'map' && map) {
+        setTimeout(() => map.invalidateSize(), 150);
+      }
+      if (tabId === 'mutatie') {
+        document.getElementById('mutatie-alert-dot').classList.add('hidden');
+      }
+    }
+
+    /* -------------------------------------------------------------------------
+       9. SIMULATOR MODAL & GAME TIMER (60 MINUTEN)
+       ------------------------------------------------------------------------- */
+    function openSimulationModal() { document.getElementById('sim-modal').classList.remove('hidden'); }
+    function closeSimulationModal() { document.getElementById('sim-modal').classList.add('hidden'); }
+
+    function simulateTeleportToTarget() {
+      if (!activeCasus) return;
+      simulatedLatLng = { lat: activeCasus.lat + 0.00004, lng: activeCasus.lng + 0.00004 }; // ~5 meter afstand
+      handleNewPosition();
+      closeSimulationModal();
+      alert("📍 Positie geteleporteerd naar binnen de 10m radius van de casus!");
+    }
+
+    function resetSimulation() {
+      simulatedLatLng = null;
+      handleNewPosition();
+      closeSimulationModal();
+      alert("Echte GPS-tracking hervat.");
+    }
+
+    function startCountdownTimer() {
+      let secondsRemaining = 3600; // 60 minuten
+      const timerEl = document.getElementById('game-timer');
+      setInterval(() => {
+        if (secondsRemaining <= 0) return;
+        secondsRemaining--;
+        const m = Math.floor(secondsRemaining / 60);
+        const s = secondsRemaining % 60;
+        timerEl.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    // Start-up initialisaties
+    window.addEventListener('DOMContentLoaded', () => {
+      populateClasses();
     });
-
-    // ---- Criminelen lijst en arrestatie ----
-    onValue(playersRef, async snap => { const d=snap.val(); const list=document.getElementById('criminalList'); if(!d){list.innerHTML='<div style="color:#8899aa;">Geen spelers.</div>';return;} let h=''; for(const[n,p]of Object.entries(d)){if(p.role!=='criminal')continue; const s=p.isArrested?'⛓️ Gearresteerd':(p.extractReached?'✅ Ontsnapt!':'🏃 Op de vlucht'); h+=`<div class="ping-item" style="border-left-color:${p.isArrested?'#6c757d':(p.extractReached?'#28a745':'#dc3545')};"><strong>${n}</strong> - ${s}${p.isArrested&&p.misdrijf?`<br><span style="font-size:0.8rem;color:#8899aa;">Misdrijf: ${p.misdrijf}</span>`:''}</div>`;} list.innerHTML=h||'<div style="color:#8899aa;">Geen criminelen.</div>'; });
-    document.getElementById('arrestBtn').addEventListener('click',async()=>{const crim=document.getElementById('arrestCriminalInput').value.trim(),mis=document.getElementById('arrestMisdrijfInput').value.trim(),bew=document.getElementById('arrestBewijsInput').value.trim();if(!crim||!mis||!bew)return;if(!gameStarted){setStatus(document.getElementById('arrestStatus'),'⏳ Spel niet gestart!','warning');return;}const snap=await get(ref(db,`klassen/${className}/players/${crim}`));if(!snap.exists()||snap.val().role!=='criminal'||snap.val().isArrested)return;await update(ref(db,`klassen/${className}/players/${crim}`),{isArrested:true,arrestedBy:teamName,arrestedAt:getTimestamp(),misdrijf:mis,bewijsvoering:bew});await push(ref(db,`klassen/${className}/arrests`),{criminal:crim,hunter:teamName,misdrijf:mis,bewijsvoering:bew,timestamp:getTimestamp()});document.getElementById('arrestCriminalInput').value='';document.getElementById('arrestMisdrijfInput').value='';document.getElementById('arrestBewijsInput').value='';});
-
-    document.getElementById('hunterLogoutBtn').addEventListener('click', ()=>{ if(confirm('Uitloggen?')) logout(); });
-  }
-
-  showScreen('loginScreen');
-</script>
+  </script>
 </body>
 </html>
